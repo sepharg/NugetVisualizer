@@ -1,4 +1,4 @@
-﻿namespace NugetVisualizer.Domain
+﻿namespace NugetVisualizer.Core.Domain
 {
     public class Package
     {

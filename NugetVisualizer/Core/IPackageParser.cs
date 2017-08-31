@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace NugetVisualizer
+﻿namespace NugetVisualizer.Core
 {
     using System.Collections.Generic;
     using System.Xml.Linq;
-
-    using NugetVisualizer.Domain;
+    using NugetVisualizer.Core.Domain;
 
     public interface IPackageParser
     {
