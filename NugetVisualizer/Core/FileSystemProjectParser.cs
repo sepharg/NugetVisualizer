@@ -1,5 +1,6 @@
 ﻿namespace NugetVisualizer.Core
 {
+    using System.Collections.Generic;
     using System.Linq;
 
     using NugetVisualizer.Core.Domain;
@@ -23,6 +24,11 @@
             project.Packages.AddRange(packagesContents.SelectMany(x => _packageParser.ParsePackages(x)));
 
             return project;
+        }
+
+        public IEnumerable<Project> ParseProjects(IEnumerable<IProjectIdentifier> projectIdentifiers)
+        {
+            return projectIdentifiers.Select(ParseProject);
         }
     }
 }

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NugetVisualizer.Core
+﻿namespace NugetVisualizer.Core
 {
+    using System.Collections.Generic;
+
     using NugetVisualizer.Core.Domain;
 
     public interface IProjectParser
     {
         Project ParseProject(IProjectIdentifier projectIdentifier);
+
+        IEnumerable<Project> ParseProjects(IEnumerable<IProjectIdentifier> projectIdentifiers);
     }
 }
