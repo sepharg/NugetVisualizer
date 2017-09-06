@@ -70,8 +70,8 @@ namespace UnitTests
         {
             xmlDocument = XDocument.Parse("<?xml version=\"1.0\" encoding=\"utf-8\"?><packages>"
                                           + "<package id = \"Newtonsoft.Json\" version = \"9.0.1\" targetFramework = \"net461\" />"
-                                          + "<package id=\"EntityFramework\" version=\"6.1.3\" targetFramework=\"net461\" />"
-                                          + "<package id=\"AutoMapper\" version=\"3.3.1\" targetFramework=\"net461\" />"
+                                          + "<package id=\"EntityFramework\" version=\"6.1.3\" targetFramework=\"net462\" />"
+                                          + "<package id=\"AutoMapper\" version=\"3.3.1\" />"
                                           + "</packages>");
         }
 
@@ -97,6 +97,15 @@ namespace UnitTests
         private void ThenThreePackagesAreReturned()
         {
             _results.Count().ShouldBe(3);
+            _results.ElementAt(0).Name.ShouldBe("Newtonsoft.Json");
+            _results.ElementAt(0).Version.ShouldBe("9.0.1");
+            _results.ElementAt(0).TargetFramework.ShouldBe("net461");
+            _results.ElementAt(1).Name.ShouldBe("EntityFramework");
+            _results.ElementAt(1).Version.ShouldBe("6.1.3");
+            _results.ElementAt(1).TargetFramework.ShouldBe("net462");
+            _results.ElementAt(2).Name.ShouldBe("AutoMapper");
+            _results.ElementAt(2).Version.ShouldBe("3.3.1");
+            _results.ElementAt(2).TargetFramework.ShouldBeNullOrEmpty();
         }
     }
 }

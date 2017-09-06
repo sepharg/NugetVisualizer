@@ -19,7 +19,7 @@
                                       {
                                           Name = package.Attribute("id").Value,
                                           Version = package.Attribute("version").Value,
-                                          TargetFramework = package.Attribute("targetFramework").Value
+                                          TargetFramework = package.Attribute("targetFramework")?.Value
                                       };
             return packages;
         }

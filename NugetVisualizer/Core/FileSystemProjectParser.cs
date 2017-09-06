@@ -19,7 +19,7 @@
         public Project ParseProject(IProjectIdentifier projectIdentifier)
         {
             var packagesContents = _fileSystemPackageReader.GetPackagesContents(projectIdentifier);
-            var project = new Project(projectIdentifier.Name, projectIdentifier.Path);
+            var project = new Project(projectIdentifier.Name);
             project.Packages.AddRange(packagesContents.SelectMany(x => _packageParser.ParsePackages(x)));
 
             return project;

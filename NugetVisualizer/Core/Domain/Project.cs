@@ -2,19 +2,16 @@
 {
     using System.Collections.Generic;
 
-    public class Project : IProjectIdentifier
+    public class Project
     {
-        public Project(string name, string path)
+        public Project(string name)
         {
             Name = name;
-            Path = path;
             Packages = new List<Package>();
         }
 
         public List<Package> Packages { get; }
 
         public string Name { get; }
-
-        public string Path { get; }
     }
 }
