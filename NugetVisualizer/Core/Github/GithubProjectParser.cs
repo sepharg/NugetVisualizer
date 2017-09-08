@@ -14,7 +14,7 @@
 
         public GithubProjectParser()
         {
-            _githubPackageReader = new GithubPackageReader();
+            _githubPackageReader = new GithubPackageReader(new ConfigurationHelper());
             _packageParser = new PackageParser();
         }
 

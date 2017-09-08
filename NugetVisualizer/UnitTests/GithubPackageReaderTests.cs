@@ -26,7 +26,7 @@
 
         public GithubPackageReaderTests()
         {
-            _githubPackageReader = new GithubPackageReader();
+            _githubPackageReader = new GithubPackageReader(new ConfigurationHelper());
         }
 
         [Fact]

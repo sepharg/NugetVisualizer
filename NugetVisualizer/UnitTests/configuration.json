@@ -1,4 +1,8 @@
-﻿{
+﻿/*
+  Use {env.EnvironmentName}.json as your configuration file as it will not be checked into source control.
+  {env.EnvironmentName} values : development, staging, production
+*/
+{
   "GithubOrganization": "YOUR ORGANIZATION HERE",
   "GithubToken": "YOUR GITHUB TOKEN HERE"
 }

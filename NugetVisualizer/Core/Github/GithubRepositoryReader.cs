@@ -20,10 +20,9 @@ namespace NugetVisualizer.Core.Github
 
         private GitHubClient _gitHubClient;
 
-        public GithubRepositoryReader()
+        public GithubRepositoryReader(ConfigurationHelper configurationHelper)
         {
-            var builder = new ConfigurationBuilder().AddJsonFile("configuration.json");
-            _configurationRoot = builder.Build();
+            _configurationRoot = configurationHelper.GetConfiguration();
             InMemoryCredentialStore credentials = new InMemoryCredentialStore(new Credentials(_configurationRoot["GithubToken"]));
             _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationRoot["GithubOrganization"]), credentials);
         }

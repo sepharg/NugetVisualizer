@@ -43,7 +43,7 @@ namespace UnitTests
 
         private async Task GivenAGithubOrganisationWithProjectsAndPackages()
         {
-            var githubRepositoryReader = new GithubRepositoryReader();
+            var githubRepositoryReader = new GithubRepositoryReader(new ConfigurationHelper());
             _projectIdentifiers = await githubRepositoryReader.GetProjectsAsync("photobox", new []{ "moonpig", "template" });
         }
 
