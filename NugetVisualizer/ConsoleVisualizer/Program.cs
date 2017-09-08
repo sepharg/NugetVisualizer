@@ -8,22 +8,20 @@ namespace ConsoleVisualizer
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.FileSystem;
+    using NugetVisualizer.Core.Github;
 
     class Program
     {
         static void Main(string[] args)
         {
+            //var projects2 = new GithubProjectParser().ParseProjects(projectIdentifiers).ToList();
             Console.WriteLine("Please enter the root path where the projects are located: ");
             var rootPath = Console.ReadLine();
-            var projectDirectories = Directory.GetDirectories(rootPath);
 
-            var projectIdentifiers = new List<IProjectIdentifier>();
-            foreach (var projectDirectory in projectDirectories)
-            {
-                projectIdentifiers.Add(new ProjectIdentifier(Path.GetFileName(projectDirectory), projectDirectory));
-            }
+            var repoReader = new FileSystemRepositoryReader();
 
-            var projects = new FileSystemProjectParser().ParseProjects(projectIdentifiers).ToList();
+            var projects = new FileSystemProjectParser().ParseProjects(repoReader.GetProjects(rootPath, new [] {"moonpig"})).ToList();
         }
     }
 }

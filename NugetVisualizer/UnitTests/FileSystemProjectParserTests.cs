@@ -4,6 +4,7 @@
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.FileSystem;
 
     using Shouldly;
 
