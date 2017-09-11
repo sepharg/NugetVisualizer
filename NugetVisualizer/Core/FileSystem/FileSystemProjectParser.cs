@@ -23,7 +23,7 @@
         {
             var packagesContents = _fileSystemPackageReader.GetPackagesContents(projectIdentifier);
             var project = new Project(projectIdentifier.Name);
-            project.Packages.AddRange(Enumerable.SelectMany<XDocument, Package>(packagesContents, x => _packageParser.ParsePackages(x)));
+            project.Packages.AddRange(Enumerable.SelectMany(packagesContents, x => _packageParser.ParsePackages(x)));
 
             return project;
         }

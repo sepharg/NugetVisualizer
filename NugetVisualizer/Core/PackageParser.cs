@@ -15,12 +15,10 @@
             }
 
             var packages = from package in packagesXml.Root.Descendants("package")
-                           select new Package()
-                                      {
-                                          Name = package.Attribute("id").Value,
-                                          Version = package.Attribute("version").Value,
-                                          TargetFramework = package.Attribute("targetFramework")?.Value
-                                      };
+                           select new Package(
+                               package.Attribute("id").Value,
+                               package.Attribute("version").Value,
+                               package.Attribute("targetFramework")?.Value);
             return packages;
         }
     }

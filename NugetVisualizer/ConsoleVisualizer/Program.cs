@@ -10,6 +10,7 @@ namespace ConsoleVisualizer
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.FileSystem;
     using NugetVisualizer.Core.Github;
+    using NugetVisualizer.Core.Repositories;
 
     class Program
     {
@@ -18,6 +19,7 @@ namespace ConsoleVisualizer
             //var projects2 = new GithubProjectParser().ParseProjects(projectIdentifiers).ToList();
             Console.WriteLine("1.- Folder Search");
             Console.WriteLine("2.- Github Search");
+            Console.WriteLine("3.- Read Saved Projects");
             var option = Console.ReadKey();
             Console.WriteLine();
             switch (option.Key)
@@ -37,11 +39,19 @@ namespace ConsoleVisualizer
                         {
                             Console.WriteLine($"{project.Name} has {FormatPackages(project.Packages)}");
                         }
+                        new ProjectRepository().SaveProjects(projects);
                         break;
                     }
                 case ConsoleKey.D2:
                 case ConsoleKey.NumPad2:
                     {
+                        break;
+                    }
+                case ConsoleKey.D3:
+                case ConsoleKey.NumPad3:
+                    {
+                        var projects = new ProjectRepository().LoadProjects();
+
                         break;
                     }
                 default: throw new InvalidOperationException();
