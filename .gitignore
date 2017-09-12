@@ -290,3 +290,5 @@ __pycache__/
 NugetVisualizer/UnitTests/configuration\.development\.json
 
 NugetVisualizer/Core/configuration\.development\.json
+
+NugetVisualizer/ConsoleVisualizer/configuration\.development\.json

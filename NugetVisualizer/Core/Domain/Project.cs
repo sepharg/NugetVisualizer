@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
 
-    using LiteDB;
 
     public class Project
     {
@@ -18,7 +17,6 @@
 
         public List<Package> Packages { get; set; }
 
-        [BsonId]
         public string Name { get; set; }
     }
 }

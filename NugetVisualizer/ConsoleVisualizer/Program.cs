@@ -6,6 +6,8 @@ namespace ConsoleVisualizer
     using System.IO;
     using System.Linq;
 
+    using ConsoleTables;
+
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.FileSystem;
@@ -51,7 +53,18 @@ namespace ConsoleVisualizer
                 case ConsoleKey.NumPad3:
                     {
                         var projects = new ProjectRepository().LoadProjects();
+                        
+                        foreach (var package in projects.SelectMany(x => x.Packages))
+                        {
+                            var table = new ConsoleTable(projects.SelectMany(x => x.Packages.Where(z => z.Name == package.Name).Select(y => y.Version)).ToArray());
+                            foreach (var project in projects)
+                            {
+                                table.AddRow(project.Name);
+                            }
+                            
+                        }
 
+                        
                         break;
                     }
                 default: throw new InvalidOperationException();

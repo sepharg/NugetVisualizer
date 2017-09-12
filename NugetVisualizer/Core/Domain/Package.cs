@@ -1,6 +1,5 @@
 ﻿namespace NugetVisualizer.Core.Domain
 {
-    using LiteDB;
 
     public class Package
     {
@@ -15,10 +14,10 @@
             TargetFramework = targetFramework;
         }
 
-        [BsonId]
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
-        [BsonId]
         public string Version { get; set; }
 
         public string TargetFramework { get; set; }

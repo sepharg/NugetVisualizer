@@ -4,5 +4,6 @@
 */
 {
   "GithubOrganization": "YOUR ORGANIZATION HERE",
-  "GithubToken": "YOUR GITHUB TOKEN HERE"
+  "GithubToken": "YOUR GITHUB TOKEN HERE",
+  "Dbpath" : "full path to your sqlite database" 
 }
