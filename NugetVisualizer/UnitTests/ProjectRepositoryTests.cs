@@ -3,6 +3,7 @@ namespace UnitTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
@@ -12,7 +13,7 @@ namespace UnitTests
 
     using Xunit;
 
-    public class ProjectRepositoryTests
+    public class ProjectRepositoryTests : DbTest
     {
         private ProjectRepository _projectRepository;
 
@@ -20,7 +21,7 @@ namespace UnitTests
 
         public ProjectRepositoryTests()
         {
-            _projectRepository = new ProjectRepository(new ConfigurationHelper());
+            _projectRepository = new ProjectRepository(_configurationHelper);
             _projectRepository.DeleteProjects();
         }
 
@@ -48,6 +49,7 @@ namespace UnitTests
         private void ThenProjectsAreReturned()
         {
             _projects.Count.ShouldBe(10);
+            _projects.First().ProjectPackages.Count.ShouldBe(3);
         }
 
         private List<Project> GetProjectsToCreate()
@@ -59,7 +61,7 @@ namespace UnitTests
                 var project = new Project("Project " + i);
                 for (int j = 0; j < 3; j++)
                 {
-                    project.ProjectPackages.Add(new ProjectPackage() { Package = new Package("Package " + j, "Version " + j, string.Empty), Project = project});
+                    project.ProjectPackages.Add(new ProjectPackage() { Package = new Package("Package " + i + j, "Version " + i + j, string.Empty), Project = project});
                 }
                 projects.Add(project);
             }

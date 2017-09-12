@@ -12,7 +12,7 @@
 
     using Xunit;
 
-    public class FileSystemProjectParserTests
+    public class FileSystemProjectParserTests : DbTest
     {
         private FileSystemProjectParser _fileSystemProjectParser;
 
@@ -52,7 +52,7 @@
         private void ThenAProjectWithExpectedPackagesIsReturned()
         {
             _project.Name.ShouldBe(_projecName);
-            _project.ProjectPackages.Count.ShouldBe(32);
+            _project.ProjectPackages.Count.ShouldBe(29);
         }
     }
 }
