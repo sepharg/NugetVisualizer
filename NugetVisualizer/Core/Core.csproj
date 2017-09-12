@@ -11,6 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="configuration.development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="configuration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

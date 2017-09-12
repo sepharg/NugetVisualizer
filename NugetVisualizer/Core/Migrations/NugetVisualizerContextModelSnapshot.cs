@@ -31,9 +31,10 @@ namespace NugetVisualizer.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name");
+                    b.HasIndex("Name", "Version")
+                        .IsUnique();
 
-                    b.ToTable("Package");
+                    b.ToTable("Packages");
                 });
 
             modelBuilder.Entity("NugetVisualizer.Core.Domain.Project", b =>
@@ -46,11 +47,30 @@ namespace NugetVisualizer.Core.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("NugetVisualizer.Core.Domain.Package", b =>
+            modelBuilder.Entity("NugetVisualizer.Core.Domain.ProjectPackage", b =>
                 {
-                    b.HasOne("NugetVisualizer.Core.Domain.Project")
-                        .WithMany("Packages")
-                        .HasForeignKey("Name");
+                    b.Property<string>("ProjectName");
+
+                    b.Property<int>("PackageId");
+
+                    b.HasKey("ProjectName", "PackageId");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("ProjectPackage");
+                });
+
+            modelBuilder.Entity("NugetVisualizer.Core.Domain.ProjectPackage", b =>
+                {
+                    b.HasOne("NugetVisualizer.Core.Domain.Package", "Package")
+                        .WithMany("ProjectPackages")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("NugetVisualizer.Core.Domain.Project", "Project")
+                        .WithMany("ProjectPackages")
+                        .HasForeignKey("ProjectName")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

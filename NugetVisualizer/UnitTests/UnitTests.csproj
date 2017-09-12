@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputType>exe</OutputType>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <PropertyGroup>    
@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <Content Include="configuration.development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="configuration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
 
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Repositories;
 
     public class GithubProjectParser : IProjectParser
     {
@@ -12,10 +13,16 @@
 
         private PackageParser _packageParser;
 
+        private ProjectRepository _projectRepository;
+
+        private PackageRepository _packageRepository;
+
         public GithubProjectParser()
         {
             _githubPackageReader = new GithubPackageReader(new ConfigurationHelper());
             _packageParser = new PackageParser();
+            _projectRepository = new ProjectRepository(new ConfigurationHelper());
+            _packageRepository = new PackageRepository();
         }
 
         public Project ParseProject(IProjectIdentifier projectIdentifier)
@@ -27,7 +34,9 @@
         {
             var packagesContents = await _githubPackageReader.GetPackagesContentsAsync(projectIdentifier);
             var project = new Project(projectIdentifier.Name);
-            project.Packages.AddRange(packagesContents.SelectMany(x => _packageParser.ParsePackages(x)));
+            var packages = packagesContents.SelectMany(x => _packageParser.ParsePackages(x)).GroupBy(package => new { package.Name, package.Version }).Select(group => group.First()).ToList();
+            _packageRepository.AddRange(packages);
+            _projectRepository.Add(project, packages);
 
             return project;
         }

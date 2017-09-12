@@ -4,6 +4,7 @@ namespace UnitTests
     using System;
     using System.Collections.Generic;
 
+    using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Repositories;
 
@@ -19,7 +20,7 @@ namespace UnitTests
 
         public ProjectRepositoryTests()
         {
-            _projectRepository = new ProjectRepository();
+            _projectRepository = new ProjectRepository(new ConfigurationHelper());
             _projectRepository.DeleteProjects();
         }
 
@@ -58,7 +59,7 @@ namespace UnitTests
                 var project = new Project("Project " + i);
                 for (int j = 0; j < 3; j++)
                 {
-                    project.Packages.Add(new Package("Package " + j, "Version " + j, string.Empty));
+                    project.ProjectPackages.Add(new ProjectPackage() { Package = new Package("Package " + j, "Version " + j, string.Empty), Project = project});
                 }
                 projects.Add(project);
             }

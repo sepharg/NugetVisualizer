@@ -39,9 +39,9 @@ namespace ConsoleVisualizer
                         var projects = new FileSystemProjectParser().ParseProjects(repoReader.GetProjects(rootPath, filters.Split(' '))).ToList();
                         foreach (var project in projects)
                         {
-                            Console.WriteLine($"{project.Name} has {FormatPackages(project.Packages)}");
+                            Console.WriteLine($"{project.Name} has {FormatPackages(project.ProjectPackages.Select(x => x.Package).ToList())}");
                         }
-                        new ProjectRepository().SaveProjects(projects);
+                        new ProjectRepository(new ConfigurationHelper()).SaveProjects(projects);
                         break;
                     }
                 case ConsoleKey.D2:
@@ -52,11 +52,11 @@ namespace ConsoleVisualizer
                 case ConsoleKey.D3:
                 case ConsoleKey.NumPad3:
                     {
-                        var projects = new ProjectRepository().LoadProjects();
+                        var projects = new ProjectRepository(new ConfigurationHelper()).LoadProjects();
                         
-                        foreach (var package in projects.SelectMany(x => x.Packages))
+                        foreach (var package in projects.SelectMany(x => x.ProjectPackages))
                         {
-                            var table = new ConsoleTable(projects.SelectMany(x => x.Packages.Where(z => z.Name == package.Name).Select(y => y.Version)).ToArray());
+                            var table = new ConsoleTable(projects.SelectMany(x => x.ProjectPackages.Select(y => y.Package).Where(z => z.Name == package.Package.Name).Select(y => y.Version)).ToArray());
                             foreach (var project in projects)
                             {
                                 table.AddRow(project.Name);

@@ -11,9 +11,11 @@
 
     public class ProjectRepository
     {
+        private readonly IConfigurationHelper _configurationHelper;
 
-        public ProjectRepository()
+        public ProjectRepository(IConfigurationHelper configurationHelper)
         {
+            _configurationHelper = configurationHelper;
             //CreateDbIfNotExists();
         }
 
@@ -27,9 +29,9 @@
 
         public List<Project> LoadProjects()
         {
-            using (var db = new NugetVisualizerContext(new ConfigurationHelper()))
+            using (var db = new NugetVisualizerContext(_configurationHelper))
             {
-                return db.Projects.Include(x => x.Packages).ToList();
+                return db.Projects.Include(x => x.ProjectPackages).ThenInclude(y => y.Package).ToList();
             }
 
                 /* using (var db = new LiteDatabase(@"nugetVisualizer.db"))
@@ -50,9 +52,26 @@
                 return null;
         }
 
+        public void Add(Project project, IEnumerable<Package> packages)
+        {
+            using (var db = new NugetVisualizerContext(_configurationHelper))
+            {
+                var existingProject = db.Projects.SingleOrDefault(x => x.Name == project.Name);
+                if (existingProject == null)
+                {
+                    foreach (var package in packages)
+                    {
+                        project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = package.Id });
+                    }
+                    db.Projects.Add(project);
+                    db.SaveChanges();
+                }
+            }
+        }
+
         public void SaveProjects(List<Project> projects)
         {
-            using (var db = new NugetVisualizerContext(new ConfigurationHelper()))
+            using (var db = new NugetVisualizerContext(_configurationHelper))
             {
                 db.Projects.AddRange(projects);
                 db.SaveChanges();

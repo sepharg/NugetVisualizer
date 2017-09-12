@@ -7,15 +7,15 @@
     {
         public Project()
         {
+            ProjectPackages = new List<ProjectPackage>();
         }
 
-        public Project(string name)
+        public Project(string name) : this()
         {
             Name = name;
-            Packages = new List<Package>();
         }
 
-        public List<Package> Packages { get; set; }
+        public ICollection<ProjectPackage> ProjectPackages { get; set; }
 
         public string Name { get; set; }
     }

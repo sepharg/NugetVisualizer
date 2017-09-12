@@ -52,7 +52,7 @@
         private void ThenAProjectWithExpectedPackagesIsReturned()
         {
             _project.Name.ShouldBe(_projecName);
-            _project.Packages.Count.ShouldBe(32);
+            _project.ProjectPackages.Count.ShouldBe(32);
         }
     }
 }
