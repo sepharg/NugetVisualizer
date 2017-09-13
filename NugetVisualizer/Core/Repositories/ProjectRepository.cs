@@ -52,16 +52,16 @@
                 return null;
         }
 
-        public void Add(Project project, IEnumerable<Package> packages)
+        public void Add(Project project, IEnumerable<int> packageIds)
         {
             using (var db = new NugetVisualizerContext(_configurationHelper))
             {
                 var existingProject = db.Projects.SingleOrDefault(x => x.Name == project.Name);
                 if (existingProject == null)
                 {
-                    foreach (var package in packages)
+                    foreach (var packageId in packageIds)
                     {
-                        project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = package.Id });
+                        project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = packageId });
                     }
                     db.Projects.Add(project);
                     db.SaveChanges();

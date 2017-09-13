@@ -32,7 +32,7 @@
             var project = new Project(projectIdentifier.Name);
             var packages = packagesContents.SelectMany(x => _packageParser.ParsePackages(x)).GroupBy(package => new { package.Name, package.Version }).Select(group => group.First()).ToList();
             _packageRepository.AddRange(packages);
-            _projectRepository.Add(project, packages);
+            _projectRepository.Add(project, packages.Select(p => p.Id));
 
             return project;
         }

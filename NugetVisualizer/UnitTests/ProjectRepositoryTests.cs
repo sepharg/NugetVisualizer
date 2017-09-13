@@ -19,10 +19,12 @@ namespace UnitTests
 
         private List<Project> _projects;
 
+        private PackageRepository _packageRepository;
+
         public ProjectRepositoryTests()
         {
             _projectRepository = new ProjectRepository(_configurationHelper);
-            _projectRepository.DeleteProjects();
+            _packageRepository = new PackageRepository();
         }
 
         [Fact]
@@ -38,7 +40,12 @@ namespace UnitTests
         private void GivenADatabaseWithSomeProjects()
         {
             var projectsToCreate = GetProjectsToCreate();
-            _projectRepository.SaveProjects(projectsToCreate);
+            var packagesToCreate = GetPackagesToCreate();
+            _packageRepository.AddRange(packagesToCreate);
+            for (int i = 0; i < 10; i++)
+            {
+                _projectRepository.Add(projectsToCreate[i], packagesToCreate.Skip(i).Take(3).Select(p => p.Id));
+            }
         }
 
         private void WhenLoadingProjects()
@@ -52,20 +59,24 @@ namespace UnitTests
             _projects.First().ProjectPackages.Count.ShouldBe(3);
         }
 
+        private List<Package> GetPackagesToCreate()
+        {
+            var packages = new List<Package>();
+            for (int j = 0; j < 30; j++)
+            {
+                packages.Add(new Package("Package " + j, "Version " + j, string.Empty));
+            }
+            return packages;
+        }
+
         private List<Project> GetProjectsToCreate()
         {
             var projects = new List<Project>();
-
             for (int i = 0; i < 10; i++)
             {
                 var project = new Project("Project " + i);
-                for (int j = 0; j < 3; j++)
-                {
-                    project.ProjectPackages.Add(new ProjectPackage() { Package = new Package("Package " + i + j, "Version " + i + j, string.Empty), Project = project});
-                }
                 projects.Add(project);
             }
-
             return projects;
         }
     }
