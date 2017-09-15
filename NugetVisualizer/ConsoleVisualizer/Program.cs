@@ -45,7 +45,7 @@ namespace ConsoleVisualizer
                         
                         var repoReader = container.Resolve<FileSystemRepositoryReader>();
 
-                        var projects = container.Resolve<FileSystemProjectParser>().ParseProjects(repoReader.GetProjects(rootPath, filters.Split(' '))).ToList();
+                        var projects = container.Resolve<FileSystemProjectParser>().ParseProjectsAsync(repoReader.GetProjects(rootPath, filters.Split(' '))).GetAwaiter().GetResult().ToList();
                         foreach (var project in projects)
                         {
                             Console.WriteLine($"{project.Name} parsed");
@@ -62,7 +62,7 @@ namespace ConsoleVisualizer
 
                         var repoReader = container.Resolve<GithubRepositoryReader>();
 
-                        var projects = container.Resolve<GithubProjectParser>().ParseProjects(repoReader.GetProjects(rootPath, filters.Split(' '))).ToList();
+                        var projects = container.Resolve<GithubProjectParser>().ParseProjectsAsync(repoReader.GetProjects(rootPath, filters.Split(' '))).GetAwaiter().GetResult().ToList();
                         foreach (var project in projects)
                         {
                             Console.WriteLine($"{project.Name} parsed");

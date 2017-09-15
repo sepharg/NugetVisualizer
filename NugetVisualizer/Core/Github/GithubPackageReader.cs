@@ -25,11 +25,6 @@
             _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationRoot["GithubOrganization"]), credentials);
         }
 
-        public List<XDocument> GetPackagesContents(IProjectIdentifier projectIdentifier)
-        {
-            return GetPackagesContentsAsync(projectIdentifier).GetAwaiter().GetResult();
-        }
-
         public async Task<List<XDocument>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
         {
             var ret = new List<XDocument>();

@@ -10,14 +10,14 @@
 
     public class FileSystemPackageReader : IPackageReader
     {
-        public List<XDocument> GetPackagesContents(IProjectIdentifier projectIdentifier)
+        private List<XDocument> GetPackagesContents(IProjectIdentifier projectIdentifier)
         {
             return Enumerable.Select(GetPackagesFiles(projectIdentifier.Path), packagesFile => XDocument.Load(new FileStream(packagesFile, FileMode.Open))).ToList();
         }
 
         public Task<List<XDocument>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
         {
-            return Task.FromResult<List<XDocument>>(GetPackagesContents(projectIdentifier));
+            return Task.FromResult(GetPackagesContents(projectIdentifier));
         }
 
         private string[] GetPackagesFiles(string projectIdentifierPath)

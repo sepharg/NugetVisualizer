@@ -1,5 +1,9 @@
 ﻿namespace UnitTests
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     using Autofac;
 
     using Microsoft.DotNet.PlatformAbstractions;
@@ -20,7 +24,7 @@
     {
         private FileSystemProjectParser _fileSystemProjectParser;
 
-        private Project _project;
+        private List<Project> _projects;
 
         private string _projecName;
 
@@ -48,15 +52,15 @@
             _projectPath = ApplicationEnvironment.ApplicationBasePath + $"\\TestData\\{_projecName}";
         }
 
-        private void WhenParsingProject()
+        private async Task WhenParsingProject()
         {
-            _project = _fileSystemProjectParser.ParseProject(new ProjectIdentifier(_projecName, _projectPath));
+            _projects = await _fileSystemProjectParser.ParseProjectsAsync(new IProjectIdentifier[1] { new ProjectIdentifier(_projecName, _projectPath) } );
         }
 
         private void ThenAProjectWithExpectedPackagesIsReturned()
         {
-            _project.Name.ShouldBe(_projecName);
-            _project.ProjectPackages.Count.ShouldBe(29);
+            _projects.Single().Name.ShouldBe(_projecName);
+            _projects.Single().ProjectPackages.Count.ShouldBe(29);
         }
     }
 }

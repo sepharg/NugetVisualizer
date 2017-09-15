@@ -26,9 +26,9 @@
             _packageRepository = packageRepository;
         }
 
-        public Project ParseProject(IProjectIdentifier projectIdentifier)
+        private async Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier)
         {
-            var packagesContents = _fileSystemPackageReader.GetPackagesContents(projectIdentifier);
+            var packagesContents = await _fileSystemPackageReader.GetPackagesContentsAsync(projectIdentifier);
             var project = new Project(projectIdentifier.Name);
             var packages = packagesContents.SelectMany(x => _packageParser.ParsePackages(x)).GroupBy(package => new { package.Name, package.Version }).Select(group => group.First()).ToList();
             _packageRepository.AddRange(packages);
@@ -37,19 +37,15 @@
             return project;
         }
 
-        public Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier)
+        public async Task<List<Project>> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers)
         {
-            return Task.FromResult(ParseProject(projectIdentifier));
-        }
-
-        public List<Project> ParseProjects(IEnumerable<IProjectIdentifier> projectIdentifiers)
-        {
-            return projectIdentifiers.Select(ParseProject).ToList();
-        }
-
-        public Task<List<Project>> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers)
-        {
-            return Task.FromResult(ParseProjects(projectIdentifiers));
+            var projectList = new List<Project>();
+            foreach (var projectIdentifier in projectIdentifiers)
+            {
+                var project = await ParseProjectAsync(projectIdentifier);
+                projectList.Add(project);
+            }
+            return projectList;
         }
     }
 }

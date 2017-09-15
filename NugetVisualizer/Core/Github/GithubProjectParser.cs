@@ -25,12 +25,7 @@
             _packageRepository = packageRepository;
         }
 
-        public Project ParseProject(IProjectIdentifier projectIdentifier)
-        {
-            return ParseProjectAsync(projectIdentifier).GetAwaiter().GetResult();
-        }
-
-        public async Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier)
+        private async Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier)
         {
             var packagesContents = await _githubPackageReader.GetPackagesContentsAsync(projectIdentifier);
             var project = new Project(projectIdentifier.Name);
@@ -39,11 +34,6 @@
             _projectRepository.Add(project, packages.Select(p => p.Id));
 
             return project;
-        }
-
-        public List<Project> ParseProjects(IEnumerable<IProjectIdentifier> projectIdentifiers)
-        {
-            return projectIdentifiers.Select(ParseProject).ToList();
         }
 
         public async Task<List<Project>> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers)

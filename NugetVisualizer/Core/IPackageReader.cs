@@ -8,8 +8,6 @@
 
     public interface IPackageReader
     {
-        List<XDocument> GetPackagesContents(IProjectIdentifier projectIdentifier);
-
         Task<List<XDocument>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier);
     }
 }
