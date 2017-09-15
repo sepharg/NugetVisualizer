@@ -27,9 +27,9 @@ namespace ConsoleVisualizer
         static void Main(string[] args)
         {
             var container = AutofacContainerFactory.GetBuilder().Build();
-            //var projects2 = new GithubProjectParser().ParseProjects(projectIdentifiers).ToList();
-            Console.WriteLine("1.- Folder Search");
-            Console.WriteLine("2.- Github Search");
+
+            Console.WriteLine("1.- Folder Parsing");
+            Console.WriteLine("2.- Github Parsing");
             Console.WriteLine("3.- Read Saved Projects");
             var option = Console.ReadKey();
             Console.WriteLine();
@@ -48,13 +48,23 @@ namespace ConsoleVisualizer
                         var projects = container.Resolve<FileSystemProjectParser>().ParseProjects(repoReader.GetProjects(rootPath, filters.Split(' '))).ToList();
                         foreach (var project in projects)
                         {
-                            Console.WriteLine($"{project.Name} has {FormatPackages(project.ProjectPackages.Select(x => x.Package).ToList())}");
+                            Console.WriteLine($"{project.Name} parsed");
                         }
                         break;
                     }
                 case ConsoleKey.D2:
                 case ConsoleKey.NumPad2:
                     {
+                        Console.WriteLine("Please enter a space separated list of filters: ");
+                        var filters = Console.ReadLine();
+
+                        var repoReader = container.Resolve<GithubRepositoryReader>();
+
+                        var projects = container.Resolve<GithubProjectParser>().ParseProjects(repoReader.GetProjects("photobox", filters.Split(' '))).ToList();
+                        foreach (var project in projects)
+                        {
+                            Console.WriteLine($"{project.Name} parsed");
+                        }
                         break;
                     }
                 case ConsoleKey.D3:

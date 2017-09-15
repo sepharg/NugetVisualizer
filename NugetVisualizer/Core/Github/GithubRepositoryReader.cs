@@ -20,7 +20,7 @@ namespace NugetVisualizer.Core.Github
 
         private GitHubClient _gitHubClient;
 
-        public GithubRepositoryReader(ConfigurationHelper configurationHelper)
+        public GithubRepositoryReader(IConfigurationHelper configurationHelper)
         {
             _configurationRoot = configurationHelper.GetConfiguration();
             InMemoryCredentialStore credentials = new InMemoryCredentialStore(new Credentials(_configurationRoot["GithubToken"]));
@@ -38,7 +38,7 @@ namespace NugetVisualizer.Core.Github
             return projects;
         }
 
-        List<IProjectIdentifier> IRepositoryReader.GetProjects(string rootPath, string[] filters)
+        public List<IProjectIdentifier> GetProjects(string rootPath, string[] filters)
         {
             return GetProjectsAsync(rootPath, filters).GetAwaiter().GetResult();
         }
