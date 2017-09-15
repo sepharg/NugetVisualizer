@@ -12,18 +12,18 @@
     {
         private FileSystemPackageReader _fileSystemPackageReader;
 
-        private PackageParser _packageParser;
+        private IPackageParser _packageParser;
 
         private ProjectRepository _projectRepository;
 
         private PackageRepository _packageRepository;
 
-        public FileSystemProjectParser()
+        public FileSystemProjectParser(FileSystemPackageReader fileSystemPackageReader, IPackageParser packageParser, ProjectRepository projectRepository, PackageRepository packageRepository)
         {
-            _fileSystemPackageReader = new FileSystemPackageReader();
-            _packageParser = new PackageParser();
-            _projectRepository = new ProjectRepository(new ConfigurationHelper());
-            _packageRepository = new PackageRepository();
+            _fileSystemPackageReader = fileSystemPackageReader;
+            _packageParser = packageParser;
+            _projectRepository = projectRepository;
+            _packageRepository = packageRepository;
         }
 
         public Project ParseProject(IProjectIdentifier projectIdentifier)

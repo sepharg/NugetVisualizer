@@ -1,21 +1,19 @@
 ﻿namespace UnitTests
 {
-    using NugetVisualizer.Core;
+    using Autofac;
+
     using NugetVisualizer.Core.Repositories;
 
-    public class DbTest
+    public class DbTest : IntegrationTest
     {
-        protected ConfigurationHelper _configurationHelper;
-
         public DbTest()
         {
-            _configurationHelper = new ConfigurationHelper();
             InitializeTestDb();
         }
 
         private void InitializeTestDb()
         {
-            using (var context = new NugetVisualizerContext(_configurationHelper))
+            using (var context = Container.Resolve<NugetVisualizerContext>())
             {
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();

@@ -11,18 +11,18 @@
     {
         private GithubPackageReader _githubPackageReader;
 
-        private PackageParser _packageParser;
+        private IPackageParser _packageParser;
 
         private ProjectRepository _projectRepository;
 
         private PackageRepository _packageRepository;
 
-        public GithubProjectParser()
+        public GithubProjectParser(GithubPackageReader githubPackageReader, IPackageParser packageParser, ProjectRepository projectRepository, PackageRepository packageRepository)
         {
-            _githubPackageReader = new GithubPackageReader(new ConfigurationHelper());
-            _packageParser = new PackageParser();
-            _projectRepository = new ProjectRepository(new ConfigurationHelper());
-            _packageRepository = new PackageRepository();
+            _githubPackageReader = githubPackageReader;
+            _packageParser = packageParser;
+            _projectRepository = projectRepository;
+            _packageRepository = packageRepository;
         }
 
         public Project ParseProject(IProjectIdentifier projectIdentifier)

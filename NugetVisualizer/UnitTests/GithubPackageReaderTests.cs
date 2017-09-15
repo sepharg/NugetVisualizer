@@ -1,12 +1,12 @@
 ﻿namespace UnitTests
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
-    using NugetVisualizer.Core;
+    using Autofac;
+
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Github;
 
@@ -16,7 +16,7 @@
 
     using Xunit;
 
-    public class GithubPackageReaderTests
+    public class GithubPackageReaderTests : IntegrationTest
     {
         private GithubPackageReader _githubPackageReader;
 
@@ -26,7 +26,7 @@
 
         public GithubPackageReaderTests()
         {
-            _githubPackageReader = new GithubPackageReader(new ConfigurationHelper());
+            _githubPackageReader = Container.Resolve<GithubPackageReader>();
         }
 
         [Fact]

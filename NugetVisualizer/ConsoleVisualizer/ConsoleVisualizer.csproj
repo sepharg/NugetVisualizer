@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Boostrapper\Boostrapper.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 

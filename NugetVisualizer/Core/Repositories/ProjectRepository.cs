@@ -9,13 +9,16 @@
 
     using NugetVisualizer.Core.Domain;
 
-    public class ProjectRepository
+    public class ProjectRepository : IDisposable
     {
         private readonly IConfigurationHelper _configurationHelper;
 
-        public ProjectRepository(IConfigurationHelper configurationHelper)
+        private readonly NugetVisualizerContext _dbContext;
+
+        public ProjectRepository(IConfigurationHelper configurationHelper, DbContext dbContext)
         {
             _configurationHelper = configurationHelper;
+            _dbContext = dbContext as NugetVisualizerContext;
             //CreateDbIfNotExists();
         }
 
@@ -29,10 +32,8 @@
 
         public List<Project> LoadProjects()
         {
-            using (var db = new NugetVisualizerContext(_configurationHelper))
-            {
-                return db.Projects.Include(x => x.ProjectPackages).ThenInclude(y => y.Package).ToList();
-            }
+            return _dbContext.Projects.Include(x => x.ProjectPackages).ThenInclude(y => y.Package).ToList();
+
 
                 /* using (var db = new LiteDatabase(@"nugetVisualizer.db"))
                  {
@@ -54,28 +55,22 @@
 
         public void Add(Project project, IEnumerable<int> packageIds)
         {
-            using (var db = new NugetVisualizerContext(_configurationHelper))
+            var existingProject = _dbContext.Projects.SingleOrDefault(x => x.Name == project.Name);
+            if (existingProject == null)
             {
-                var existingProject = db.Projects.SingleOrDefault(x => x.Name == project.Name);
-                if (existingProject == null)
+                foreach (var packageId in packageIds)
                 {
-                    foreach (var packageId in packageIds)
-                    {
-                        project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = packageId });
-                    }
-                    db.Projects.Add(project);
-                    db.SaveChanges();
+                    project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = packageId });
                 }
+                _dbContext.Projects.Add(project);
+                _dbContext.SaveChanges();
             }
         }
 
         public void SaveProjects(List<Project> projects)
         {
-            using (var db = new NugetVisualizerContext(_configurationHelper))
-            {
-                db.Projects.AddRange(projects);
-                db.SaveChanges();
-            }
+            _dbContext.Projects.AddRange(projects);
+            _dbContext.SaveChanges();
 
            /* using (var connection = new SQLiteConnection($"Data Source={_databaseName};Version=3;"))
             {
@@ -118,5 +113,9 @@
                 SQLiteConnection.CreateFile(_databaseName);
             }
         }*/
+        public void Dispose()
+        {
+            _dbContext?.Dispose();
+        }
     }
 }

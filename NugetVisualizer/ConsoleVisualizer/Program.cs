@@ -6,6 +6,10 @@ namespace ConsoleVisualizer
     using System.IO;
     using System.Linq;
 
+    using Autofac;
+
+    using Boostrapper;
+
     using ConsoleTables;
 
     using NugetVisualizer.Core;
@@ -18,6 +22,7 @@ namespace ConsoleVisualizer
     {
         static void Main(string[] args)
         {
+            var container = AutofacContainerFactory.GetBuilder().Build();
             //var projects2 = new GithubProjectParser().ParseProjects(projectIdentifiers).ToList();
             Console.WriteLine("1.- Folder Search");
             Console.WriteLine("2.- Github Search");
@@ -33,15 +38,15 @@ namespace ConsoleVisualizer
                         var rootPath = Console.ReadLine();
                         Console.WriteLine("Please enter a space separated list of filters: ");
                         var filters = Console.ReadLine();
+                        
+                        var repoReader = container.Resolve<FileSystemRepositoryReader>();
 
-                        var repoReader = new FileSystemRepositoryReader();
-
-                        var projects = new FileSystemProjectParser().ParseProjects(repoReader.GetProjects(rootPath, filters.Split(' '))).ToList();
+                        var projects = container.Resolve<FileSystemProjectParser>().ParseProjects(repoReader.GetProjects(rootPath, filters.Split(' '))).ToList();
                         foreach (var project in projects)
                         {
                             Console.WriteLine($"{project.Name} has {FormatPackages(project.ProjectPackages.Select(x => x.Package).ToList())}");
                         }
-                        new ProjectRepository(new ConfigurationHelper()).SaveProjects(projects);
+                        container.Resolve<ProjectRepository>().SaveProjects(projects);
                         break;
                     }
                 case ConsoleKey.D2:
@@ -52,7 +57,7 @@ namespace ConsoleVisualizer
                 case ConsoleKey.D3:
                 case ConsoleKey.NumPad3:
                     {
-                        var projects = new ProjectRepository(new ConfigurationHelper()).LoadProjects();
+                        var projects = container.Resolve<ProjectRepository>().LoadProjects();
                         
                         foreach (var package in projects.SelectMany(x => x.ProjectPackages))
                         {

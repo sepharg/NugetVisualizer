@@ -1,19 +1,20 @@
-﻿using TestStack.BDDfy;
-namespace UnitTests
+﻿namespace UnitTests
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    using NugetVisualizer.Core;
+    using Autofac;
+
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Repositories;
 
     using Shouldly;
 
+    using TestStack.BDDfy;
+
     using Xunit;
 
-    public class ProjectRepositoryTests : DbTest
+    public class ProjectRepositoryTests : IntegrationTest
     {
         private ProjectRepository _projectRepository;
 
@@ -23,7 +24,7 @@ namespace UnitTests
 
         public ProjectRepositoryTests()
         {
-            _projectRepository = new ProjectRepository(_configurationHelper);
+            _projectRepository = Container.Resolve<ProjectRepository>();
             _packageRepository = new PackageRepository();
         }
 

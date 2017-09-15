@@ -1,6 +1,10 @@
 ﻿namespace UnitTests
 {
+    using Autofac;
+
     using Microsoft.DotNet.PlatformAbstractions;
+
+    using Moq.AutoMock;
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
@@ -24,7 +28,7 @@
 
         public FileSystemProjectParserTests()
         {
-            _fileSystemProjectParser = new FileSystemProjectParser();
+            _fileSystemProjectParser = Container.Resolve<FileSystemProjectParser>();
         }
 
         [Fact]

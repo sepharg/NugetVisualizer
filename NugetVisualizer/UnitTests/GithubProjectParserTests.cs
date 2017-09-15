@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-using NugetVisualizer.Core;
-using NugetVisualizer.Core.Domain;
-using NugetVisualizer.Core.Github;
-
-using Shouldly;
-
-using TestStack.BDDfy;
-
-using Xunit;
-
-namespace UnitTests
+﻿namespace UnitTests
 {
-    public class GithubProjectParserTests
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Xml.Linq;
+
+    using Autofac;
+
+    using NugetVisualizer.Core;
+    using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Github;
+
+    using Shouldly;
+
+    using TestStack.BDDfy;
+
+    using Xunit;
+
+    public class GithubProjectParserTests : IntegrationTest
     {
         private GithubProjectParser _githubProjectParser;
         
@@ -28,7 +29,7 @@ namespace UnitTests
 
         public GithubProjectParserTests()
         {
-            _githubProjectParser = new GithubProjectParser();
+            _githubProjectParser = Container.Resolve<GithubProjectParser>();
         }
 
         [Fact]
