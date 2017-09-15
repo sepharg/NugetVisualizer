@@ -20,6 +20,10 @@ namespace ConsoleVisualizer
 
     class Program
     {
+        private static IEnumerable<Package> allPackages;
+
+        private static IEnumerable<Project> projectsThatContainPackage;
+
         static void Main(string[] args)
         {
             var container = AutofacContainerFactory.GetBuilder().Build();
@@ -46,7 +50,6 @@ namespace ConsoleVisualizer
                         {
                             Console.WriteLine($"{project.Name} has {FormatPackages(project.ProjectPackages.Select(x => x.Package).ToList())}");
                         }
-                        container.Resolve<ProjectRepository>().SaveProjects(projects);
                         break;
                     }
                 case ConsoleKey.D2:
@@ -58,18 +61,28 @@ namespace ConsoleVisualizer
                 case ConsoleKey.NumPad3:
                     {
                         var projects = container.Resolve<ProjectRepository>().LoadProjects();
-                        
-                        foreach (var package in projects.SelectMany(x => x.ProjectPackages))
-                        {
-                            var table = new ConsoleTable(projects.SelectMany(x => x.ProjectPackages.Select(y => y.Package).Where(z => z.Name == package.Package.Name).Select(y => y.Version)).ToArray());
-                            foreach (var project in projects)
-                            {
-                                table.AddRow(project.Name);
-                            }
-                            
-                        }
+                        var allPackages = container.Resolve<PackageRepository>().LoadPackages();
 
-                        
+                        var distinctPackageNames = allPackages.GroupBy(x => x.Name).Select(x => x.First().Name);
+                        foreach (var packageName in distinctPackageNames)
+                        {
+                            Console.BackgroundColor = ConsoleColor.Blue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.WriteLine(packageName);
+                            Console.ResetColor();
+                            var allVersionsForPackage = allPackages.GroupBy(x => x.Name).Single(x => x.Key.Equals(packageName)).OrderBy(x => x.Version).Select(x => x.Version).ToList();
+                            var header = new List<string>();
+                            header.Add("Package");
+                            header.AddRange(allVersionsForPackage);
+                            var table = new ConsoleTable(header.ToArray());
+                            projectsThatContainPackage = projects.Where(p => p.ProjectPackages.Any(pp => pp.Package.Name.Equals(packageName)));
+                            foreach (var project in projectsThatContainPackage)
+                            {
+                                table.AddRow(GetProjectRow(project, packageName, allVersionsForPackage));
+                            }
+                            table.Write();
+                            Console.WriteLine();
+                        }
                         break;
                     }
                 default: throw new InvalidOperationException();
@@ -78,6 +91,27 @@ namespace ConsoleVisualizer
             Console.WriteLine();
             Console.Write("press any key to exit...");
             Console.ReadKey();
+        }
+
+        private static string[] GetProjectRow(Project project, string packageName, List<string> packageVersionsList)
+        {
+            var rowContents = new string [packageVersionsList.Count + 1];
+            rowContents[0] = project.Name;
+            int i = 1;
+            foreach (var packageVersion in packageVersionsList)
+            {
+                if (project.ProjectPackages.Where(x => x.Package.Name == packageName)
+                                           .Any(pp => pp.Package.Version.Equals(packageVersion)))
+                {
+                    rowContents[i] = "X";
+                }
+                else
+                {
+                    rowContents[i] = string.Empty;
+                }
+                i++;
+            }
+            return rowContents;
         }
 
         private static string FormatPackages(List<Package> projectPackages)

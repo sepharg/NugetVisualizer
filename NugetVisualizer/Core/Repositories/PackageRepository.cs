@@ -1,45 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NugetVisualizer.Core.Repositories
+﻿namespace NugetVisualizer.Core.Repositories
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
+
+    using Microsoft.EntityFrameworkCore;
 
     using NugetVisualizer.Core.Domain;
 
-    public class PackageRepository
+    public class PackageRepository : IDisposable
     {
+        private readonly NugetVisualizerContext _context;
+
+        public PackageRepository(DbContext context)
+        {
+            _context = context as NugetVisualizerContext;
+        }
+
         public void Add(Package package)
         {
-            using (var db = new NugetVisualizerContext(new ConfigurationHelper()))
+            if (_context.Packages.SingleOrDefault(x => x.Name == package.Name && x.Version == package.Version) == null)
             {
-                if (db.Packages.SingleOrDefault(x => x.Name == package.Name && x.Version == package.Version) == null)
-                {
-                    db.Packages.Add(package);
-                    db.SaveChanges();
-                }
+                _context.Packages.Add(package);
+                _context.SaveChanges();
             }
         }
 
         public void AddRange(IEnumerable<Package> packages)
         {
-            using (var db = new NugetVisualizerContext(new ConfigurationHelper()))
+
+            foreach (var package in packages.GroupBy(x => new { x.Name, x.Version }).Select(g => g.First()))
             {
-                foreach (var package in packages.GroupBy(x => new { x.Name, x.Version }).Select(g => g.First()))
+                var existingPackage = _context.Packages.SingleOrDefault(x => x.Name == package.Name && x.Version == package.Version);
+                if (existingPackage == null)
                 {
-                    var existingPackage = db.Packages.SingleOrDefault(x => x.Name == package.Name && x.Version == package.Version);
-                    if (existingPackage == null)
-                    {
-                        db.Packages.Add(package);
-                    }
-                    else
-                    {
-                        package.Id = existingPackage.Id;
-                    }
+                    _context.Packages.Add(package);
                 }
-                db.SaveChanges();
+                else
+                {
+                    package.Id = existingPackage.Id;
+                }
             }
+            _context.SaveChanges();
+        }
+
+        public List<Package> LoadPackages()
+        {
+            return _context.Packages.ToList();
+        }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
         }
     }
 }
