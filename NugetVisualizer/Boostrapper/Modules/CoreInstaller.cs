@@ -1,6 +1,10 @@
 ﻿namespace Boostrapper.Modules
 {
+    using System;
+
     using Autofac;
+    using Autofac.Core;
+    using Autofac.Core.Activators.Reflection;
 
     using Microsoft.EntityFrameworkCore;
 
@@ -18,8 +22,32 @@
             builder.RegisterType<FileSystemRepositoryReader>();
             builder.RegisterType<GithubRepositoryReader>();
 
-            builder.RegisterType<FileSystemProjectParser>();
-            builder.RegisterType<GithubProjectParser>();
+            builder.Register<IProjectParser>(
+                (context, parameters) =>
+                    {
+                        switch (parameters.TypedAs<ProjectParserType>())
+                        {
+                            case ProjectParserType.FileSystem:
+                                return context.Resolve<ProjectParser>(
+                                    new ResolvedParameter(
+                                        (pi, ctx) => pi.ParameterType == typeof(IPackageReader),
+                                        (pi, ctx) => ctx.Resolve<FileSystemPackageReader>()),
+                                    new AutowiringParameter(),
+                                    new AutowiringParameter(),
+                                    new AutowiringParameter());
+                            case ProjectParserType.Github:
+                                return context.Resolve<ProjectParser>(
+                                    new ResolvedParameter(
+                                        (pi, ctx) => pi.ParameterType == typeof(IPackageReader),
+                                        (pi, ctx) => ctx.Resolve<GithubPackageReader>()),
+                                    new AutowiringParameter(),
+                                    new AutowiringParameter(),
+                                    new AutowiringParameter());
+                            default: throw new ArgumentOutOfRangeException("Specified Project parser doesn't exist");
+                        }
+                    });
+                   
+            builder.RegisterType<ProjectParser>();
 
             builder.RegisterType<FileSystemPackageReader>();
             builder.RegisterType<GithubPackageReader>();

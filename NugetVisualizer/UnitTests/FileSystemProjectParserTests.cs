@@ -22,7 +22,7 @@
 
     public class FileSystemProjectParserTests : DbTest
     {
-        private FileSystemProjectParser _fileSystemProjectParser;
+        private IProjectParser _fileSystemProjectParser;
 
         private List<Project> _projects;
 
@@ -32,7 +32,7 @@
 
         public FileSystemProjectParserTests()
         {
-            _fileSystemProjectParser = Container.Resolve<FileSystemProjectParser>();
+            _fileSystemProjectParser = Container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
         }
 
         [Fact]

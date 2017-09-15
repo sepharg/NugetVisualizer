@@ -19,7 +19,7 @@
 
     public class GithubProjectParserTests : IntegrationTest
     {
-        private GithubProjectParser _githubProjectParser;
+        private IProjectParser _githubProjectParser;
         
         private IEnumerable<XDocument> _packagesContents;
 
@@ -29,7 +29,7 @@
 
         public GithubProjectParserTests()
         {
-            _githubProjectParser = Container.Resolve<GithubProjectParser>();
+            _githubProjectParser = Container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github));
         }
 
         [Fact]

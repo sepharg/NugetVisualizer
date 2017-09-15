@@ -1,4 +1,4 @@
-﻿namespace NugetVisualizer.Core.FileSystem
+﻿namespace NugetVisualizer.Core
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -8,19 +8,18 @@
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Repositories;
 
-    public class FileSystemProjectParser : IProjectParser
+    public class ProjectParser : IProjectParser
     {
-        private FileSystemPackageReader _fileSystemPackageReader;
-
+        private IPackageReader _packageReader;
         private IPackageParser _packageParser;
-
         private ProjectRepository _projectRepository;
-
         private PackageRepository _packageRepository;
 
-        public FileSystemProjectParser(FileSystemPackageReader fileSystemPackageReader, IPackageParser packageParser, ProjectRepository projectRepository, PackageRepository packageRepository)
+        public delegate ProjectParser Factory(ProjectParserType type);
+
+        public ProjectParser(IPackageReader packageReader, IPackageParser packageParser, ProjectRepository projectRepository, PackageRepository packageRepository)
         {
-            _fileSystemPackageReader = fileSystemPackageReader;
+            _packageReader = packageReader;
             _packageParser = packageParser;
             _projectRepository = projectRepository;
             _packageRepository = packageRepository;
@@ -28,9 +27,9 @@
 
         private async Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier)
         {
-            var packagesContents = await _fileSystemPackageReader.GetPackagesContentsAsync(projectIdentifier);
+            var packagesContents = await _packageReader.GetPackagesContentsAsync(projectIdentifier);
             var project = new Project(projectIdentifier.Name);
-            var packages = packagesContents.SelectMany(x => _packageParser.ParsePackages(x)).GroupBy(package => new { package.Name, package.Version }).Select(group => group.First()).ToList();
+            var packages = Enumerable.SelectMany<XDocument, Package>(packagesContents, x => _packageParser.ParsePackages(x)).GroupBy(package => new { package.Name, package.Version }).Select(group => group.First()).ToList();
             _packageRepository.AddRange(packages);
             _projectRepository.Add(project, packages.Select(p => p.Id));
 
