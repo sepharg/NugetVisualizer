@@ -25,7 +25,7 @@
         public ProjectRepositoryTests()
         {
             _projectRepository = Container.Resolve<ProjectRepository>();
-            _packageRepository = new PackageRepository();
+            _packageRepository = Container.Resolve<PackageRepository>();
         }
 
         [Fact]

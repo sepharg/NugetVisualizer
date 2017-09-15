@@ -55,12 +55,14 @@ namespace ConsoleVisualizer
                 case ConsoleKey.D2:
                 case ConsoleKey.NumPad2:
                     {
+                        Console.WriteLine("Please enter the name of your github organization: ");
+                        var rootPath = Console.ReadLine();
                         Console.WriteLine("Please enter a space separated list of filters: ");
                         var filters = Console.ReadLine();
 
                         var repoReader = container.Resolve<GithubRepositoryReader>();
 
-                        var projects = container.Resolve<GithubProjectParser>().ParseProjects(repoReader.GetProjects("photobox", filters.Split(' '))).ToList();
+                        var projects = container.Resolve<GithubProjectParser>().ParseProjects(repoReader.GetProjects(rootPath, filters.Split(' '))).ToList();
                         foreach (var project in projects)
                         {
                             Console.WriteLine($"{project.Name} parsed");
