@@ -14,7 +14,7 @@
 
     using Xunit;
 
-    public class ProjectRepositoryTests : IntegrationTest
+    public class ProjectRepositoryTests : DbTest
     {
         private IProjectRepository _projectRepository;
 
@@ -43,9 +43,11 @@
             var projectsToCreate = GetProjectsToCreate();
             var packagesToCreate = GetPackagesToCreate();
             _packageRepository.AddRange(packagesToCreate);
+            int taken = 0;
             for (int i = 0; i < 10; i++)
             {
-                _projectRepository.Add(projectsToCreate[i], packagesToCreate.Skip(i).Take(3).Select(p => p.Id));
+                _projectRepository.Add(projectsToCreate[i], packagesToCreate.Skip(taken).Take(3).Select(p => p.Id));
+                taken += 3;
             }
         }
 

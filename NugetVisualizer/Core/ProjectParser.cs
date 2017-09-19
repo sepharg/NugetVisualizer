@@ -50,7 +50,7 @@
             }
         }
 
-        public async Task<List<Project>> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers)
+        public async Task<ProjectParsingResult> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers)
         {
             var projectList = new List<Project>();
             foreach (var projectIdentifier in projectIdentifiers)
@@ -61,7 +61,7 @@
                     projectList.Add(project);
                 }
             }
-            return projectList;
+            return new ProjectParsingResult(projectList, true);
         }
     }
 }

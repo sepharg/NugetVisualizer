@@ -53,7 +53,7 @@ namespace UnitTests
         {
             this.Given(x => x.GivenAProjectCannotBeParsed())
                 .When(x => x.WhenParsingProject())
-                .Then(x => x.ThenLastSuccessfullParsedProjectIsSaved())
+                .Then(x => x.ThenFirstLastSuccessfullParsedProjectIsSaved())
                 .And(x => x.ThenWorkingProjectsAreSaved())
                 .BDDfy();
         }
@@ -70,7 +70,7 @@ namespace UnitTests
             var result = await _projectParser.ParseProjectsAsync(_projectIdentifiers);
         }
 
-        private void ThenLastSuccessfullParsedProjectIsSaved()
+        private void ThenFirstLastSuccessfullParsedProjectIsSaved()
         {
             //throw new NotImplementedException();
         }

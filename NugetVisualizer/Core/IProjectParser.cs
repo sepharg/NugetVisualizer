@@ -7,6 +7,6 @@
 
     public interface IProjectParser
     {
-        Task<List<Project>> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers);
+        Task<ProjectParsingResult> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers);
     }
 }

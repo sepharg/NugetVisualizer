@@ -51,7 +51,7 @@
         private async Task WhenReadingThePackagesForTheProjects()
         {
             
-            _projects = await _githubProjectParser.ParseProjectsAsync(_projectIdentifiers);
+            _projects = (await _githubProjectParser.ParseProjectsAsync(_projectIdentifiers)).ParsedProjects;
         }
 
         private void ThenThePackagesFilesContentsAreReturned()

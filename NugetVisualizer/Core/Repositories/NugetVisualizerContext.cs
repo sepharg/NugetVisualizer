@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NugetVisualizer.Core.Repositories
+﻿namespace NugetVisualizer.Core.Repositories
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -41,7 +37,6 @@ namespace NugetVisualizer.Core.Repositories
                                                 .WithMany(x => x.ProjectPackages)
                                                 .HasForeignKey(x => x.PackageId);
             modelBuilder.Entity<Project>().HasKey(x => x.Name);
-            //modelBuilder.Entity<Package>().HasKey(x => new { x.Name, x.Version });
             modelBuilder.Entity<Package>().HasKey(x => x.Id);
             modelBuilder.Entity<Package>().HasIndex(x => new { x.Name, x.Version }).IsUnique();
         }

@@ -54,7 +54,7 @@
 
         private async Task WhenParsingProject()
         {
-            _projects = await _fileSystemProjectParser.ParseProjectsAsync(new IProjectIdentifier[1] { new ProjectIdentifier(_projecName, _projectPath) } );
+            _projects = (await _fileSystemProjectParser.ParseProjectsAsync(new IProjectIdentifier[1] { new ProjectIdentifier(_projecName, _projectPath) } )).ParsedProjects;
         }
 
         private void ThenAProjectWithExpectedPackagesIsReturned()
