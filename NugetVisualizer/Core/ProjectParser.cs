@@ -44,7 +44,7 @@
 
                 return project;
             }
-            catch (CannotGetPackagesContentsException ex)
+            catch (CannotGetPackagesContentsException)
             {
                 return null;
             }
@@ -53,6 +53,7 @@
         public async Task<ProjectParsingResult> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers)
         {
             var projectList = new List<Project>();
+            bool allExistingProjectsParsed = false;
             foreach (var projectIdentifier in projectIdentifiers)
             {
                 var project = await ParseProjectAsync(projectIdentifier);
@@ -60,8 +61,13 @@
                 {
                     projectList.Add(project);
                 }
+                allExistingProjectsParsed = project != null;
+                if (!allExistingProjectsParsed)
+                {
+                    break;
+                }
             }
-            return new ProjectParsingResult(projectList, true);
+            return new ProjectParsingResult(projectList, allExistingProjectsParsed);
         }
     }
 }

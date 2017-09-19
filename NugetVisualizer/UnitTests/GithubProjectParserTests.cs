@@ -16,9 +16,12 @@
     using TestStack.BDDfy;
 
     using Xunit;
+    using Xunit.Abstractions;
 
-    public class GithubProjectParserTests : IntegrationTest
+    public class GithubProjectParserTests : IClassFixture<DbTest>
     {
+        private readonly DbTest _dbTest;
+
         private IProjectParser _githubProjectParser;
         
         private IEnumerable<XDocument> _packagesContents;
@@ -27,9 +30,10 @@
 
         private List<IProjectIdentifier> _projectIdentifiers;
 
-        public GithubProjectParserTests()
+        public GithubProjectParserTests(DbTest dbTest)
         {
-            _githubProjectParser = Container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github));
+            _dbTest = dbTest;
+            _githubProjectParser = _dbTest.Container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github));
         }
 
         [Fact]

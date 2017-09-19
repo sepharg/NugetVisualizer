@@ -16,6 +16,8 @@ namespace UnitTests
     using NugetVisualizer.Core.Exceptions;
     using NugetVisualizer.Core.Repositories;
 
+    using Shouldly;
+
     using Xunit;
 
     public class ProjectParserTests
@@ -25,6 +27,8 @@ namespace UnitTests
         private List<IProjectIdentifier> _projectIdentifiers;
 
         private AutoMocker _autoMocker;
+
+        private ProjectParsingResult _projectParsingResult;
 
         public ProjectParserTests()
         {
@@ -39,8 +43,8 @@ namespace UnitTests
             _projectIdentifiers = new List<IProjectIdentifier>()
                                       {
                                           new ProjectIdentifier("first", "firstpath"),
-                                          new ProjectIdentifier("notwork", "notworkpath"),
                                           new ProjectIdentifier("second", "secondpath"),
+                                          new ProjectIdentifier("notwork", "notworkpath"),
                                           new ProjectIdentifier("third", "thirdpath"),
                                           new ProjectIdentifier("notwork2", "notwork2path"),
                                           new ProjectIdentifier("last", "lastpath")
@@ -49,7 +53,18 @@ namespace UnitTests
 
         [Fact]
 
-        public async Task GivenAProjectCannotBeParsed_WhenParsingProject_ThenLastSuccessfullParsedProjectIsSaved()
+        public async Task GivenAProjectCannotBeParsed_WhenParsingProject_ThenNotAllExistingProjectsCanBeParsed()
+        {
+            this.Given(x => x.GivenAProjectCannotBeParsed())
+                .When(x => x.WhenParsingProject())
+                .Then(x => x.ThenNotAllExistingProjectsCanBeParsed())
+                .And(x => x.ThenStopsAtFirstError())
+                .BDDfy();
+        }
+
+        [Fact]
+
+        public async Task GivenAProjectCannotBeParsed_WhenParsingProject_ThenSavesProjectUntilItFails()
         {
             this.Given(x => x.GivenAProjectCannotBeParsed())
                 .When(x => x.WhenParsingProject())
@@ -67,7 +82,7 @@ namespace UnitTests
 
         private async Task WhenParsingProject()
         {
-            var result = await _projectParser.ParseProjectsAsync(_projectIdentifiers);
+            _projectParsingResult = await _projectParser.ParseProjectsAsync(_projectIdentifiers);
         }
 
         private void ThenFirstLastSuccessfullParsedProjectIsSaved()
@@ -75,14 +90,29 @@ namespace UnitTests
             //throw new NotImplementedException();
         }
 
+        private void ThenStopsAtFirstError()
+        {
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("first"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("second"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("notwork"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("third"))), Times.Never);
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("notwork2"))), Times.Never);
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("last"))), Times.Never);
+        }
+
+        private void ThenNotAllExistingProjectsCanBeParsed()
+        {
+            _projectParsingResult.AllExistingProjectsParsed.ShouldBeFalse();
+        }
+
         private void ThenWorkingProjectsAreSaved()
         {
             _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("first")), It.IsAny<IEnumerable<int>>()));
-            _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("nowork")), It.IsAny<IEnumerable<int>>()), Times.Never);
             _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("second")), It.IsAny<IEnumerable<int>>()));
-            _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("third")), It.IsAny<IEnumerable<int>>()));
-            _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("nowork2")), It.IsAny<IEnumerable<int>>()), Times.Never);
-            _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("last")), It.IsAny<IEnumerable<int>>()));
+            _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("notwork")), It.IsAny<IEnumerable<int>>()), Times.Never);
+            _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("third")), It.IsAny<IEnumerable<int>>()), Times.Never);
+            _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("notwork2")), It.IsAny<IEnumerable<int>>()), Times.Never);
+            _autoMocker.GetMock<IProjectRepository>().Verify(x => x.Add(It.Is<Project>(p => p.Name.Equals("last")), It.IsAny<IEnumerable<int>>()), Times.Never);
         }
     }
 }

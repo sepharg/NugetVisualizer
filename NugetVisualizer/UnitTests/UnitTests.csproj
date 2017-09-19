@@ -17,6 +17,7 @@
     <None Remove="TestData\Project1\Folder2\Folder21\packages.config" />
     <None Remove="TestData\Project1\Folder3\packages.config" />
     <None Remove="TestData\Project1\packages.config" />
+    <None Remove="xunit.runner.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +35,9 @@
     </Content>
     <Content Include="TestData\Project1\packages.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

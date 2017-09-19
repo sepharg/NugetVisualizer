@@ -20,8 +20,10 @@
 
     using Xunit;
 
-    public class FileSystemProjectParserTests : DbTest
+    public class FileSystemProjectParserTests : IClassFixture<DbTest>
     {
+        private readonly DbTest _dbTest;
+
         private IProjectParser _fileSystemProjectParser;
 
         private List<Project> _projects;
@@ -30,14 +32,15 @@
 
         private string _projectPath;
 
-        public FileSystemProjectParserTests()
+        public FileSystemProjectParserTests(DbTest dbTest)
         {
-            _fileSystemProjectParser = Container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
+            _dbTest = dbTest;
+            _fileSystemProjectParser = _dbTest.Container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
         }
 
         [Fact]
 
-        public void GivenAProjectWithSomePackages_WhenParsingProject_ThenAProjectWithExpectedPackagesIsReturned()
+        public async Task GivenAProjectWithSomePackages_WhenParsingProject_ThenAProjectWithExpectedPackagesIsReturned()
         {
             this.Given(x => x.GivenAProjectWithSomePackages())
                 .When(x => x.WhenParsingProject())

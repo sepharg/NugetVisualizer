@@ -14,18 +14,21 @@
 
     using Xunit;
 
-    public class ProjectRepositoryTests : DbTest
+    public class ProjectRepositoryTests : IClassFixture<DbTest>
     {
+        private readonly DbTest _dbTest;
+
         private IProjectRepository _projectRepository;
 
         private List<Project> _projects;
 
         private IPackageRepository _packageRepository;
 
-        public ProjectRepositoryTests()
+        public ProjectRepositoryTests(DbTest dbTest)
         {
-            _projectRepository = Container.Resolve<IProjectRepository>();
-            _packageRepository = Container.Resolve<IPackageRepository>();
+            _dbTest = dbTest;
+            _projectRepository = _dbTest.Container.Resolve<IProjectRepository>();
+            _packageRepository = _dbTest.Container.Resolve<IPackageRepository>();
         }
 
         [Fact]

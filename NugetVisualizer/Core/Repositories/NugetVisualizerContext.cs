@@ -11,8 +11,6 @@
 
         private IConfigurationRoot _configurationRoot;
 
-        public const string _databaseName = "nugetVisualizerdb";
-
         public NugetVisualizerContext(IConfigurationHelper configurationHelper)
         {
             _configurationRoot = configurationHelper.GetConfiguration();
