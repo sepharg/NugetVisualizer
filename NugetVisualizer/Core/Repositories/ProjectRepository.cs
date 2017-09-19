@@ -8,7 +8,7 @@
 
     using NugetVisualizer.Core.Domain;
 
-    public class ProjectRepository : IDisposable
+    public class ProjectRepository : IDisposable, IProjectRepository
     {
         private readonly NugetVisualizerContext _dbContext;
 

@@ -52,8 +52,8 @@
             builder.RegisterType<FileSystemPackageReader>();
             builder.RegisterType<GithubPackageReader>();
 
-            builder.RegisterType<PackageRepository>();
-            builder.RegisterType<ProjectRepository>();
+            builder.RegisterType<PackageRepository>().As<IPackageRepository>();
+            builder.RegisterType<ProjectRepository>().As<IProjectRepository>();
 
             builder.RegisterType<NugetVisualizerContext>().As<DbContext>().InstancePerLifetimeScope();
             builder.RegisterType<NugetVisualizerContext>().InstancePerLifetimeScope();

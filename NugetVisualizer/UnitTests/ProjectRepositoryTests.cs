@@ -16,16 +16,16 @@
 
     public class ProjectRepositoryTests : IntegrationTest
     {
-        private ProjectRepository _projectRepository;
+        private IProjectRepository _projectRepository;
 
         private List<Project> _projects;
 
-        private PackageRepository _packageRepository;
+        private IPackageRepository _packageRepository;
 
         public ProjectRepositoryTests()
         {
-            _projectRepository = Container.Resolve<ProjectRepository>();
-            _packageRepository = Container.Resolve<PackageRepository>();
+            _projectRepository = Container.Resolve<IProjectRepository>();
+            _packageRepository = Container.Resolve<IPackageRepository>();
         }
 
         [Fact]

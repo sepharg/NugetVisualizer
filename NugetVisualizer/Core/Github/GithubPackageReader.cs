@@ -8,6 +8,7 @@
     using Microsoft.Extensions.Configuration;
 
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Exceptions;
 
     using Octokit;
     using Octokit.Internal;
@@ -28,14 +29,22 @@
         public async Task<List<XDocument>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
         {
             var ret = new List<XDocument>();
-            foreach (var packagesFile in await GetPackagesFiles(projectIdentifier))
+            try
             {
-                var downloadedFile = Enumerable.Single<RepositoryContent>((await _gitHubClient.Repository.Content.GetAllContents(_configurationRoot["GithubOrganization"], projectIdentifier.Name, packagesFile)));
-                
-                var downloadedFileContent = GetDownloadedFileContent(downloadedFile);
-                XDocument xml = XDocument.Parse(downloadedFileContent);
-                ret.Add(xml);
+                foreach (var packagesFile in await GetPackagesFiles(projectIdentifier))
+                {
+                    var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(_configurationRoot["GithubOrganization"], projectIdentifier.Name, packagesFile)).Single();
+
+                    var downloadedFileContent = GetDownloadedFileContent(downloadedFile);
+                    XDocument xml = XDocument.Parse(downloadedFileContent);
+                    ret.Add(xml);
+                }
             }
+            catch (RateLimitExceededException rateLimitExceededException)
+            {
+                throw new CannotGetPackagesContentsException("Git API returned rate limit exceeded", rateLimitExceededException);
+            }
+            
             return ret;
         }
 

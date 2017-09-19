@@ -8,7 +8,7 @@
 
     using NugetVisualizer.Core.Domain;
 
-    public class PackageRepository : IDisposable
+    public class PackageRepository : IDisposable, IPackageRepository
     {
         private readonly NugetVisualizerContext _context;
 
