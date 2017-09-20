@@ -8,4 +8,4 @@ before_install: cd NugetVisualizer
 
 script:
  - dotnet restore
- - xbuild /p:Configuration=Release NugetVisualizer.sln
+ - dotnet build NugetVisualizer.sln
