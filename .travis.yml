@@ -12,3 +12,4 @@ script:
  - dotnet restore
  - ./createConfig.sh
  - dotnet build NugetVisualizer.sln
+ - dotnet test UnitTests
