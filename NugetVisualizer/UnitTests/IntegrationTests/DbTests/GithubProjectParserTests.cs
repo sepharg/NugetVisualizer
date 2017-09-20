@@ -1,4 +1,4 @@
-﻿namespace UnitTests
+﻿namespace UnitTests.IntegrationTests.DbTests
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -16,8 +16,8 @@
     using TestStack.BDDfy;
 
     using Xunit;
-    using Xunit.Abstractions;
 
+    [Collection("DbIntegrationTests")]
     public class GithubProjectParserTests : IClassFixture<DbTest>
     {
         private readonly DbTest _dbTest;
@@ -33,17 +33,17 @@
         public GithubProjectParserTests(DbTest dbTest)
         {
             _dbTest = dbTest;
-            _githubProjectParser = _dbTest.Container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github));
+            _githubProjectParser = ResolutionExtensions.Resolve<IProjectParser>(_dbTest.Container, new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github));
         }
 
         [Fact]
 
         public void GivenAGithubOrganisationWithProjectsAndPackages_WhenReadingThePackagesForTheProjects_ThenThePackagesFilesContentsAreReturned()
         {
-            this.Given(x => x.GivenAGithubOrganisationWithProjectsAndPackages())
-                .When(x => x.WhenReadingThePackagesForTheProjects())
-                .Then(x => x.ThenThePackagesFilesContentsAreReturned())
-                .BDDfy();
+            BDDfyExtensions.BDDfy(
+                    this.Given(x => x.GivenAGithubOrganisationWithProjectsAndPackages())
+                        .When(x => x.WhenReadingThePackagesForTheProjects())
+                        .Then(x => x.ThenThePackagesFilesContentsAreReturned()));
         }
 
         private async Task GivenAGithubOrganisationWithProjectsAndPackages()
@@ -60,8 +60,8 @@
 
         private void ThenThePackagesFilesContentsAreReturned()
         {
-            _projects.ShouldNotBeNull();
-            _projects.Count().ShouldBeGreaterThan(0);
+            ShouldBeNullExtensions.ShouldNotBeNull<IEnumerable<Project>>(_projects);
+            Enumerable.Count<Project>(_projects).ShouldBeGreaterThan(0);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace UnitTests
+﻿namespace UnitTests.IntegrationTests.DbTests
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -8,11 +8,8 @@
 
     using Microsoft.DotNet.PlatformAbstractions;
 
-    using Moq.AutoMock;
-
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
-    using NugetVisualizer.Core.FileSystem;
 
     using Shouldly;
 
@@ -20,6 +17,7 @@
 
     using Xunit;
 
+    [Collection("DbIntegrationTests")]
     public class FileSystemProjectParserTests : IClassFixture<DbTest>
     {
         private readonly DbTest _dbTest;
@@ -35,18 +33,20 @@
         public FileSystemProjectParserTests(DbTest dbTest)
         {
             _dbTest = dbTest;
-            _fileSystemProjectParser = _dbTest.Container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
+            _fileSystemProjectParser = ResolutionExtensions.Resolve<IProjectParser>(_dbTest.Container, new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
         }
 
         [Fact]
 
         public async Task GivenAProjectWithSomePackages_WhenParsingProject_ThenAProjectWithExpectedPackagesIsReturned()
         {
-            this.Given(x => x.GivenAProjectWithSomePackages())
-                .When(x => x.WhenParsingProject())
-                .Then(x => x.ThenAProjectWithExpectedPackagesIsReturned())
-                .BDDfy();
+            BDDfyExtensions.BDDfy(
+                    this.Given(x => x.GivenAProjectWithSomePackages())
+                        .When(x => x.WhenParsingProject())
+                        .Then(x => x.ThenAProjectWithExpectedPackagesIsReturned()));
         }
+
+        
 
         private void GivenAProjectWithSomePackages()
         {
@@ -60,10 +60,12 @@
             _projects = (await _fileSystemProjectParser.ParseProjectsAsync(new IProjectIdentifier[1] { new ProjectIdentifier(_projecName, _projectPath) } )).ParsedProjects;
         }
 
+        
+
         private void ThenAProjectWithExpectedPackagesIsReturned()
         {
-            _projects.Single().Name.ShouldBe(_projecName);
-            _projects.Single().ProjectPackages.Count.ShouldBe(29);
+            ShouldBeStringTestExtensions.ShouldBe(Enumerable.Single<Project>(_projects).Name, _projecName);
+            Enumerable.Single<Project>(_projects).ProjectPackages.Count.ShouldBe(29);
         }
     }
 }

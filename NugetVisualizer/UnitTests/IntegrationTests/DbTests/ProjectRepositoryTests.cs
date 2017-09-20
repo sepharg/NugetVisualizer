@@ -1,4 +1,4 @@
-﻿namespace UnitTests
+﻿namespace UnitTests.IntegrationTests.DbTests
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -14,6 +14,7 @@
 
     using Xunit;
 
+    [Collection("DbIntegrationTests")]
     public class ProjectRepositoryTests : IClassFixture<DbTest>
     {
         private readonly DbTest _dbTest;
@@ -27,18 +28,18 @@
         public ProjectRepositoryTests(DbTest dbTest)
         {
             _dbTest = dbTest;
-            _projectRepository = _dbTest.Container.Resolve<IProjectRepository>();
-            _packageRepository = _dbTest.Container.Resolve<IPackageRepository>();
+            _projectRepository = ResolutionExtensions.Resolve<IProjectRepository>(_dbTest.Container);
+            _packageRepository = ResolutionExtensions.Resolve<IPackageRepository>(_dbTest.Container);
         }
 
         [Fact]
 
         public void GivenADatabaseWithSomeProjects_WhenLoadingProjects_ThenProjectsAreReturned()
         {
-            this.Given(x => x.GivenADatabaseWithSomeProjects())
-                .When(x => x.WhenLoadingProjects())
-                .Then(x => x.ThenProjectsAreReturned())
-                .BDDfy();
+            BDDfyExtensions.BDDfy(
+                    this.Given(x => x.GivenADatabaseWithSomeProjects())
+                        .When(x => x.WhenLoadingProjects())
+                        .Then(x => x.ThenProjectsAreReturned()));
         }
 
         private void GivenADatabaseWithSomeProjects()
@@ -49,7 +50,7 @@
             int taken = 0;
             for (int i = 0; i < 10; i++)
             {
-                _projectRepository.Add(projectsToCreate[i], packagesToCreate.Skip(taken).Take(3).Select(p => p.Id));
+                _projectRepository.Add(projectsToCreate[i], Enumerable.Skip<Package>(packagesToCreate, taken).Take(3).Select(p => p.Id));
                 taken += 3;
             }
         }
@@ -61,8 +62,8 @@
 
         private void ThenProjectsAreReturned()
         {
-            _projects.Count.ShouldBe(10);
-            _projects.First().ProjectPackages.Count.ShouldBe(3);
+            ShouldBeTestExtensions.ShouldBe(_projects.Count, 10);
+            Enumerable.First<Project>(_projects).ProjectPackages.Count.ShouldBe(3);
         }
 
         private List<Package> GetPackagesToCreate()

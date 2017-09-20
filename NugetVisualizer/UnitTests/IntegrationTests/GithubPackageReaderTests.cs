@@ -1,4 +1,4 @@
-﻿namespace UnitTests
+﻿namespace UnitTests.IntegrationTests
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -26,17 +26,17 @@
 
         public GithubPackageReaderTests()
         {
-            _githubPackageReader = Container.Resolve<GithubPackageReader>();
+            _githubPackageReader = ResolutionExtensions.Resolve<GithubPackageReader>(Container);
         }
 
         [Fact]
 
         public void GivenAGithubProjectWithPackages_WhenReadingThePackagesForTheProject_ThenThePackagesFilesContentsAreReturned()
         {
-            this.Given(x => x.GivenAGithubProjectWithPackages())
-                .When(x => x.WhenReadingThePackagesForTheProject())
-                .Then(x => x.ThenThePackagesFilesContentsAreReturned())
-                .BDDfy();
+            BDDfyExtensions.BDDfy(
+                    this.Given(x => x.GivenAGithubProjectWithPackages())
+                        .When(x => x.WhenReadingThePackagesForTheProject())
+                        .Then(x => x.ThenThePackagesFilesContentsAreReturned()));
         }
 
         private void GivenAGithubProjectWithPackages()
@@ -51,7 +51,7 @@
 
         private void ThenThePackagesFilesContentsAreReturned()
         {
-            _packagesContents.Count().ShouldBe(5);
+            Enumerable.Count<XDocument>(_packagesContents).ShouldBe(5);
         }
     }
 }
