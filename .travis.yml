@@ -8,4 +8,5 @@ before_install: cd NugetVisualizer
 
 script:
  - dotnet restore
+ - ./createConfig.sh
  - dotnet build NugetVisualizer.sln
