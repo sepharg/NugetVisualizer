@@ -41,7 +41,7 @@
 
         private void GivenAGithubProjectWithPackages()
         {
-            _projectIdentifier = new ProjectIdentifier("Moonpig.Migration.TemplateAssets", "");
+            _projectIdentifier = new ProjectIdentifier("testrepo", "");
         }
 
         private async Task WhenReadingThePackagesForTheProject()
@@ -51,7 +51,7 @@
 
         private void ThenThePackagesFilesContentsAreReturned()
         {
-            Enumerable.Count<XDocument>(_packagesContents).ShouldBe(5);
+            Enumerable.Count<XDocument>(_packagesContents).ShouldBe(4);
         }
     }
 }

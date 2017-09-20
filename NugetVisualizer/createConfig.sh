@@ -1,10 +1,10 @@
 echo "{
-  \"GithubOrganization\": \"sepharg\",
-  \"GithubToken\": \"aa0746e8a4599c916e6e89560e0f01dad5fa4eb2\",
+  \"GithubOrganization\": \"Sephargorganization\",
+  \"GithubToken\": \"a320c2251732f5d3db06b3c9378a3cd2d4b0ed54\",
   \"Dbpath\": \"C:\\Development\\NugetVisualizer\\NugetVisualizer\\Core\\nugetvisualizerdb\"
 }" > ConsoleVisualizer\\configuration.json
 
 echo "{
-  \"GithubOrganization\": \"sepharg\",
-  \"GithubToken\": \"aa0746e8a4599c916e6e89560e0f01dad5fa4eb2\"
+  \"GithubOrganization\": \"Sephargorganization\",
+  \"GithubToken\": \"a320c2251732f5d3db06b3c9378a3cd2d4b0ed54\"
 }" > UnitTests\\configuration.json
