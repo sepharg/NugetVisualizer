@@ -4,7 +4,9 @@ dotnet: 2.0.0
 dist: trusty
 solution: NugetVisualizer.sln
 
-before_install: cd NugetVisualizer
+before_install: 
+ - cd NugetVisualizer
+ - chmod +x createConfig.sh
 
 script:
  - dotnet restore

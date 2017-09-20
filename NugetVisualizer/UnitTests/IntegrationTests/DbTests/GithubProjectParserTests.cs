@@ -23,8 +23,6 @@
         private readonly DbTest _dbTest;
 
         private IProjectParser _githubProjectParser;
-        
-        private IEnumerable<XDocument> _packagesContents;
 
         private IEnumerable<Project> _projects;
 
