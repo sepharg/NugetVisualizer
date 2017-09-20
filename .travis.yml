@@ -5,3 +5,7 @@ dist: trusty
 solution: NugetVisualizer.sln
 
 before_install: cd NugetVisualizer
+
+script:
+ - dotnet restore
+ - xbuild /p:Configuration=Release NugetVisualizer.sln
