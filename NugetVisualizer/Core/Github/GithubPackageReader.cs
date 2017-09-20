@@ -22,7 +22,8 @@
         public GithubPackageReader(IConfigurationHelper configurationHelper)
         {
             _configurationRoot = configurationHelper.GetConfiguration();
-            InMemoryCredentialStore credentials = new InMemoryCredentialStore(new Credentials(_configurationRoot["GithubToken"]));
+            var githubToken = _configurationRoot["GithubToken"];
+            InMemoryCredentialStore credentials = new InMemoryCredentialStore(new Credentials(githubToken));
             _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationRoot["GithubOrganization"]), credentials);
         }
 
