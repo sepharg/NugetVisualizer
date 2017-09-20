@@ -10,9 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="configuration.development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="configuration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -29,5 +26,13 @@
     <ProjectReference Include="..\Boostrapper\Boostrapper.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
+
+  <!-- Copies configuration files to output dir -->
+  <Target Name="CopyConfiguration" AfterTargets="BeforeBuild">
+    <CreateItem Include="configuration*.json">
+      <Output TaskParameter="Include" ItemName="ConfigurationFiles" />
+    </CreateItem>
+    <Copy SourceFiles="@(ConfigurationFiles)" DestinationFolder="$(OutDir)" />
+  </Target>
 
 </Project>
