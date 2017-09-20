@@ -19,8 +19,20 @@ The following variables are supported:
 
 ### Initial setup
 
+##### Database
+
 Run the following command in a Windows prompt under Core\
 
     dotnet ef database update
 
 This will create the database under the path defined by the *Dbpath* variable
+
+##### Configuration
+
+Create a file named configuration.json in the root of ConsoleVisualizer and UnitTests folders. 
+This can be used as a template:
+
+    {  "GithubOrganization": "YOUR ORGANIZATION HERE",
+       "GithubToken": "YOUR GITHUB TOKEN HERE",
+       "Dbpath" : "full path to your sqlite database" 
+    }
