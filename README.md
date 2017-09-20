@@ -1,6 +1,8 @@
 # NugetVisualizer
 Tool intended to help visualize all of the nuget packages and their corresponding versions for a set of given repositories
 
+[![Build Status](https://travis-ci.org/sepharg/NugetVisualizer.svg?branch=master)](https://travis-ci.org/sepharg/NugetVisualizer)
+
 ### Process
 
 Initially, the data must be harvested. This can be done via the file system or by using the github API.
