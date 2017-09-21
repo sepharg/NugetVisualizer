@@ -13,22 +13,10 @@
 
   <ItemGroup>
     <None Remove="configuration.json" />
-    <None Remove="TestData\Project1\Folder2\Folder21\packages.config" />
-    <None Remove="TestData\Project1\Folder3\packages.config" />
-    <None Remove="TestData\Project1\packages.config" />
     <None Remove="xunit.runner.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="TestData\Project1\Folder2\Folder21\packages.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\Project1\Folder3\packages.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\Project1\packages.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -57,12 +45,17 @@
 
   <ItemGroup>
     <Folder Include="TestData\Project1\Folder1\" />
-    <Folder Include="TestData\Project1\Folder2\Folder21\" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="TestData\Project1\Folder2\Folder21\packages.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Project1\Folder3\packages.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Project1\packages.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
@@ -72,6 +65,20 @@
       <Output TaskParameter="Include" ItemName="ConfigurationFiles" />
     </CreateItem>
     <Copy SourceFiles="@(ConfigurationFiles)" DestinationFolder="$(OutDir)" />
+  </Target>
+
+  <Target Name="MakeTestDataDirs" AfterTargets="BeforeBuild">
+    <MakeDir Directories="$(OutDir)TestData\Project1\Folder1" />
+    <MakeDir Directories="$(OutDir)TestData\Project1\Folder2\Folder21" />
+    <MakeDir Directories="$(OutDir)TestData\Project1\Folder3" />
+  </Target>
+  
+  <!-- Copies test data to output dir -->
+  <Target Name="CopyTestDataFiles" AfterTargets="BeforeBuild">
+    <ItemGroup>
+      <AllFolderFiles Include="TestData\**\*.config" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AllFolderFiles)" DestinationFiles="$(OutDir)\TestData\%(RecursiveDir)%(Filename)%(Extension)" />
   </Target>
 
 </Project>
