@@ -7,10 +7,10 @@ solution: NugetVisualizer.sln
 before_install: 
  - cd NugetVisualizer
  - chmod +x createConfig.sh
-  - chmod +x test.sh
+ - chmod +x test.sh
  
  after_deploy:
-  - ./test.sh $TRAVIS_BUILD_DIR
+ - ./test.sh $TRAVIS_BUILD_DIR
 
 script:
  - dotnet restore
