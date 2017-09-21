@@ -1,6 +1,7 @@
 ﻿namespace UnitTests.IntegrationTests.DbTests
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -52,7 +53,7 @@
         {
             // folder21 has 6 packages, folder3 has 19 packages, root has 7 packages (total 32)
             _projecName = "Project1";
-            _projectPath = ApplicationEnvironment.ApplicationBasePath + $"\\TestData\\{_projecName}";
+            _projectPath = Path.Combine(ApplicationEnvironment.ApplicationBasePath, "TestData", _projecName);
         }
 
         private async Task WhenParsingProject()
