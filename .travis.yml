@@ -8,12 +8,10 @@ before_install:
 - cd NugetVisualizer
 - chmod +x createConfig.sh
 - chmod +x test.sh
- 
-after_deploy:
-- ./test.sh $TRAVIS_BUILD_DIR
 
 script:
 - dotnet restore
 - ./createConfig.sh $GITHUB_TOKEN
 - dotnet build NugetVisualizer.sln
 - dotnet test UnitTests
+- ./test.sh $TRAVIS_BUILD_DIR
