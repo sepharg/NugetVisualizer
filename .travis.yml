@@ -10,6 +10,6 @@ before_install:
 
 script:
  - dotnet restore
- - ./createConfig.sh
+ - ./createConfig.sh $GITHUB_TOKEN
  - dotnet build NugetVisualizer.sln
  - dotnet test UnitTests
