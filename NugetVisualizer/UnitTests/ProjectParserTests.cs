@@ -83,6 +83,23 @@ namespace UnitTests
                 .BDDfy();
         }
 
+        [Fact]
+
+        public async Task GivenAllProjectsCanBeParsed_WhenParsingProject_ThenEmptyIsSaved()
+        {
+            this.Given(x => x.GivenAllProjectsCanBeParsed())
+                .When(x => x.WhenParsingProject())
+                .Then(x => x.ThenEmptyIsSaved())
+                .BDDfy();
+        }
+
+        private void GivenAllProjectsCanBeParsed()
+        {
+            _autoMocker.GetMock<IPackageReader>()
+                .Setup(x => x.GetPackagesContentsAsync(It.IsAny<IProjectIdentifier>()))
+                .ReturnsAsync(new List<XDocument>());
+        }
+
         private void GivenAProjectCannotBeParsed()
         {
             _autoMocker.GetMock<IPackageReader>()
@@ -110,6 +127,11 @@ namespace UnitTests
         private void ThenLastSuccessfullParsedProjectIsNotSaved()
         {
             _autoMocker.GetMock<IProjectParsingState>().Verify(x => x.SaveLatestParsedProject(It.IsAny<string>()), Times.Never);
+        }
+
+        private void ThenEmptyIsSaved()
+        {
+            _autoMocker.GetMock<IProjectParsingState>().Verify(x => x.SaveLatestParsedProject(string.Empty));
         }
 
         private void ThenStopsAtFirstError()

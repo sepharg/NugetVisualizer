@@ -1,5 +1,6 @@
 ﻿namespace NugetVisualizer.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -70,6 +71,10 @@
                     }
                     break;
                 }
+            }
+            if (allExistingProjectsParsed)
+            {
+                _projectParsingState.SaveLatestParsedProject(string.Empty);
             }
             return new ProjectParsingResult(projectList, allExistingProjectsParsed);
         }
