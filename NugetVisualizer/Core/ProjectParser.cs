@@ -20,15 +20,17 @@
         private IPackageParser _packageParser;
         private IProjectRepository _projectRepository;
         private IPackageRepository _packageRepository;
+        private readonly IProjectParsingState _projectParsingState;
 
         public delegate ProjectParser Factory(ProjectParserType type);
 
-        public ProjectParser(IPackageReader packageReader, IPackageParser packageParser, IProjectRepository projectRepository, IPackageRepository packageRepository)
+        public ProjectParser(IPackageReader packageReader, IPackageParser packageParser, IProjectRepository projectRepository, IPackageRepository packageRepository, IProjectParsingState projectParsingState)
         {
             _packageReader = packageReader;
             _packageParser = packageParser;
             _projectRepository = projectRepository;
             _packageRepository = packageRepository;
+            _projectParsingState = projectParsingState;
         }
 
         private async Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier)
@@ -54,16 +56,22 @@
         {
             var projectList = new List<Project>();
             bool allExistingProjectsParsed = false;
+            string lastSuccessfullParsedProjectName = null;
             foreach (var projectIdentifier in projectIdentifiers)
             {
                 var project = await ParseProjectAsync(projectIdentifier);
                 if (project != null)
                 {
                     projectList.Add(project);
+                    lastSuccessfullParsedProjectName = project.Name;
                 }
                 allExistingProjectsParsed = project != null;
                 if (!allExistingProjectsParsed)
                 {
+                    if (!string.IsNullOrWhiteSpace(lastSuccessfullParsedProjectName))
+                    {
+                        _projectParsingState.SaveLatestParsedProject(lastSuccessfullParsedProjectName);
+                    }
                     break;
                 }
             }

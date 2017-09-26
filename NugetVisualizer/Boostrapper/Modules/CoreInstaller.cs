@@ -34,12 +34,14 @@
                                         (pi, ctx) => ctx.Resolve<FileSystemPackageReader>()),
                                     new AutowiringParameter(),
                                     new AutowiringParameter(),
+                                    new AutowiringParameter(),
                                     new AutowiringParameter());
                             case ProjectParserType.Github:
                                 return context.Resolve<ProjectParser>(
                                     new ResolvedParameter(
                                         (pi, ctx) => pi.ParameterType == typeof(IPackageReader),
                                         (pi, ctx) => ctx.Resolve<GithubPackageReader>()),
+                                    new AutowiringParameter(),
                                     new AutowiringParameter(),
                                     new AutowiringParameter(),
                                     new AutowiringParameter());
@@ -54,6 +56,8 @@
 
             builder.RegisterType<PackageRepository>().As<IPackageRepository>();
             builder.RegisterType<ProjectRepository>().As<IProjectRepository>();
+            builder.RegisterType<ProjectParsingStateRepository>().As<IProjectParsingState>();
+
 
             builder.RegisterType<NugetVisualizerContext>().As<DbContext>().InstancePerLifetimeScope();
             builder.RegisterType<NugetVisualizerContext>().InstancePerLifetimeScope();

@@ -68,8 +68,18 @@ namespace UnitTests
         {
             this.Given(x => x.GivenAProjectCannotBeParsed())
                 .When(x => x.WhenParsingProject())
-                .Then(x => x.ThenFirstLastSuccessfullParsedProjectIsSaved())
+                .Then(x => x.ThenLastSuccessfullParsedProjectIsSaved())
                 .And(x => x.ThenWorkingProjectsAreSaved())
+                .BDDfy();
+        }
+
+        [Fact]
+
+        public async Task GivenFirstProjectCannotBeParsed_WhenParsingProject_ThenNothingIsSaved()
+        {
+            this.Given(x => x.GivenFirstProjectCannotBeParsed())
+                .When(x => x.WhenParsingProject())
+                .Then(x => x.ThenLastSuccessfullParsedProjectIsNotSaved())
                 .BDDfy();
         }
 
@@ -80,14 +90,26 @@ namespace UnitTests
                        .Throws<CannotGetPackagesContentsException>();
         }
 
+        private void GivenFirstProjectCannotBeParsed()
+        {
+            _autoMocker.GetMock<IPackageReader>()
+                .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Contains("first"))))
+                .Throws<CannotGetPackagesContentsException>();
+        }
+
         private async Task WhenParsingProject()
         {
             _projectParsingResult = await _projectParser.ParseProjectsAsync(_projectIdentifiers);
         }
 
-        private void ThenFirstLastSuccessfullParsedProjectIsSaved()
+        private void ThenLastSuccessfullParsedProjectIsSaved()
         {
-            //throw new NotImplementedException();
+            _autoMocker.GetMock<IProjectParsingState>().Verify(x => x.SaveLatestParsedProject("second"));
+        }
+
+        private void ThenLastSuccessfullParsedProjectIsNotSaved()
+        {
+            _autoMocker.GetMock<IProjectParsingState>().Verify(x => x.SaveLatestParsedProject(It.IsAny<string>()), Times.Never);
         }
 
         private void ThenStopsAtFirstError()
