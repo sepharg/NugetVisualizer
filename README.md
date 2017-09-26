@@ -23,11 +23,9 @@ The following variables are supported:
 
 ##### Database
 
-Run the following command in a Windows prompt under Core\
+The database is initially created when the console app runs, it is created under the path defined by the *Dbpath* variable
 
-    dotnet ef database update
-
-This will create the database under the path defined by the *Dbpath* variable
+ToDo: add support for *dotnet ef database update* command
 
 ##### Configuration
 

@@ -28,6 +28,8 @@ namespace ConsoleVisualizer
         {
             var container = AutofacContainerFactory.GetBuilder().Build();
 
+            container.Resolve<NugetVisualizerContext>().Database.EnsureCreated();
+
             Console.WriteLine("1.- Folder Parsing");
             Console.WriteLine("2.- Github Parsing");
             Console.WriteLine("3.- Read Saved Projects");
