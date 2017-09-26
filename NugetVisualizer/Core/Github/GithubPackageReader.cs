@@ -1,8 +1,10 @@
 ﻿namespace NugetVisualizer.Core.Github
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Xml;
     using System.Xml.Linq;
 
     using Microsoft.Extensions.Configuration;
@@ -37,8 +39,16 @@
                     var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(_configurationRoot["GithubOrganization"], projectIdentifier.Name, packagesFile)).Single();
 
                     var downloadedFileContent = GetDownloadedFileContent(downloadedFile);
-                    XDocument xml = XDocument.Parse(downloadedFileContent);
-                    ret.Add(xml);
+                    try
+                    {
+                        XDocument xml = XDocument.Parse(downloadedFileContent);
+                        ret.Add(xml);
+                    }
+                    catch (XmlException e)
+                    {
+                        // ToDo : Log this in a better way
+                        Console.WriteLine($"Error {e.Message} while parsing {packagesFile} for {projectIdentifier.Name}");
+                    }
                 }
             }
             catch (RateLimitExceededException rateLimitExceededException)
