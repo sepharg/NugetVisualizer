@@ -302,3 +302,5 @@ NugetVisualizer/UnitTests/configuration\.json\.a
 NugetVisualizer/ConsoleVisualizer/configuration\.json\.a
 
 NugetVisualizer/Core/configuration\.json
+
+NugetVisualizer/Core/nugetVisualizerdb
