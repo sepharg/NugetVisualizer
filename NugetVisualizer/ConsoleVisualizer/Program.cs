@@ -53,11 +53,7 @@ namespace ConsoleVisualizer
 
                         var processor = new Processor(projectParser, repoReader, projectParsingState);*/
 
-                        var projects = processor.Process(rootPath, filters.Split(' ')).GetAwaiter().GetResult().ParsedProjects.ToList();
-                        foreach (var project in projects)
-                        {
-                            Console.WriteLine($"{project.Name} parsed");
-                        }
+                        DoProcess(processor, rootPath, filters);
                         break;
                     }
                 case ConsoleKey.D2:
@@ -68,17 +64,9 @@ namespace ConsoleVisualizer
                         Console.WriteLine("Please enter a space separated list of filters: ");
                         var filters = Console.ReadLine();
 
-                        var repoReader = container.Resolve<GithubRepositoryReader>();
-                        var projectParser = container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github));
-                        var projectParsingState = container.Resolve<IProjectParsingState>();
+                        var processor = container.Resolve<IProcessor>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github));
 
-                        var processor = new Processor(projectParser, repoReader, projectParsingState);
-
-                        var projects = processor.Process(rootPath, filters.Split(' ')).GetAwaiter().GetResult().ParsedProjects.ToList();
-                        foreach (var project in projects)
-                        {
-                            Console.WriteLine($"{project.Name} parsed");
-                        }
+                        DoProcess(processor, rootPath, filters);
                         break;
                     }
                 case ConsoleKey.D3:
@@ -116,6 +104,21 @@ namespace ConsoleVisualizer
             Console.WriteLine();
             Console.Write("press any key to exit...");
             Console.ReadKey();
+        }
+
+        private static void DoProcess(IProcessor processor, string rootPath, string filters)
+        {
+            var projectParsingResult = processor.Process(rootPath, filters.Split(' ')).GetAwaiter().GetResult();
+            var projects = projectParsingResult.ParsedProjects.ToList();
+
+            foreach (var project in projects)
+            {
+                Console.WriteLine($"{project.Name} parsed");
+            }
+            if (!projectParsingResult.AllExistingProjectsParsed)
+            {
+                Console.WriteLine("Not all projects could be parsed, please rerun to continue after the last successful parsed project");
+            }
         }
 
         private static string[] GetProjectRow(Project project, string packageName, List<string> packageVersionsList)
