@@ -3,7 +3,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class Processor
+    public class Processor : IProcessor
     {
         private readonly IProjectParser _projectParser;
 
@@ -31,5 +31,10 @@
             var remainingProjectsToParse = projectIdentifiers.Skip(alreadyProcessed);
             return await _projectParser.ParseProjectsAsync(remainingProjectsToParse);
         }
+    }
+
+    public interface IProcessor
+    {
+        Task<ProjectParsingResult> Process(string rootPath, string[] filters);
     }
 }

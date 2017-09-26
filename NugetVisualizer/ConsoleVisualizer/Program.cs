@@ -42,12 +42,14 @@ namespace ConsoleVisualizer
                         var rootPath = Console.ReadLine();
                         Console.WriteLine("Please enter a space separated list of filters: ");
                         var filters = Console.ReadLine();
-                        
-                        var repoReader = container.Resolve<FileSystemRepositoryReader>();
+
+                        var processor = container.Resolve<IProcessor>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
+
+                        /*var repoReader = container.Resolve<FileSystemRepositoryReader>();
                         var projectParser = container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
                         var projectParsingState = container.Resolve<IProjectParsingState>();
 
-                        var processor = new Processor(projectParser, repoReader, projectParsingState);
+                        var processor = new Processor(projectParser, repoReader, projectParsingState);*/
 
                         var projects = processor.Process(rootPath, filters.Split(' ')).GetAwaiter().GetResult().ParsedProjects.ToList();
                         foreach (var project in projects)
@@ -89,6 +91,7 @@ namespace ConsoleVisualizer
                             Console.BackgroundColor = ConsoleColor.Blue;
                             Console.ForegroundColor = ConsoleColor.White;
                             Console.WriteLine(packageName);
+                            Console.Out.Flush();
                             Console.ResetColor();
                             var allVersionsForPackage = allPackages.GroupBy(x => x.Name).Single(x => x.Key.Equals(packageName)).OrderBy(x => x.Version).Select(x => x.Version).ToList();
                             var header = new List<string>();

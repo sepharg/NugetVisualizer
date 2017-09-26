@@ -46,3 +46,8 @@ Create a file named configuration.json in the root of the UnitTests folder.
     {  "GithubOrganization": "YOUR ORGANIZATION HERE",
        "GithubToken": "YOUR GITHUB TOKEN HERE"
     }
+	
+	
+##### Useful Tools
+
+https://github.com/sqlitebrowser/sqlitebrowser/

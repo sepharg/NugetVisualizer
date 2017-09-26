@@ -48,8 +48,36 @@
                             default: throw new ArgumentOutOfRangeException("Specified Project parser doesn't exist");
                         }
                     });
+
+            builder.Register<IProcessor>(
+                (context, parameters) =>
+                    {
+                        switch (parameters.TypedAs<ProjectParserType>())
+                        {
+                            case ProjectParserType.FileSystem:
+                                return context.Resolve<Processor>(
+                                    new ResolvedParameter(
+                                        (pi, ctx) => pi.ParameterType == typeof(IProjectParser),
+                                        (pi, ctx) => ctx.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem))),
+                                    new ResolvedParameter(
+                                        (pi, ctx) => pi.ParameterType == typeof(IRepositoryReader),
+                                        (pi, ctx) => ctx.Resolve<FileSystemRepositoryReader>()),
+                                    new AutowiringParameter());
+                            case ProjectParserType.Github:
+                                return context.Resolve<Processor>(
+                                    new ResolvedParameter(
+                                        (pi, ctx) => pi.ParameterType == typeof(IProjectParser),
+                                        (pi, ctx) => ctx.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github))),
+                                    new ResolvedParameter(
+                                        (pi, ctx) => pi.ParameterType == typeof(IRepositoryReader),
+                                        (pi, ctx) => ctx.Resolve<GithubRepositoryReader>()),
+                                    new AutowiringParameter());
+                            default: throw new ArgumentOutOfRangeException("Specified Project parser doesn't exist");
+                        }
+                    });
                    
             builder.RegisterType<ProjectParser>();
+            builder.RegisterType<Processor>();
 
             builder.RegisterType<FileSystemPackageReader>();
             builder.RegisterType<GithubPackageReader>();
