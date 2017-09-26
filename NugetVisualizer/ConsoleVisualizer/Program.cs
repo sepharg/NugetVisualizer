@@ -44,9 +44,12 @@ namespace ConsoleVisualizer
                         var filters = Console.ReadLine();
                         
                         var repoReader = container.Resolve<FileSystemRepositoryReader>();
-                        
                         var projectParser = container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
-                        var projects = projectParser.ParseProjectsAsync(repoReader.GetProjects(rootPath, filters.Split(' '))).GetAwaiter().GetResult().ParsedProjects.ToList();
+                        var projectParsingState = container.Resolve<IProjectParsingState>();
+
+                        var processor = new Processor(projectParser, repoReader, projectParsingState);
+
+                        var projects = processor.Process(rootPath, filters.Split(' ')).GetAwaiter().GetResult().ParsedProjects.ToList();
                         foreach (var project in projects)
                         {
                             Console.WriteLine($"{project.Name} parsed");
@@ -62,9 +65,12 @@ namespace ConsoleVisualizer
                         var filters = Console.ReadLine();
 
                         var repoReader = container.Resolve<GithubRepositoryReader>();
-
                         var projectParser = container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github));
-                        var projects = projectParser.ParseProjectsAsync(repoReader.GetProjects(rootPath, filters.Split(' '))).GetAwaiter().GetResult().ParsedProjects.ToList();
+                        var projectParsingState = container.Resolve<IProjectParsingState>();
+
+                        var processor = new Processor(projectParser, repoReader, projectParsingState);
+
+                        var projects = processor.Process(rootPath, filters.Split(' ')).GetAwaiter().GetResult().ParsedProjects.ToList();
                         foreach (var project in projects)
                         {
                             Console.WriteLine($"{project.Name} parsed");

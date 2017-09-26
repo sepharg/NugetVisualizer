@@ -1,18 +1,14 @@
 ﻿namespace NugetVisualizer.Core
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
 
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Exceptions;
     using NugetVisualizer.Core.Repositories;
 
-    using Octokit;
-
-    using Project = NugetVisualizer.Core.Domain.Project;
+    using Project = Domain.Project;
 
     public class ProjectParser : IProjectParser
     {
