@@ -10,6 +10,10 @@ A console app is provided for testing purposes (and can be used as code examples
 Once the data is harvested, it can be visualized
 All data is stored in a Sqlite database
 
+### Requirements
+
+The solution is built and requires [.net Core 2.0](https://www.microsoft.com/net/download/core) to run
+
 ### Configuration
 
 A configuration.json file must be created to run the tests and the application.
@@ -39,12 +43,8 @@ This can be used as a template:
 
 ##### Running Tests Locally
 
-Create a file named configuration.json in the root of the UnitTests folder. 
-
-    {  "GithubOrganization": "YOUR ORGANIZATION HERE",
-       "GithubToken": "YOUR GITHUB TOKEN HERE"
-    }
-	
+Just run them normally. At the moment of writing, Resharper's test runner doesn't work on .net core, so use the visual studio test runner.
+The Integration Tests that connect to github cannot be run locally, because a token is needed for a dummy organization i've created. Github doesn't let me check in tokens into source control for security reasons, so these tests run only on the travis build.	
 	
 ##### Useful Tools
 

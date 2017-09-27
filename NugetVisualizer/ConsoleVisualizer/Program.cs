@@ -46,13 +46,7 @@ namespace ConsoleVisualizer
                         var filters = Console.ReadLine();
 
                         var processor = container.Resolve<IProcessor>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
-
-                        /*var repoReader = container.Resolve<FileSystemRepositoryReader>();
-                        var projectParser = container.Resolve<IProjectParser>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
-                        var projectParsingState = container.Resolve<IProjectParsingState>();
-
-                        var processor = new Processor(projectParser, repoReader, projectParsingState);*/
-
+                        
                         DoProcess(processor, rootPath, filters);
                         break;
                     }
