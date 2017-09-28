@@ -1,6 +1,39 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model PackagesViewModel
+
+@{
+    ViewData["Title"] = "Package List";
 }
+
+<form asp-controller="Home" asp-action="ShowPackages" method="post">
+    <p>
+        <select asp-for="SelectedPackage" asp-items="Model.Packages" ></select>
+        <br /><button type="submit">Show</button>
+    </p>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>#</th> 
+                @foreach (var version in Model.Versions)
+                {
+                    <th>@version</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var projectRowValue in Model.ProjectRows)
+            {
+                <tr>
+                    <th>@projectRowValue.ProjectName</th>
+                    @foreach (var value in projectRowValue.ValuesList)
+                    {
+                        <td>@value</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
+
 
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
     <ol class="carousel-indicators">
