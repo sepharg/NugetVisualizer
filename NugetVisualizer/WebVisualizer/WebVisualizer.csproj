@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
   </ItemGroup>
 
@@ -13,7 +14,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Boostrapper\Boostrapper.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
+
+  <!-- Copies configuration files to output dir -->
+  <Target Name="CopyConfiguration" AfterTargets="BeforeBuild">
+    <CreateItem Include="configuration*.json">
+      <Output TaskParameter="Include" ItemName="ConfigurationFiles" />
+    </CreateItem>
+    <Copy SourceFiles="@(ConfigurationFiles)" DestinationFolder="$(OutDir)" />
+  </Target>
 
 </Project>

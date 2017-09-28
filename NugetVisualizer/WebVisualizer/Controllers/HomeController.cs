@@ -8,11 +8,20 @@ namespace WebVisualizer.Controllers
     using System;
     using System.Collections.Generic;
 
+    using WebVisualizer.Services;
+
     public class HomeController : Controller
     {
+        private readonly PackageSearchService _packageSearchService;
+
+        public HomeController(PackageSearchService packageSearchService)
+        {
+            _packageSearchService = packageSearchService;
+        }
+
         public IActionResult Index()
         {
-            var packagesViewModel = new PackagesViewModel();
+            var packagesViewModel = new PackagesViewModel(_packageSearchService.GetPackages());
             return View(packagesViewModel);
         }
 

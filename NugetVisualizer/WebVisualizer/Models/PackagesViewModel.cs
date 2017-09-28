@@ -10,16 +10,9 @@ namespace WebVisualizer.Models
 
     public class PackagesViewModel
     {
-        public PackagesViewModel()
+        public PackagesViewModel(List<Package> packages)
         {
-            Packages =
-                new List<Package>()
-                        {
-                            new Package("First", "1.0", ""),
-                            new Package("Second", "2.0", ""),
-                            new Package("Third", "3.0", ""),
-                        }.Select(p => new SelectListItem() { Text = p.Name, Value = p.Name })
-                    .ToList();
+            Packages = packages.Select(p => new SelectListItem() { Text = p.Name, Value = p.Name }).ToList();
 
             Versions = new List<string>();
 
