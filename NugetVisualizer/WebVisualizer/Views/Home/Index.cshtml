@@ -4,41 +4,45 @@
     ViewData["Title"] = "Package List";
 }
 
-<form asp-controller="Home" asp-action="ShowPackages" method="post">
+@*<form asp-controller="Home" asp-action="ShowPackages" method="post">
     All packages:
     <p>
         <select asp-for="SelectedPackageName" asp-items="Model.Packages"></select>
         <br /><button type="submit">Show project usages</button>
     </p>
-</form>
+</form>*@
 <form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post">
     Packages ordered by version count:
     <p>
         <select asp-for="SelectedOrderedByVersionPackageName" asp-items="Model.PackagesOrderedByVersionCount"></select>
-        <br/><button type="submit">Show project usages</button>
+        <br/><br /><button type="submit" class="btn btn-primary btn-sm">Show project usages</button>
     </p>
 </form>
-    
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>#</th> 
-                @foreach (var version in Model.Versions)
-                {
-                    <th>@version</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var projectRowValue in Model.ProjectRows)
-            {
+    @if (Model.SelectedOrderedByVersionPackageName != null)
+    {
+        @*<div class="table-responsive">*@
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
                 <tr>
-                    <th>@projectRowValue.ProjectName</th>
-                    @foreach (var value in projectRowValue.ValuesList)
+                    <th style="background-color: floralwhite;">@Model.SelectedOrderedByVersionPackageName</th>
+                    @foreach (var version in Model.Versions)
                     {
-                        <td>@value</td>
+                        <th>@version</th>
                     }
                 </tr>
+                </thead>
+                <tbody>
+                @foreach (var projectRowValue in Model.ProjectRows)
+                {
+                    <tr>
+                        <th>@projectRowValue.ProjectName</th>
+                        @foreach (var value in projectRowValue.ValuesList)
+                        {
+                            <td style="text-align: center">@if (value == "X") { <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> }</td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        @*</div>*@
             }
-        </tbody>
-    </table>
