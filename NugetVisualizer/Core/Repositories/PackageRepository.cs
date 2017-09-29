@@ -46,7 +46,16 @@
 
         public List<Package> LoadPackages()
         {
-            return _context.Packages.ToList();
+            return _context.Packages.OrderBy(p => p.Name).ToList();
+        }
+
+        public List<string> GetPackageVersions(string packageName)
+        {
+            return _context.Packages.GroupBy(x => x.Name)
+                                    .Single(x => x.Key.Equals(packageName))
+                                    .OrderBy(x => x.Version)
+                                    .Select(x => x.Version)
+                                    .ToList();
         }
 
         public void Dispose()

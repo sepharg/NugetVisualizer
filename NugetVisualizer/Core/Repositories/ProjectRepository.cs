@@ -22,6 +22,13 @@
             return _dbContext.Projects.Include(x => x.ProjectPackages).ThenInclude(y => y.Package).ToList();
         }
 
+        public List<Project> GetProjectsForPackage(string packageName)
+        {
+            return _dbContext.Projects.Where(p => p.ProjectPackages.Any(pp => pp.Package.Name.Equals(packageName)))
+                                      .Include(x => x.ProjectPackages)
+                                      .ToList();
+        }
+
         public void Add(Project project, IEnumerable<int> packageIds)
         {
             var existingProject = _dbContext.Projects.SingleOrDefault(x => x.Name == project.Name);

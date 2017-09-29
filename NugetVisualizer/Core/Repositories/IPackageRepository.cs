@@ -8,5 +8,7 @@ namespace NugetVisualizer.Core.Repositories
         void Add(Package package);
         void AddRange(IEnumerable<Package> packages);
         List<Package> LoadPackages();
+
+        List<string> GetPackageVersions(string packageName);
     }
 }

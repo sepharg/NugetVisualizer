@@ -44,35 +44,9 @@ namespace WebVisualizer.Controllers
         {
             if (ModelState.IsValid)
             {
-                model.Versions = new List<string>() { "1.1", "2.0", "2.1", "3.1.3"};
-                model.ProjectRows = new List<ProjectRow>()
-                                        {
-                                            new ProjectRow()
-                                                {
-                                                    ProjectName = "FIRST PROJ",
-                                                    ValuesList = new List<string>() { string.Empty, "X", String.Empty, String.Empty }
-                                                },
-                                            new ProjectRow()
-                                                {
-                                                    ProjectName = "SECOND PROJ",
-                                                    ValuesList = new List<string>() { "X", string.Empty, String.Empty, String.Empty }
-                                                },
-                                            new ProjectRow()
-                                                {
-                                                    ProjectName = "THIRD PROJ",
-                                                    ValuesList = new List<string>() { string.Empty, "X", String.Empty, String.Empty }
-                                                },
-                                            new ProjectRow()
-                                                {
-                                                    ProjectName = "FOURTH PROJ",
-                                                    ValuesList = new List<string>() { string.Empty, "X", "X", String.Empty }
-                                                },
-                                            new ProjectRow()
-                                                {
-                                                    ProjectName = "FIFTH PROJ",
-                                                    ValuesList = new List<string>() { string.Empty, "X", String.Empty, "X" }
-                                                },
-                                        };
+                model.Versions = _packageSearchService.GetPackageVersions(model.SelectedPackageName);
+                model.SetPackages(_packageSearchService.GetPackages());
+                model.ProjectRows = _packageSearchService.GetProjectRows(model.SelectedPackageName, model.Versions);
                 return View("Index", model);
             }
 

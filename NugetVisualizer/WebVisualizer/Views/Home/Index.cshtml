@@ -6,7 +6,7 @@
 
 <form asp-controller="Home" asp-action="ShowPackages" method="post">
     <p>
-        <select asp-for="SelectedPackage" asp-items="Model.Packages" ></select>
+        <select asp-for="SelectedPackageName" asp-items="Model.Packages" ></select>
         <br /><button type="submit">Show</button>
     </p>
     <table class="table table-bordered">

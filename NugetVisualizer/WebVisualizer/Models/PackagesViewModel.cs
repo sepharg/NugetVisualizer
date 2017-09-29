@@ -10,18 +10,26 @@ namespace WebVisualizer.Models
 
     public class PackagesViewModel
     {
-        public PackagesViewModel(List<Package> packages)
+        public PackagesViewModel()
         {
-            Packages = packages.Select(p => new SelectListItem() { Text = p.Name, Value = p.Name }).ToList();
-
+            Packages = new List<SelectListItem>();
             Versions = new List<string>();
-
             ProjectRows = new List<ProjectRow>();
         }
 
-        public Package SelectedPackage { get; set; }
+        public PackagesViewModel(List<Package> packages) : this()
+        {
+            SetPackages(packages);
+        }
 
-        public List<SelectListItem> Packages { get; }
+        public void SetPackages(List<Package> packages)
+        {
+            Packages = packages.Select(p => new SelectListItem() { Text = p.Name, Value = p.Name }).ToList();
+        }
+
+        public string SelectedPackageName { get; set; }
+
+        public List<SelectListItem> Packages { get; private set; }
 
         public List<string> Versions { get; set; }
 
@@ -32,6 +40,11 @@ namespace WebVisualizer.Models
 
     public class ProjectRow
     {
+        public ProjectRow()
+        {
+            ValuesList = new List<string>();
+        }
+
         public string ProjectName { get; set; }
 
         public List<string> ValuesList { get; set; }
