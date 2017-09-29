@@ -67,7 +67,7 @@ namespace ConsoleVisualizer
                 case ConsoleKey.NumPad3:
                     {
                         var projects = container.Resolve<IProjectRepository>().LoadProjects();
-                        var allPackages = container.Resolve<IPackageRepository>().LoadPackages();
+                        var allPackages = container.Resolve<IPackageRepository>().GetPackages();
 
                         var distinctPackageNames = allPackages.GroupBy(x => x.Name).Select(x => x.First().Name);
                         foreach (var packageName in distinctPackageNames)

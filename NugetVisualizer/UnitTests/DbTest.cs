@@ -24,14 +24,7 @@
         private void InitializeTestDb()
         {
             _nugetVisualizerContext = Container.Resolve<NugetVisualizerContext>();
-            //context.Database.EnsureDeleted();
             _nugetVisualizerContext.Database.EnsureCreatedAsync();
-
-            /*
-            using (var context = Container.Resolve<NugetVisualizerContext>())
-            {
-                context.Database.EnsureCreated();
-            }*/
         }
         public void Dispose()
         {

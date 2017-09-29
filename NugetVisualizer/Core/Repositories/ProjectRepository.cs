@@ -26,6 +26,7 @@
         {
             return _dbContext.Projects.Where(p => p.ProjectPackages.Any(pp => pp.Package.Name.Equals(packageName)))
                                       .Include(x => x.ProjectPackages)
+                                      .ThenInclude(x => x.Package)
                                       .ToList();
         }
 

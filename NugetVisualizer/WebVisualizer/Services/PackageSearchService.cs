@@ -23,9 +23,15 @@ namespace WebVisualizer.Services
 
         public List<Package> GetPackages()
         {
-            var allPackages = _packageRepository.LoadPackages();
+            var allPackages = _packageRepository.GetPackages();
             var distinctPackages = allPackages.GroupBy(x => x.Name).Select(x => x.First()).ToList(); // distinct packages by name
             return distinctPackages;
+        }
+
+        public Dictionary<Package, int> GetPackagesOrderedByVersions()
+        {
+            var allPackages = _packageRepository.GetPackagesOrderedByVersionsCount();
+            return allPackages;
         }
 
         public List<string> GetPackageVersions(string packageName)

@@ -22,6 +22,7 @@ namespace WebVisualizer.Controllers
         public IActionResult Index()
         {
             var packagesViewModel = new PackagesViewModel(_packageSearchService.GetPackages());
+            packagesViewModel.SetPackagesOrderedByVersionCount(_packageSearchService.GetPackagesOrderedByVersions());
             return View(packagesViewModel);
         }
 
@@ -46,11 +47,23 @@ namespace WebVisualizer.Controllers
             {
                 model.Versions = _packageSearchService.GetPackageVersions(model.SelectedPackageName);
                 model.SetPackages(_packageSearchService.GetPackages());
+                model.SetPackagesOrderedByVersionCount(_packageSearchService.GetPackagesOrderedByVersions());
                 model.ProjectRows = _packageSearchService.GetProjectRows(model.SelectedPackageName, model.Versions);
+                
                 return View("Index", model);
             }
 
             // If we got this far, something failed; redisplay form.
+            return View("Index", model);
+        }
+
+        public IActionResult ShowPackagesOrderedByVersionPackageName(PackagesViewModel model)
+        {
+            model.Versions = _packageSearchService.GetPackageVersions(model.SelectedOrderedByVersionPackageName);
+            model.SetPackages(_packageSearchService.GetPackages());
+            model.SetPackagesOrderedByVersionCount(_packageSearchService.GetPackagesOrderedByVersions());
+            model.ProjectRows = _packageSearchService.GetProjectRows(model.SelectedOrderedByVersionPackageName, model.Versions);
+
             return View("Index", model);
         }
 

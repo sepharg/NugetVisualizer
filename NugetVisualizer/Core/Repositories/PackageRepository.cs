@@ -12,6 +12,8 @@
     {
         private readonly NugetVisualizerContext _context;
 
+        private static readonly Func<Package, string> defaultOrderByFunc = (p) => p.Name;
+
         public PackageRepository(DbContext context)
         {
             _context = context as NugetVisualizerContext;
@@ -44,9 +46,18 @@
             _context.SaveChanges();
         }
 
-        public List<Package> LoadPackages()
+        public List<Package> GetPackages(Func<Package, string> orderBy = null)
         {
-            return _context.Packages.OrderBy(p => p.Name).ToList();
+            return _context.Packages.OrderBy(orderBy ?? defaultOrderByFunc).ToList();
+        }
+
+        public Dictionary<Package, int> GetPackagesOrderedByVersionsCount()
+        {
+            var groupBy = _context.Packages.GroupBy(p => new { p.Name })
+                                           .Select(group => new { Package = group.First(), Count = group.Count() })
+                                           .OrderByDescending(x => x.Count)
+                                           .ToDictionary(x => x.Package, x => x.Count);
+            return groupBy;
         }
 
         public List<string> GetPackageVersions(string packageName)
