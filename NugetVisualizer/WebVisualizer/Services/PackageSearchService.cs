@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace WebVisualizer.Services
+﻿namespace WebVisualizer.Services
 {
+    using System.Collections.Generic;
     using System.Linq;
 
     using NugetVisualizer.Core.Domain;
@@ -49,14 +48,13 @@ namespace WebVisualizer.Services
                 int i = 1;
                 foreach (var packageVersion in packageVersionsList)
                 {
-                    if (project.ProjectPackages.Where(x => x.Package.Name == packageName)
-                        .Any(pp => pp.Package.Version.Equals(packageVersion)))
+                    if (project.ProjectPackages.Where(x => x.Package.Name == packageName).Any(pp => pp.Package.Version.Equals(packageVersion)))
                     {
-                        projectRow.ValuesList.Add("X");
+                        projectRow.ValuesList.Add(true);
                     }
                     else
                     {
-                        projectRow.ValuesList.Add(string.Empty);
+                        projectRow.ValuesList.Add(false);
                     }
                     i++;
                 }

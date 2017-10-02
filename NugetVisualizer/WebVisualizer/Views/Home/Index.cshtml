@@ -4,27 +4,20 @@
     ViewData["Title"] = "Package List";
 }
 
-@*<form asp-controller="Home" asp-action="ShowPackages" method="post">
-    All packages:
-    <p>
-        <select asp-for="SelectedPackageName" asp-items="Model.Packages"></select>
-        <br /><button type="submit">Show project usages</button>
-    </p>
-</form>*@
 <form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post">
     Packages ordered by version count:
     <p>
-        <select asp-for="SelectedOrderedByVersionPackageName" asp-items="Model.PackagesOrderedByVersionCount"></select>
+        <select asp-for="SelectedPackageName" asp-items="Model.PackagesOrderedByVersionCount"></select>
         <br/><br /><button type="submit" class="btn btn-primary btn-sm">Show project usages</button>
     </p>
 </form>
-    @if (Model.SelectedOrderedByVersionPackageName != null)
+    @if (Model.SelectedPackageName != null)
     {
         @*<div class="table-responsive">*@
             <table class="table table-bordered table-striped table-hover">
                 <thead>
                 <tr>
-                    <th style="background-color: floralwhite;">@Model.SelectedOrderedByVersionPackageName</th>
+                    <th style="background-color: floralwhite;">@Model.SelectedPackageName</th>
                     @foreach (var version in Model.Versions)
                     {
                         <th style="text-align: center">@version</th>
@@ -38,7 +31,7 @@
                         <th>@projectRowValue.ProjectName</th>
                         @foreach (var value in projectRowValue.ValuesList)
                         {
-                            <td style="text-align: center">@if (value == "X") { <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> }</td>
+                            <td style="text-align: center">@if (value) { <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> }</td>
                         }
                     </tr>
                 }
