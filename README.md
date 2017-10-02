@@ -33,12 +33,12 @@ ToDo: add support for *dotnet ef database update* command
 
 ##### Configuration
 
-Create a file named configuration.json in the root of ConsoleVisualizer folder.
+Create a file named configuration.json in the root of ConsoleVisualizer folder, and also for the WebVisualizer.
 This can be used as a template:
 
     {  "GithubOrganization": "YOUR ORGANIZATION HERE",
        "GithubToken": "YOUR GITHUB TOKEN HERE",
-       "Dbpath" : "full path to your sqlite database" 
+       "Dbpath" : "C:\\FullPathToSqlLiteDatabase\\myDatabase.db" 
     }
 
 ##### Running Tests Locally
