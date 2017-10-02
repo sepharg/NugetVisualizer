@@ -310,3 +310,5 @@ NugetVisualizer/ConsoleVisualizer/consolevisualizer\.json
 NugetVisualizer/ConsoleVisualizer/projectParsingState\.txt
 
 NugetVisualizer/ConsoleVisualizer/nugetVisualizerdb
+
+NugetVisualizer/WebVisualizer/configuration\.json
