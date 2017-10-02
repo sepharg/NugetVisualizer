@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{C57BD382-A7CE-46E0-A9EB-EEA9C359A162}"
 EndProject
@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleVisualizer", "ConsoleVisualizer\ConsoleVisualizer.csproj", "{3DD8E0D1-DCF5-445D-947C-B0CBAFA4D27D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boostrapper", "Boostrapper\Boostrapper.csproj", "{298DD55D-F9D3-4322-964A-00DD2BC2EB6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boostrapper", "Boostrapper\Boostrapper.csproj", "{298DD55D-F9D3-4322-964A-00DD2BC2EB6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebVisualizer", "WebVisualizer\WebVisualizer.csproj", "{69FEC2D1-48AD-43F9-A4E9-E8CA48BEA211}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{298DD55D-F9D3-4322-964A-00DD2BC2EB6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{298DD55D-F9D3-4322-964A-00DD2BC2EB6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{298DD55D-F9D3-4322-964A-00DD2BC2EB6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69FEC2D1-48AD-43F9-A4E9-E8CA48BEA211}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69FEC2D1-48AD-43F9-A4E9-E8CA48BEA211}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69FEC2D1-48AD-43F9-A4E9-E8CA48BEA211}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69FEC2D1-48AD-43F9-A4E9-E8CA48BEA211}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

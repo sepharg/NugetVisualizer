@@ -3,10 +3,18 @@ using NugetVisualizer.Core.Domain;
 
 namespace NugetVisualizer.Core.Repositories
 {
+    using System;
+
     public interface IPackageRepository
     {
         void Add(Package package);
+
         void AddRange(IEnumerable<Package> packages);
-        List<Package> LoadPackages();
+
+        List<Package> GetPackages(Func<Package, string> orderBy = null);
+
+        Dictionary<Package, int> GetPackagesOrderedByVersionsCount();
+
+        List<string> GetPackageVersions(string packageName);
     }
 }

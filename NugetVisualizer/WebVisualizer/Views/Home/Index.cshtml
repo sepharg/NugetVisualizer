@@ -1,0 +1,41 @@
+﻿@model PackagesViewModel
+
+@{
+    ViewData["Title"] = "Package List";
+}
+
+<form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post">
+    Packages ordered by version count:
+    <p>
+        <select asp-for="SelectedPackageName" asp-items="Model.PackagesOrderedByVersionCount"></select>
+        <br/><br /><button type="submit" class="btn btn-primary btn-sm">Show project usages</button>
+    </p>
+</form>
+    @if (Model.SelectedPackageName != null)
+    {
+        @*<div class="table-responsive">*@
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr>
+                    <th style="background-color: floralwhite;">@Model.SelectedPackageName</th>
+                    @foreach (var version in Model.Versions)
+                    {
+                        <th style="text-align: center">@version</th>
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var projectRowValue in Model.ProjectRows)
+                {
+                    <tr>
+                        <th>@projectRowValue.ProjectName</th>
+                        @foreach (var value in projectRowValue.ValuesList)
+                        {
+                            <td style="text-align: center">@if (value) { <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> }</td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        @*</div>*@
+            }

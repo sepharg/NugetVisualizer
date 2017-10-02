@@ -69,6 +69,10 @@
 
         private void GivenProjectParsingStateFileDoesntExist()
         {
+            if (File.Exists(ProjectParsingStateRepository.ProjectParsingStateFilename))
+            {
+                File.Delete(ProjectParsingStateRepository.ProjectParsingStateFilename);
+            }
             Assert.False(File.Exists(ProjectParsingStateRepository.ProjectParsingStateFilename));
         }
 
