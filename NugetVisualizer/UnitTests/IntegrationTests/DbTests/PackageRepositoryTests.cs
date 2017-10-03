@@ -69,20 +69,20 @@
 
             _packages = new List<Package>()
                             {
-                                new Package("MostUsed", "1.0", string.Empty), // *
-                                new Package("MostUsed", "1.1", string.Empty), // *
-                                new Package("MostUsed", "1.2", string.Empty), // *
-                                new Package("MostUsed", "1.3", string.Empty), // *
-                                new Package("SecondMostUsed", "1.0", string.Empty), // *
-                                new Package("SecondMostUsed", "1.1", string.Empty), // *
-                                new Package("SecondMostUsed", "1.2", string.Empty), // *
-                                new Package("SecondMostUsed", "1.3", string.Empty), // * 
-                                new Package("SecondMostUsed", "1.4", string.Empty), // *
-                                new Package("SecondMostUsed", "1.5", string.Empty), // *
-                                new Package("ThirdMostUsed", "4.3", string.Empty), // *
-                                new Package("FourthMostUsed", "2.0", string.Empty), // *
-                                new Package("FourthMostUsed", "2.11", string.Empty), //
-                                new Package("FifthMostUsed", "5.0", string.Empty) // *
+                                new Package("MostUsed", "1.0", string.Empty),
+                                new Package("MostUsed", "1.1", string.Empty),
+                                new Package("MostUsed", "1.2", string.Empty),
+                                new Package("MostUsed", "1.3", string.Empty),
+                                new Package("SecondMostUsed", "1.0", string.Empty),
+                                new Package("SecondMostUsed", "1.1", string.Empty),
+                                new Package("SecondMostUsed", "1.2", string.Empty), 
+                                new Package("SecondMostUsed", "1.3", string.Empty), 
+                                new Package("SecondMostUsed", "1.4", string.Empty), 
+                                new Package("SecondMostUsed", "1.5", string.Empty), 
+                                new Package("ThirdMostUsed", "4.3", string.Empty), 
+                                new Package("FourthMostUsed", "2.0", string.Empty), 
+                                new Package("FourthMostUsed", "2.11", string.Empty),
+                                new Package("FifthMostUsed", "5.0", string.Empty)
                             };
             _packageRepository.AddRange(_packages);
             _projectRepository.Add(new Project("UsagesP1"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(3).Id, _packages.ElementAt(4).Id, _packages.ElementAt(6).Id, _packages.ElementAt(11).Id });

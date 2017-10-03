@@ -4,6 +4,8 @@
 
     public class MostUsedPackagesViewModel
     {
+        public int MaxToRetrieve { get; set; }
+
         private string _packageList;
 
         private string _usagesValues;

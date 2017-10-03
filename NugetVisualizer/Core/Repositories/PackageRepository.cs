@@ -71,6 +71,10 @@
                 var usagesCountForPackage = _context.ProjectPackages.Count(y => packageWithIds.IdsForPackage.Contains(y.PackageId));
                 result.Add(packageWithIds.Package, usagesCountForPackage);
             }
+            if (maxNumberToRetrieve.HasValue)
+            {
+                return result.OrderByDescending(x => x.Value).Take(maxNumberToRetrieve.Value).ToDictionary(x => x.Key, x => x.Value);
+            }
             
             return result;
         }

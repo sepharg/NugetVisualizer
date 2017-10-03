@@ -32,6 +32,7 @@ namespace WebVisualizer
 
             var builder = AutofacContainerFactory.GetBuilder();
             builder.RegisterType<PackageSearchService>();
+            builder.RegisterType<DashboardService>();
             builder.Populate(services);
             ApplicationContainer = builder.Build();
 
