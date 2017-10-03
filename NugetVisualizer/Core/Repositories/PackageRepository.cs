@@ -60,7 +60,7 @@
             return groupBy;
         }
 
-        public Dictionary<Package, int> GetMostUsedPackages(int? maxNumberToRetrieve = null)
+        public Dictionary<Package, int> GetPackageUses()
         {
             var result = new Dictionary<Package, int>();
             var packagesWithIds = _context.Packages.GroupBy(p => new { p.Name })
@@ -70,10 +70,6 @@
             {
                 var usagesCountForPackage = _context.ProjectPackages.Count(y => packageWithIds.IdsForPackage.Contains(y.PackageId));
                 result.Add(packageWithIds.Package, usagesCountForPackage);
-            }
-            if (maxNumberToRetrieve.HasValue)
-            {
-                return result.OrderByDescending(x => x.Value).Take(maxNumberToRetrieve.Value).ToDictionary(x => x.Key, x => x.Value);
             }
             
             return result;

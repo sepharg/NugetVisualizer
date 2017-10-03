@@ -17,14 +17,24 @@ namespace WebVisualizer.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
-            var model = new DashboardViewModel() { MostUsedPackagesViewModel = _dashboardService.GetMostUsedPackagesViewModel(5) };
+            var model = new DashboardViewModel() { MostUsedPackagesViewModel = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(5), LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(5)};
             return View(model);
         }
 
         public IActionResult MostUsed(DashboardViewModel inputModel)
         {
-            var model = new DashboardViewModel() { MostUsedPackagesViewModel = _dashboardService.GetMostUsedPackagesViewModel(inputModel.MostUsedPackagesViewModel.MaxToRetrieve) };
-            return View("Index", model);
+            // this is horrible, need a better solution
+            inputModel.MostUsedPackagesViewModel = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(inputModel.MostUsedPackagesViewModel.MaxToRetrieve);
+            inputModel.LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(5);
+            return View("Index", inputModel);
+        }
+
+        public IActionResult LeastUsed(DashboardViewModel inputModel)
+        {
+            // this is horrible, need a better solution
+            inputModel.MostUsedPackagesViewModel = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(5);
+            inputModel.LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(inputModel.LeastUsedPackagesViewModel.MaxToRetrieve);
+            return View("Index", inputModel);
         }
     }
 }

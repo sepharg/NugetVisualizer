@@ -148,15 +148,15 @@
     <div class="clearfix">
         <div class="half widget">
             <div class="chart-legend">
-                <h3>Most used packages</h3>
+                <h3>Least used packages</h3>
             </div>
             <div class="canvas-container">
-                <canvas id="mostUsedPackagesLineChart"></canvas>
+                <canvas id="leastUsedPackagesLineChart"></canvas>
             </div>
             <div style="text-align: center; padding-top: 10px;">
-                <form asp-for="maxToRetrieve" asp-controller="Dashboard" asp-action="MostUsed" method="post">
-                    @Html.DropDownListFor(model => model.MostUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() {  new SelectListItem() {  Text = "5", Value = "5"} , new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { @onchange = "this.form.submit();" })
-                </form>               
+                <form asp-for="maxToRetrieve" asp-controller="Dashboard" asp-action="LeastUsed" method="post">
+                    @Html.DropDownListFor(model => model.LeastUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() {  new SelectListItem() {  Text = "5", Value = "5"} , new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { @onchange = "this.form.submit();" })
+                </form>
             </div>
         </div>
         <div class="half widget">
@@ -199,7 +199,7 @@
 <script>
     var ctx = document.getElementById("mostUsedPackagesPieChart");
     var myChart = new Chart(ctx, {
-        type: 'pie',
+        type: 'bar',
         data: {
             labels: [@Html.Raw(Model.MostUsedPackagesViewModel.PackageList)],
             datasets: [{
@@ -248,14 +248,14 @@
         }
     });
 
-    var ctx = document.getElementById("mostUsedPackagesLineChart");
+    var ctx = document.getElementById("leastUsedPackagesLineChart");
     var myChart = new Chart(ctx, {
-        type: 'bar',
+        type: 'pie',
         data: {
-            labels: [@Html.Raw(Model.MostUsedPackagesViewModel.PackageList)],
+            labels: [@Html.Raw(Model.LeastUsedPackagesViewModel.PackageList)],
             datasets: [{
                 label: '# of usages',
-                data: [@Html.Raw(Model.MostUsedPackagesViewModel.UsagesValues)],
+                data: [@Html.Raw(Model.LeastUsedPackagesViewModel.UsagesValues)],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
