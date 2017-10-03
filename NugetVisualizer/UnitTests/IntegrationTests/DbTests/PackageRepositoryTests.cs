@@ -141,12 +141,13 @@
 
         private void ThenCorrectOrderReturnedForMostUsedPackages()
         {
-            _mostUsedPackages.Keys.Count.ShouldBe(5);
-            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("MostUsed"))].ShouldBe(9);
-            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("SecondMostUsed"))].ShouldBe(6);
-            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("ThirdMostUsed"))].ShouldBe(3);
-            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("FourthMostUsed"))].ShouldBe(3);
-            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("FifthMostUsed"))].ShouldBe(1);
+            var filteredResults = _mostUsedPackages.Where(x => new [] { "MostUsed", "SecondMostUsed", "ThirdMostUsed", "FourthMostUsed", "FifthMostUsed" }.Contains(x.Key.Name)).ToDictionary(x => x.Key, x => x.Value); // this is a workaround because the tests share the database. should be fixed as part of https://github.com/sepharg/NugetVisualizer/issues/5 (basically remove the filter)
+            filteredResults.Keys.Count.ShouldBe(5);
+            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("MostUsed"))].ShouldBe(9);
+            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("SecondMostUsed"))].ShouldBe(6);
+            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("ThirdMostUsed"))].ShouldBe(3);
+            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("FourthMostUsed"))].ShouldBe(3);
+            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("FifthMostUsed"))].ShouldBe(1);
         }
 
         private void ThenCorrectOrderReturned()
