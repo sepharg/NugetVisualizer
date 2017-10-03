@@ -20,6 +20,8 @@
 
         public DbSet<Package> Packages { get; set; }
 
+        public DbSet<ProjectPackage> ProjectPackages { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite($"Data Source={_configurationRoot["Dbpath"]}");

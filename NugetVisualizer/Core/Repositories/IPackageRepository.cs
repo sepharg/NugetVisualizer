@@ -15,6 +15,8 @@ namespace NugetVisualizer.Core.Repositories
 
         Dictionary<Package, int> GetPackagesOrderedByVersionsCount();
 
+        Dictionary<Package, int> GetMostUsedPackages(int? maxNumberToRetrieve = null);
+
         List<string> GetPackageVersions(string packageName);
     }
 }

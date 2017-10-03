@@ -60,6 +60,21 @@
             return groupBy;
         }
 
+        public Dictionary<Package, int> GetMostUsedPackages(int? maxNumberToRetrieve = null)
+        {
+            var result = new Dictionary<Package, int>();
+            var packagesWithIds = _context.Packages.GroupBy(p => new { p.Name })
+                                                   .Select(group => new { Package = group.First(), IdsForPackage = group.Select(package => package.Id)});
+
+            foreach (var packageWithIds in packagesWithIds)
+            {
+                var usagesCountForPackage = _context.ProjectPackages.Count(y => packageWithIds.IdsForPackage.Contains(y.PackageId));
+                result.Add(packageWithIds.Package, usagesCountForPackage);
+            }
+            
+            return result;
+        }
+
         public List<string> GetPackageVersions(string packageName)
         {
             return _context.Packages.GroupBy(x => x.Name)

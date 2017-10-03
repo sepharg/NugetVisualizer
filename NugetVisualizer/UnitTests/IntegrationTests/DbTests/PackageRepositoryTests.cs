@@ -25,6 +25,8 @@
 
         private Dictionary<Package, int> _packagesOrderedByVersionsCount;
 
+        private Dictionary<Package, int> _mostUsedPackages;
+
         private List<Package> _packages;
 
         public PackageRepositoryTests(DbTest dbTest)
@@ -43,6 +45,52 @@
                 .When(x => x.WhenGetPackagesOrderedByVersionCount())
                 .Then(x => x.ThenCorrectOrderReturned())
                 .BDDfy();
+        }
+
+        [Fact]
+
+        public void GivenSomePackagesWithDifferentUsagesByProjects_WhenGetMostUsedPackages_ThenCorrectOrderReturnedForMostUsedPackages()
+        {
+            this.Given(x => x.GivenSomePackagesWithDifferentUsagesByProjects())
+                .When(x => x.WhenGetMostUsedPackages())
+                .Then(x => x.ThenCorrectOrderReturnedForMostUsedPackages())
+                .BDDfy();
+        }
+
+        private void GivenSomePackagesWithDifferentUsagesByProjects()
+        {
+            /*
+             * MostUsed : 9 usages. UsagesP1 : 3 (1.0, 1.1, 1.3). UsagesP2 : 5 (1.0, 1.1, 1.2). UsagesP3 : 2 (1.1, 1.2). UsagesP4 : 1 (1.0)
+             * SecondMostUsed : 6 usages. UsagesP1 : 2 (1.0, 1.2) . UsagesP3 : 4 (1.1, 1.3, 1.4, 1.5)
+             * ThirdMostUsed : 3 usages. UsagesP2 : 1 (4.3). UsagesP3 : 1 (4.3). UsagesP4 : 1 (4.3)
+             * FourthMostUsed : 3 usages. UsagesP1: 1 (2.0) . UsagesP5 : 2 (2.0, 2.11)
+             * FifthMostUsed : 1 usage . UsagesP3 : 1 (5.0)
+             */
+
+            _packages = new List<Package>()
+                            {
+                                new Package("MostUsed", "1.0", string.Empty), // *
+                                new Package("MostUsed", "1.1", string.Empty), // *
+                                new Package("MostUsed", "1.2", string.Empty), // *
+                                new Package("MostUsed", "1.3", string.Empty), // *
+                                new Package("SecondMostUsed", "1.0", string.Empty), // *
+                                new Package("SecondMostUsed", "1.1", string.Empty), // *
+                                new Package("SecondMostUsed", "1.2", string.Empty), // *
+                                new Package("SecondMostUsed", "1.3", string.Empty), // * 
+                                new Package("SecondMostUsed", "1.4", string.Empty), // *
+                                new Package("SecondMostUsed", "1.5", string.Empty), // *
+                                new Package("ThirdMostUsed", "4.3", string.Empty), // *
+                                new Package("FourthMostUsed", "2.0", string.Empty), // *
+                                new Package("FourthMostUsed", "2.11", string.Empty), //
+                                new Package("FifthMostUsed", "5.0", string.Empty) // *
+                            };
+            _packageRepository.AddRange(_packages);
+            _projectRepository.Add(new Project("UsagesP1"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(3).Id, _packages.ElementAt(4).Id, _packages.ElementAt(6).Id, _packages.ElementAt(11).Id });
+            _projectRepository.Add(new Project("UsagesP2"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(2).Id, _packages.ElementAt(10).Id });
+            _projectRepository.Add(new Project("UsagesP3"), new[] { _packages.ElementAt(1).Id, _packages.ElementAt(2).Id, _packages.ElementAt(5).Id, _packages.ElementAt(7).Id, _packages.ElementAt(8).Id, _packages.ElementAt(9).Id, _packages.ElementAt(10).Id, _packages.ElementAt(13).Id });
+            _projectRepository.Add(new Project("UsagesP4"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(10).Id });
+            _projectRepository.Add(new Project("UsagesP5"), new[] { _packages.ElementAt(11).Id, _packages.ElementAt(12).Id });
+
         }
 
         private void GivenAnInitialState()
@@ -84,6 +132,21 @@
         private void WhenGetPackagesOrderedByVersionCount()
         {
             _packagesOrderedByVersionsCount = _packageRepository.GetPackagesOrderedByVersionsCount();
+        }
+
+        private void WhenGetMostUsedPackages()
+        {
+            _mostUsedPackages = _packageRepository.GetMostUsedPackages();
+        }
+
+        private void ThenCorrectOrderReturnedForMostUsedPackages()
+        {
+            _mostUsedPackages.Keys.Count.ShouldBe(5);
+            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("MostUsed"))].ShouldBe(9);
+            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("SecondMostUsed"))].ShouldBe(6);
+            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("ThirdMostUsed"))].ShouldBe(3);
+            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("FourthMostUsed"))].ShouldBe(3);
+            _mostUsedPackages[_mostUsedPackages.Keys.Single(p => p.Name.Equals("FifthMostUsed"))].ShouldBe(1);
         }
 
         private void ThenCorrectOrderReturned()
