@@ -106,38 +106,25 @@
             width: 580px;
             margin: 0 auto;
         }
-        .third {
-            float: left;
-            width: 47.5%;
-            margin-left: 5%;
-        }
-        .third:first-child {
-            margin-left: 0;
-        }
-        .third:last-child {
-            display: block;
-            width: 100%;
-            margin-left: 0;
-        }
     }
  
     @@media only screen and (min-width:960px){
         .container {
             width: 940px;
         }
-        .third {
+        .half {
             float: left;
-            width: 30%;
-            margin-left: 2.5%;
-            margin-right: 2.5%;
+            width: 50%;
+            margin-left: 1.5%;
+            margin-right: 1.5%;
         }
-        .third:first-child {
+        .half:first-child {
             margin-left: 0;
         }
-        .third:last-child {
+        .half:last-child {
             margin-right: 0;
-            margin-left: 2.5%;
-            width: 30%;
+            margin-left: 1.5%;
+            width: 47%;
         }
     }
     @@media only screen and (min-width:1140px){
@@ -159,15 +146,7 @@
         </div>
     </header>
     <div class="clearfix">
-        <div class="third widget doughnut">
-            <div class="chart-legend">
-                <h3>Something</h3>
-            </div>
-            <div class="canvas-container">
-                <canvas id="some stuff"></canvas>
-            </div>
-        </div>
-        <div class="third widget line">
+        <div class="half widget">
             <div class="chart-legend">
                 <h3>Most used packages</h3>
             </div>
@@ -180,7 +159,7 @@
                 </form>               
             </div>
         </div>
-        <div class="third widget">
+        <div class="half widget">
             <div class="chart-legend">
                 <h3>Most used packages</h3>
             </div>
@@ -191,6 +170,22 @@
                 <form asp-for="maxToRetrieve" asp-controller="Dashboard" asp-action="MostUsed" method="post">
                     @Html.DropDownListFor(model => model.MostUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() {  new SelectListItem() {  Text = "5", Value = "5"} , new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { @onchange = "this.form.submit();" })
                 </form>               
+            </div>
+        </div>
+    </div>
+    <div class="clearfix">
+        <div class="half widget">
+            <div class="chart-legend">
+                <h3>Another Graph</h3>
+            </div>
+            <div class="canvas-container">
+            </div>
+        </div>
+        <div class="half widget">
+            <div class="chart-legend">
+                <h3>Another Graph</h3>
+            </div>
+            <div class="canvas-container">
             </div>
         </div>
     </div>
