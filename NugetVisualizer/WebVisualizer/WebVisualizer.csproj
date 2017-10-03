@@ -18,6 +18,12 @@
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\lib\chartjs\dist\js\Chart.min.js">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
   <!-- Copies configuration files to output dir -->
   <Target Name="CopyConfiguration" AfterTargets="BeforeBuild">
     <CreateItem Include="configuration*.json">
