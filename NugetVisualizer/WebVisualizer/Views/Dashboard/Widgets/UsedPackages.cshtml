@@ -1,0 +1,61 @@
+﻿@model UsedPackagesViewModel
+
+<div class="chart-legend">
+    <h3>@Model.ChartTitle</h3>
+</div>
+<div class="canvas-container">
+    <canvas id="@Model.CanvasId"></canvas>
+</div>
+
+<script>
+    var ctx = document.getElementById('@Model.CanvasId');
+    var myChart = new Chart(ctx, {
+        type: '@Model.ChartType',
+        data: {
+            labels: [@Html.Raw(Model.PackageList)],
+            datasets: [{
+                label: '# of usages',
+                data: [@Html.Raw(Model.UsagesValues)],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(0,83,101, 0.2)',
+                    'rgba(68,146,159, 0.2)',
+                    'rgba(193,189,180, 0.2)',
+                    'rgba(221,201,99, 0.2)',
+                    'rgba(205,167,19, 0.2)',
+                    'rgba(62,156,211 0.2)',
+                    'rgba(89,170,217, 0.2)',
+                    'rgba(145,198,230, 0.2)',
+                    'rgba(170,170,170, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(0,83,101, 1)',
+                    'rgba(68,146,159, 1)',
+                    'rgba(193,189,180, 1)',
+                    'rgba(221,201,99, 1)',
+                    'rgba(205,167,19, 1)',
+                    'rgba(62,156,211 1)',
+                    'rgba(89,170,217, 1)',
+                    'rgba(145,198,230, 1)',
+                    'rgba(170,170,170, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>

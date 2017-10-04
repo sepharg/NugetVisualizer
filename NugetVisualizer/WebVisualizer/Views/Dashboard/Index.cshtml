@@ -147,29 +147,23 @@
     </header>
     <div class="clearfix">
         <div class="half widget">
-            <div class="chart-legend">
-                <h3>Least used packages</h3>
-            </div>
-            <div class="canvas-container">
-                <canvas id="leastUsedPackagesLineChart"></canvas>
+            <div id="leastUsedPackagesContainer">
+                @{Html.RenderPartial("Widgets/UsedPackages", Model.LeastUsedPackagesViewModel);}
             </div>
             <div style="text-align: center; padding-top: 10px;">
                 <form asp-for="maxToRetrieve" asp-controller="Dashboard" asp-action="LeastUsed" method="post">
-                    @Html.DropDownListFor(model => model.LeastUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() {  new SelectListItem() {  Text = "5", Value = "5"} , new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { @onchange = "this.form.submit();" })
+                    @Html.DropDownListFor(model => model.LeastUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() {  new SelectListItem() {  Text = "5", Value = "5"} , new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { id = "ddlLeastUsedMaxToRetrieve" })
                 </form>
             </div>
         </div>
         <div class="half widget">
-            <div class="chart-legend">
-                <h3>Most used packages</h3>
-            </div>
-            <div class="canvas-container">
-                <canvas id="mostUsedPackagesPieChart"></canvas>
+            <div id="mostUsedPackagesContainer">
+                @{Html.RenderPartial("Widgets/UsedPackages", Model.MostUsedPackagesViewModel);}
             </div>
             <div style="text-align: center; padding-top: 10px;">
                 <form asp-for="maxToRetrieve" asp-controller="Dashboard" asp-action="MostUsed" method="post">
-                    @Html.DropDownListFor(model => model.MostUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() {  new SelectListItem() {  Text = "5", Value = "5"} , new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { @onchange = "this.form.submit();" })
-                </form>               
+                    @Html.DropDownListFor(model => model.MostUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() { new SelectListItem() { Text = "5", Value = "5" }, new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { id = "ddlMostUsedMaxToRetrieve" })
+                </form>
             </div>
         </div>
     </div>
@@ -194,108 +188,15 @@
 <footer>
 </footer>
 
-
-
-<script>
-    var ctx = document.getElementById("mostUsedPackagesPieChart");
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [@Html.Raw(Model.MostUsedPackagesViewModel.PackageList)],
-            datasets: [{
-                label: '# of usages',
-                data: [@Html.Raw(Model.MostUsedPackagesViewModel.UsagesValues)],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(0,83,101, 0.2)',
-                    'rgba(68,146,159, 0.2)',
-                    'rgba(193,189,180, 0.2)',
-                    'rgba(221,201,99, 0.2)',
-                    'rgba(205,167,19, 0.2)',
-                    'rgba(62,156,211 0.2)',
-                    'rgba(89,170,217, 0.2)',
-                    'rgba(145,198,230, 0.2)',
-                    'rgba(170,170,170, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(0,83,101, 1)',
-                    'rgba(68,146,159, 1)',
-                    'rgba(193,189,180, 1)',
-                    'rgba(221,201,99, 1)',
-                    'rgba(205,167,19, 1)',
-                    'rgba(62,156,211 1)',
-                    'rgba(89,170,217, 1)',
-                    'rgba(145,198,230, 1)',
-                    'rgba(170,170,170, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
+<script type="text/javascript">  
+    $(document).ready(function () {
+        $("#ddlLeastUsedMaxToRetrieve").change(function () {
+            var maxToRetrieve = $("#ddlLeastUsedMaxToRetrieve").val();
+            $("#leastUsedPackagesContainer").load('@(Url.Action("LeastUsed", "Dashboard",null))?maxToRetrieve=' + maxToRetrieve);
+        });
+    $("#ddlMostUsedMaxToRetrieve").change(function () {
+        var maxToRetrieve = $("#ddlMostUsedMaxToRetrieve").val();
+    $("#mostUsedPackagesContainer").load('@(Url.Action("MostUsed", "Dashboard",null))?maxToRetrieve=' + maxToRetrieve);
+        });     
     });
-
-    var ctx = document.getElementById("leastUsedPackagesLineChart");
-    var myChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: [@Html.Raw(Model.LeastUsedPackagesViewModel.PackageList)],
-            datasets: [{
-                label: '# of usages',
-                data: [@Html.Raw(Model.LeastUsedPackagesViewModel.UsagesValues)],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(0,83,101, 0.2)',
-                    'rgba(68,146,159, 0.2)',
-                    'rgba(193,189,180, 0.2)',
-                    'rgba(221,201,99, 0.2)',
-                    'rgba(205,167,19, 0.2)',
-                    'rgba(62,156,211 0.2)',
-                    'rgba(89,170,217, 0.2)',
-                    'rgba(145,198,230, 0.2)',
-                    'rgba(170,170,170, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(0,83,101, 1)',
-                    'rgba(68,146,159, 1)',
-                    'rgba(193,189,180, 1)',
-                    'rgba(221,201,99, 1)',
-                    'rgba(205,167,19, 1)',
-                    'rgba(62,156,211 1)',
-                    'rgba(89,170,217, 1)',
-                    'rgba(145,198,230, 1)',
-                    'rgba(170,170,170, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-</script>
+</script> 

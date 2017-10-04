@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace WebVisualizer.Controllers
+﻿namespace WebVisualizer.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+
     using WebVisualizer.Models;
     using WebVisualizer.Services;
 
@@ -17,24 +17,25 @@ namespace WebVisualizer.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
-            var model = new DashboardViewModel() { MostUsedPackagesViewModel = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(5), LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(5)};
+            var model = GetDefaultDashboardViewModel();
             return View(model);
         }
 
-        public IActionResult MostUsed(DashboardViewModel inputModel)
+        private DashboardViewModel GetDefaultDashboardViewModel()
         {
-            // this is horrible, need a better solution
-            inputModel.MostUsedPackagesViewModel = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(inputModel.MostUsedPackagesViewModel.MaxToRetrieve);
-            inputModel.LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(5);
-            return View("Index", inputModel);
+            return new DashboardViewModel() { MostUsedPackagesViewModel = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(5), LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(5)};
         }
 
-        public IActionResult LeastUsed(DashboardViewModel inputModel)
+        public IActionResult MostUsed(int maxToRetrieve)
         {
-            // this is horrible, need a better solution
-            inputModel.MostUsedPackagesViewModel = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(5);
-            inputModel.LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(inputModel.LeastUsedPackagesViewModel.MaxToRetrieve);
-            return View("Index", inputModel);
+            var model = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(maxToRetrieve);
+            return PartialView("Widgets/UsedPackages", model);
+        }
+
+        public IActionResult LeastUsed(int maxToRetrieve)
+        {
+            var model = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(maxToRetrieve);
+            return PartialView("Widgets/UsedPackages", model);
         }
     }
 }
