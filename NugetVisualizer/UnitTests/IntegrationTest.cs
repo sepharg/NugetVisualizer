@@ -7,9 +7,8 @@
     using Boostrapper;
 
     using NugetVisualizer.Core;
-    using NugetVisualizer.Core.Repositories;
 
-    public class IntegrationTest
+    public abstract class IntegrationTest
     {
         protected IContainer Container;
 
@@ -20,9 +19,12 @@
             var containerBuilder = AutofacContainerFactory.GetBuilder();
             var testConfigurationHelper = new TestConfigurationHelper();
             IntegrationTestConfiguration = testConfigurationHelper.IntegrationTestConfiguration;
+            ExtraRegistrations(containerBuilder);
             containerBuilder.RegisterInstance(testConfigurationHelper).As<IConfigurationHelper>();
 
             Container = containerBuilder.Build();
         }
+
+        protected abstract void ExtraRegistrations(ContainerBuilder builder);
     }
 }

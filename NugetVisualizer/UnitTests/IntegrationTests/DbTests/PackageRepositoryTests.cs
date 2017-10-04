@@ -1,6 +1,8 @@
 ﻿namespace UnitTests.IntegrationTests.DbTests
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     using Autofac;
@@ -13,12 +15,10 @@
     using Xunit;
     using TestStack.BDDfy;
 
+    using Xunit.Abstractions;
 
-    [Collection("DbIntegrationTests")]
-    public class PackageRepositoryTests : IClassFixture<DbTest>
+    public class PackageRepositoryTests : InMemoryDbTest
     {
-        private readonly DbTest _dbTest;
-
         private IProjectRepository _projectRepository;
 
         private IPackageRepository _packageRepository;
@@ -29,13 +29,11 @@
 
         private List<Package> _packages;
 
-        public PackageRepositoryTests(DbTest dbTest)
+        public PackageRepositoryTests()
         {
-            _dbTest = dbTest;
-            _projectRepository = ResolutionExtensions.Resolve<IProjectRepository>(_dbTest.Container);
-            _packageRepository = ResolutionExtensions.Resolve<IPackageRepository>(_dbTest.Container);
+            _projectRepository = ResolutionExtensions.Resolve<IProjectRepository>(Container);
+            _packageRepository = ResolutionExtensions.Resolve<IPackageRepository>(Container);
         }
-
 
         [Fact]
 
@@ -85,9 +83,9 @@
                                 new Package("FifthMostUsed", "5.0", string.Empty)
                             };
             _packageRepository.AddRange(_packages);
-            _projectRepository.Add(new Project("UsagesP1"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(3).Id, _packages.ElementAt(4).Id, _packages.ElementAt(6).Id, _packages.ElementAt(11).Id });
-            _projectRepository.Add(new Project("UsagesP2"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(2).Id, _packages.ElementAt(10).Id });
-            _projectRepository.Add(new Project("UsagesP3"), new[] { _packages.ElementAt(1).Id, _packages.ElementAt(2).Id, _packages.ElementAt(5).Id, _packages.ElementAt(7).Id, _packages.ElementAt(8).Id, _packages.ElementAt(9).Id, _packages.ElementAt(10).Id, _packages.ElementAt(13).Id });
+            _projectRepository.Add(new Project("P1"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(3).Id, _packages.ElementAt(4).Id, _packages.ElementAt(6).Id, _packages.ElementAt(11).Id });
+            _projectRepository.Add(new Project("P2"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(2).Id, _packages.ElementAt(10).Id });
+            _projectRepository.Add(new Project("P3"), new[] { _packages.ElementAt(1).Id, _packages.ElementAt(2).Id, _packages.ElementAt(5).Id, _packages.ElementAt(7).Id, _packages.ElementAt(8).Id, _packages.ElementAt(9).Id, _packages.ElementAt(10).Id, _packages.ElementAt(13).Id });
             _projectRepository.Add(new Project("UsagesP4"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(10).Id });
             _projectRepository.Add(new Project("UsagesP5"), new[] { _packages.ElementAt(11).Id, _packages.ElementAt(12).Id });
 

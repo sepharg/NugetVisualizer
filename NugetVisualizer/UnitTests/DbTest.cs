@@ -31,5 +31,9 @@
             _nugetVisualizerContext.Database.EnsureDeletedAsync();
             _nugetVisualizerContext?.Dispose();
         }
+
+        protected override void ExtraRegistrations(ContainerBuilder builder)
+        {
+        }
     }
 }

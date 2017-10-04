@@ -53,5 +53,9 @@
         {
             Enumerable.Count<XDocument>(_packagesContents).ShouldBe(4);
         }
+
+        protected override void ExtraRegistrations(ContainerBuilder builder)
+        {
+        }
     }
 }
