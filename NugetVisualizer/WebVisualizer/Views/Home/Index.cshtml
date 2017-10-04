@@ -4,12 +4,13 @@
     ViewData["Title"] = "Package List";
 }
 
-<form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post">
-    Packages ordered by version count:
-    <p>
-        <select asp-for="SelectedPackageName" asp-items="Model.PackagesOrderedByVersionCount"></select>
-        <br/><br /><button type="submit" class="btn btn-primary btn-sm">Show project usages</button>
-    </p>
+<form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post" >
+    <div class="form-group">
+        <label for="ddlPackages">Packages ordered by version count:</label>
+        <select id="ddlPackages" asp-for="SelectedPackageName" asp-items="Model.PackagesOrderedByVersionCount" class="form-control"></select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">Show project usages</button>
+    <p/>
 </form>
     @if (Model.SelectedPackageName != null)
     {
