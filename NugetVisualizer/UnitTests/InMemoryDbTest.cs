@@ -15,7 +15,7 @@
         protected override void ExtraRegistrations(ContainerBuilder builder)
         {
             _dbContextOptions = new DbContextOptionsBuilder<NugetVisualizerContext>()
-                .UseInMemoryDatabase(databaseName: DateTime.UtcNow.Ticks.ToString())
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             builder.RegisterInstance(_dbContextOptions).As<DbContextOptions<NugetVisualizerContext>>();
             builder.RegisterType<NugetVisualizerContext>().As<DbContext>().InstancePerLifetimeScope();

@@ -1,4 +1,4 @@
-﻿namespace UnitTests.IntegrationTests.DbTests
+﻿namespace UnitTests.IntegrationTests.DbTests.InMemory
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -14,22 +14,18 @@
 
     using Xunit;
 
-    [Collection("DbIntegrationTests")]
-    public class ProjectRepositoryTests : IClassFixture<DbTest>
+    public class ProjectRepositoryTests : InMemoryDbTest
     {
-        private readonly DbTest _dbTest;
-
         private IProjectRepository _projectRepository;
 
         private List<Project> _projects;
 
         private IPackageRepository _packageRepository;
         
-        public ProjectRepositoryTests(DbTest dbTest)
+        public ProjectRepositoryTests()
         {
-            _dbTest = dbTest;
-            _projectRepository = ResolutionExtensions.Resolve<IProjectRepository>(_dbTest.Container);
-            _packageRepository = ResolutionExtensions.Resolve<IPackageRepository>(_dbTest.Container);
+            _projectRepository = ResolutionExtensions.Resolve<IProjectRepository>(Container);
+            _packageRepository = ResolutionExtensions.Resolve<IPackageRepository>(Container);
             InitializeBasicData();
         }
 
@@ -90,8 +86,8 @@
         private void ThenProjectsForThePackageAreReturned()
         {
             ShouldBeTestExtensions.ShouldBe(_projects.Count, 4);
-            _projects.First().ProjectPackages.Count.ShouldBe(1);
-            _projects.First().ProjectPackages.Single().Package.ShouldNotBeNull();
+            Enumerable.First<Project>(_projects).ProjectPackages.Count.ShouldBe(1);
+            Enumerable.First<Project>(_projects).ProjectPackages.Single().Package.ShouldNotBeNull();
         }
 
         private List<Package> GetPackagesToCreate()
@@ -124,7 +120,7 @@
             // proj0 - package0, package1, package2, proj1 - package3, package4, package5, ....
             for (int i = 0; i < 10; i++)
             {
-                _projectRepository.Add(createdProjects[i], packagesToCreate.Skip(taken).Take(3).Select(p => p.Id));
+                _projectRepository.Add(createdProjects[i], Enumerable.Skip<Package>(packagesToCreate, taken).Take(3).Select(p => p.Id));
                 taken += 3;
             }
         }

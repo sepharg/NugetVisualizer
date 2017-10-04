@@ -1,8 +1,6 @@
-﻿namespace UnitTests.IntegrationTests.DbTests
+﻿namespace UnitTests.IntegrationTests.DbTests.InMemory
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
 
     using Autofac;
@@ -12,10 +10,9 @@
 
     using Shouldly;
 
-    using Xunit;
     using TestStack.BDDfy;
 
-    using Xunit.Abstractions;
+    using Xunit;
 
     public class PackageRepositoryTests : InMemoryDbTest
     {
@@ -39,20 +36,20 @@
 
         public void GivenAnInitialState_WhenGetPackagesOrderedByVersionCount_ThenCorrectOrderReturned()
         {
-            this.Given(x => x.GivenAnInitialState())
-                .When(x => x.WhenGetPackagesOrderedByVersionCount())
-                .Then(x => x.ThenCorrectOrderReturned())
-                .BDDfy();
+            BDDfyExtensions.BDDfy(
+                    this.Given(x => x.GivenAnInitialState())
+                        .When(x => x.WhenGetPackagesOrderedByVersionCount())
+                        .Then(x => x.ThenCorrectOrderReturned()));
         }
 
         [Fact]
 
         public void GivenSomePackagesWithDifferentUsagesByProjects_WhenGetMostUsedPackages_ThenCorrectOrderReturnedForMostUsedPackages()
         {
-            this.Given(x => x.GivenSomePackagesWithDifferentUsagesByProjects())
-                .When(x => x.WhenGetMostUsedPackages())
-                .Then(x => x.ThenCorrectOrderReturnedForMostUsedPackages())
-                .BDDfy();
+            BDDfyExtensions.BDDfy(
+                    this.Given(x => x.GivenSomePackagesWithDifferentUsagesByProjects())
+                        .When(x => x.WhenGetMostUsedPackages())
+                        .Then(x => x.ThenCorrectOrderReturnedForMostUsedPackages()));
         }
 
         private void GivenSomePackagesWithDifferentUsagesByProjects()
@@ -83,11 +80,11 @@
                                 new Package("FifthMostUsed", "5.0", string.Empty)
                             };
             _packageRepository.AddRange(_packages);
-            _projectRepository.Add(new Project("P1"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(3).Id, _packages.ElementAt(4).Id, _packages.ElementAt(6).Id, _packages.ElementAt(11).Id });
-            _projectRepository.Add(new Project("P2"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(2).Id, _packages.ElementAt(10).Id });
-            _projectRepository.Add(new Project("P3"), new[] { _packages.ElementAt(1).Id, _packages.ElementAt(2).Id, _packages.ElementAt(5).Id, _packages.ElementAt(7).Id, _packages.ElementAt(8).Id, _packages.ElementAt(9).Id, _packages.ElementAt(10).Id, _packages.ElementAt(13).Id });
-            _projectRepository.Add(new Project("UsagesP4"), new[] { _packages.ElementAt(0).Id, _packages.ElementAt(10).Id });
-            _projectRepository.Add(new Project("UsagesP5"), new[] { _packages.ElementAt(11).Id, _packages.ElementAt(12).Id });
+            _projectRepository.Add(new Project("P1"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id, Enumerable.ElementAt<Package>(_packages, 6).Id, Enumerable.ElementAt<Package>(_packages, 11).Id });
+            _projectRepository.Add(new Project("P2"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 10).Id });
+            _projectRepository.Add(new Project("P3"), new[] { Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id, Enumerable.ElementAt<Package>(_packages, 7).Id, Enumerable.ElementAt<Package>(_packages, 8).Id, Enumerable.ElementAt<Package>(_packages, 9).Id, Enumerable.ElementAt<Package>(_packages, 10).Id, Enumerable.ElementAt<Package>(_packages, 13).Id });
+            _projectRepository.Add(new Project("UsagesP4"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 10).Id });
+            _projectRepository.Add(new Project("UsagesP5"), new[] { Enumerable.ElementAt<Package>(_packages, 11).Id, Enumerable.ElementAt<Package>(_packages, 12).Id });
 
         }
 
@@ -121,9 +118,9 @@
                                 new Package("Package3", "5.1", string.Empty)
                             };
             _packageRepository.AddRange(_packages);
-            _projectRepository.Add(new Project("P1"), new []{ _packages.ElementAt(0).Id, _packages.ElementAt(1).Id, _packages.ElementAt(3).Id, _packages.ElementAt(4).Id } );
-            _projectRepository.Add(new Project("P2"), new []{ _packages.ElementAt(1).Id, _packages.ElementAt(2).Id, _packages.ElementAt(5).Id } );
-            _projectRepository.Add(new Project("P3"), new []{ _packages.ElementAt(0).Id } );
+            _projectRepository.Add(new Project("P1"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id } );
+            _projectRepository.Add(new Project("P2"), new []{ Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id } );
+            _projectRepository.Add(new Project("P3"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id } );
 
         }
 
@@ -139,7 +136,7 @@
 
         private void ThenCorrectOrderReturnedForMostUsedPackages()
         {
-            var filteredResults = _mostUsedPackages.Where(x => new [] { "MostUsed", "SecondMostUsed", "ThirdMostUsed", "FourthMostUsed", "FifthMostUsed" }.Contains(x.Key.Name)).ToDictionary(x => x.Key, x => x.Value); // this is a workaround because the tests share the database. should be fixed as part of https://github.com/sepharg/NugetVisualizer/issues/5 (basically remove the filter)
+            var filteredResults = Enumerable.Where<KeyValuePair<Package, int>>(_mostUsedPackages, x => new [] { "MostUsed", "SecondMostUsed", "ThirdMostUsed", "FourthMostUsed", "FifthMostUsed" }.Contains(x.Key.Name)).ToDictionary(x => x.Key, x => x.Value); // this is a workaround because the tests share the database. should be fixed as part of https://github.com/sepharg/NugetVisualizer/issues/5 (basically remove the filter)
             filteredResults.Keys.Count.ShouldBe(5);
             filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("MostUsed"))].ShouldBe(9);
             filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("SecondMostUsed"))].ShouldBe(6);
@@ -150,10 +147,10 @@
 
         private void ThenCorrectOrderReturned()
         {
-            _packagesOrderedByVersionsCount.Keys.Count.ShouldBe(3);
-            _packagesOrderedByVersionsCount[_packagesOrderedByVersionsCount.Keys.Single(p => p.Name.Equals("Package1"))].ShouldBe(3); // 3 versions, 1.0, 1.1 & 1.2
-            _packagesOrderedByVersionsCount[_packagesOrderedByVersionsCount.Keys.Single(p => p.Name.Equals("Package2"))].ShouldBe(1); // 1 version 2.6
-            _packagesOrderedByVersionsCount[_packagesOrderedByVersionsCount.Keys.Single(p => p.Name.Equals("Package3"))].ShouldBe(2); // 2 versions, 5.0 & 5.1
+            ShouldBeTestExtensions.ShouldBe(_packagesOrderedByVersionsCount.Keys.Count, 3);
+            ShouldBeTestExtensions.ShouldBe(_packagesOrderedByVersionsCount[Enumerable.Single<Package>(_packagesOrderedByVersionsCount.Keys, p => p.Name.Equals("Package1"))], 3); // 3 versions, 1.0, 1.1 & 1.2
+            ShouldBeTestExtensions.ShouldBe(_packagesOrderedByVersionsCount[Enumerable.Single<Package>(_packagesOrderedByVersionsCount.Keys, p => p.Name.Equals("Package2"))], 1); // 1 version 2.6
+            ShouldBeTestExtensions.ShouldBe(_packagesOrderedByVersionsCount[Enumerable.Single<Package>(_packagesOrderedByVersionsCount.Keys, p => p.Name.Equals("Package3"))], 2); // 2 versions, 5.0 & 5.1
         }
     }
 }
