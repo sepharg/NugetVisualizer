@@ -10,13 +10,16 @@
 
     public class TestConfigurationHelper : IConfigurationHelper
     {
+        private bool _useSqlLite;
+
         public Dictionary<string, string> IntegrationTestConfiguration { get; }
 
         public DbContextOptionsBuilder<NugetVisualizerContext> DbContextOptionsBuilder { get; set; }
 
-        public TestConfigurationHelper()
+        public TestConfigurationHelper(bool useSqlLite)
         {
             IntegrationTestConfiguration = new Dictionary<string, string>();
+            _useSqlLite = useSqlLite;
         }
 
         public IConfigurationRoot GetConfiguration()
@@ -25,5 +28,7 @@
                                                     .AddInMemoryCollection(IntegrationTestConfiguration);
             return builder.Build();
         }
+
+        public bool UseSqlLite => _useSqlLite;
     }
 }

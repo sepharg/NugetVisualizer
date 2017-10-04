@@ -14,7 +14,7 @@
 
         public IContainer Container => base.Container;
 
-        public DbTest()
+        public DbTest() : base(new TestConfigurationHelper(true))
         {
             TempTestDbName = $"integrationTestDb_{DateTime.Now.Ticks}";
             IntegrationTestConfiguration.Add("Dbpath", TempTestDbName);

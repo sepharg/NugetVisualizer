@@ -18,7 +18,7 @@
                 .UseInMemoryDatabase(databaseName: DateTime.UtcNow.Ticks.ToString())
                 .Options;
             builder.RegisterInstance(_dbContextOptions).As<DbContextOptions<NugetVisualizerContext>>();
-            builder.RegisterType<NugetVisualizerContext>().UsingConstructor(typeof(DbContextOptions<NugetVisualizerContext>)).As<DbContext>().InstancePerLifetimeScope();
+            builder.RegisterType<NugetVisualizerContext>().As<DbContext>().InstancePerLifetimeScope();
         }
     }
 }

@@ -11,13 +11,10 @@
 
         private IConfigurationRoot _configurationRoot;
 
-        public NugetVisualizerContext(IConfigurationHelper configurationHelper)
+        public NugetVisualizerContext(IConfigurationHelper configurationHelper, DbContextOptions<NugetVisualizerContext> options) : base(options)
         {
-            _configurationRoot = configurationHelper.GetConfiguration();
-        }
-
-        public NugetVisualizerContext(DbContextOptions<NugetVisualizerContext> options) : base(options)
-        {
+            _configurationHelper = configurationHelper;
+            _configurationRoot = _configurationHelper.GetConfiguration();
         }
 
         public DbSet<Project> Projects { get; set; }
@@ -28,7 +25,7 @@
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (_configurationRoot != null) // this is hacky, needs replacing
+            if (_configurationHelper.UseSqlLite)
             {
                 optionsBuilder.UseSqlite($"Data Source={_configurationRoot["Dbpath"]}");
             }

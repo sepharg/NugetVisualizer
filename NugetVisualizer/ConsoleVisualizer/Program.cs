@@ -3,7 +3,6 @@
 namespace ConsoleVisualizer
 {
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
 
     using Autofac;
@@ -14,8 +13,6 @@ namespace ConsoleVisualizer
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
-    using NugetVisualizer.Core.FileSystem;
-    using NugetVisualizer.Core.Github;
     using NugetVisualizer.Core.Repositories;
 
     class Program

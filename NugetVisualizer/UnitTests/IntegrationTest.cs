@@ -14,13 +14,16 @@
 
         protected Dictionary<string, string> IntegrationTestConfiguration { get; }
 
-        public IntegrationTest()
+        public IntegrationTest() : this(new TestConfigurationHelper(false))
+        {
+        }
+
+        public IntegrationTest(TestConfigurationHelper configurationHelper)
         {
             var containerBuilder = AutofacContainerFactory.GetBuilder();
-            var testConfigurationHelper = new TestConfigurationHelper();
-            IntegrationTestConfiguration = testConfigurationHelper.IntegrationTestConfiguration;
+            IntegrationTestConfiguration = configurationHelper.IntegrationTestConfiguration;
             ExtraRegistrations(containerBuilder);
-            containerBuilder.RegisterInstance(testConfigurationHelper).As<IConfigurationHelper>();
+            containerBuilder.RegisterInstance(configurationHelper).As<IConfigurationHelper>();
 
             Container = containerBuilder.Build();
         }
