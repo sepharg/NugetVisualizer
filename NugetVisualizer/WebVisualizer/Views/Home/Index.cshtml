@@ -4,17 +4,29 @@
     ViewData["Title"] = "Package List";
 }
 
-<form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post" >
+<form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post" class="form" >
     <div class="form-group">
         <label for="ddlPackages">Packages ordered by version count:</label>
         <select id="ddlPackages" asp-for="SelectedPackageName" asp-items="Model.PackagesOrderedByVersionCount" class="form-control"></select>
     </div>
-    <button type="submit" class="btn btn-primary btn-sm">Show project usages</button>
-    <p/>
+    
+    <div class="form-group">
+        <datalist id="dlAutoComplete">
+            @foreach (var package in Model.PackagesOrderedByVersionCount)
+            {
+                <option value="@package.Value">@package.Text</option>
+            }
+        </datalist>
+
+        <label for="search">Quick Search:</label>
+        <input id="search" class="awesomplete form-control" list="dlAutoComplete" data-minchars="1" data-maxitems="20"/>
+    </div>
+
+        <button type="submit" class="btn btn-primary btn-sm">Show project usages</button>
+        <p />
 </form>
     @if (Model.SelectedPackageName != null)
     {
-        @*<div class="table-responsive">*@
             <table class="table table-bordered table-striped table-hover">
                 <thead>
                 <tr>
@@ -38,5 +50,10 @@
                 }
                 </tbody>
             </table>
-        @*</div>*@
             }
+    
+<script type="text/javascript">
+    document.getElementById('search').addEventListener('awesomplete-selectcomplete', function(obj) {
+        document.getElementById('ddlPackages').value = obj.text.value;
+    });
+</script>
