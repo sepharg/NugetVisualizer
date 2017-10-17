@@ -86,7 +86,7 @@
             builder.RegisterType<ProjectRepository>().As<IProjectRepository>();
             builder.RegisterType<ProjectParsingStateRepository>().As<IProjectParsingState>();
 
-            builder.RegisterType<NugetVisualizerContext>().As<DbContext>().InstancePerLifetimeScope();
+            builder.RegisterType<NugetVisualizerContext>().As<INugetVisualizerContext>().InstancePerLifetimeScope();
             builder.RegisterType<NugetVisualizerContext>().InstancePerLifetimeScope();
             builder.RegisterType<DbContextOptions<NugetVisualizerContext>>();
 

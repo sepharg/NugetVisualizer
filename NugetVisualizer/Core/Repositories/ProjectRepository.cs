@@ -10,11 +10,11 @@
 
     public class ProjectRepository : IDisposable, IProjectRepository
     {
-        private readonly NugetVisualizerContext _dbContext;
+        private readonly INugetVisualizerContext _dbContext;
 
-        public ProjectRepository(DbContext dbContext)
+        public ProjectRepository(INugetVisualizerContext dbContext)
         {
-            _dbContext = dbContext as NugetVisualizerContext;
+            _dbContext = dbContext;
         }
 
         public List<Project> LoadProjects()
@@ -37,9 +37,17 @@
             {
                 foreach (var packageId in packageIds)
                 {
-                    project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = packageId });
+                    project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = packageId, SnapshotVersion = snapshotVersion});
                 }
                 _dbContext.Projects.Add(project);
+                _dbContext.SaveChanges();
+            }
+            else
+            {
+                foreach (var packageId in packageIds.Except(project.ProjectPackages.Where(pp => pp.SnapshotVersion == snapshotVersion).Select(x => x.PackageId)))
+                {
+                    project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = packageId, SnapshotVersion = snapshotVersion });
+                }
                 _dbContext.SaveChanges();
             }
         }

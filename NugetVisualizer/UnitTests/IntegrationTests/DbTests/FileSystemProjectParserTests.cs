@@ -63,8 +63,6 @@
             _projects = (await _fileSystemProjectParser.ParseProjectsAsync(new IProjectIdentifier[1] { new ProjectIdentifier(_projecName, _projectPath) }, _snapshotVersion)).ParsedProjects;
         }
 
-        
-
         private void ThenAProjectWithExpectedPackagesIsReturned()
         {
             ShouldBeStringTestExtensions.ShouldBe(Enumerable.Single<Project>(_projects).Name, _projecName);

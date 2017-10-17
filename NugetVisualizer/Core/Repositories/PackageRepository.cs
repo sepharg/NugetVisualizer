@@ -10,13 +10,13 @@
 
     public class PackageRepository : IDisposable, IPackageRepository
     {
-        private readonly NugetVisualizerContext _context;
+        private readonly INugetVisualizerContext _context;
 
         private static readonly Func<Package, string> defaultOrderByFunc = (p) => p.Name;
 
-        public PackageRepository(DbContext context)
+        public PackageRepository(INugetVisualizerContext context)
         {
-            _context = context as NugetVisualizerContext;
+            _context = context;
         }
 
         public void Add(Package package)

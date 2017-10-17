@@ -5,7 +5,7 @@
 
     using NugetVisualizer.Core.Domain;
 
-    public class NugetVisualizerContext : DbContext
+    public class NugetVisualizerContext : DbContext, INugetVisualizerContext
     {
         private readonly IConfigurationHelper _configurationHelper;
 
@@ -17,11 +17,11 @@
             _configurationRoot = _configurationHelper.GetConfiguration();
         }
 
-        public DbSet<Project> Projects { get; set; }
+        public virtual DbSet<Project> Projects { get; set; }
 
-        public DbSet<Package> Packages { get; set; }
+        public virtual DbSet<Package> Packages { get; set; }
 
-        public DbSet<ProjectPackage> ProjectPackages { get; set; }
+        public virtual DbSet<ProjectPackage> ProjectPackages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
