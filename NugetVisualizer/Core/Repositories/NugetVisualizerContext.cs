@@ -33,7 +33,7 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ProjectPackage>().HasKey(x => new { x.ProjectName, x.PackageId });
+            modelBuilder.Entity<ProjectPackage>().HasKey(x => new { x.ProjectName, x.PackageId, x.SnapshotVersion });
             modelBuilder.Entity<ProjectPackage>().HasOne(x => x.Project)
                                                  .WithMany(x => x.ProjectPackages)
                                                  .HasForeignKey(x => x.ProjectName);

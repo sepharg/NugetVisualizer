@@ -30,7 +30,7 @@
             _projectParsingState = projectParsingState;
         }
 
-        private async Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier)
+        private async Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier, int snapshotVersion)
         {
             try
             {
@@ -39,7 +39,7 @@
                 var groupedPackagesByVersion = packagesContents.SelectMany(x => _packageParser.ParsePackages(x)).GroupBy(package => new { package.Name, package.Version }); // getting the first item of the group is fancy version of "distinct"
                 var packages = groupedPackagesByVersion.Select(group => group.First()).ToList();
                 _packageRepository.AddRange(packages);
-                _projectRepository.Add(project, packages.Select(p => p.Id));
+                _projectRepository.Add(project, packages.Select(p => p.Id), snapshotVersion);
 
                 return project;
             }
@@ -49,14 +49,14 @@
             }
         }
 
-        public async Task<ProjectParsingResult> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers)
+        public async Task<ProjectParsingResult> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers, int snapshotVersion)
         {
             var projectList = new List<Project>();
             bool allExistingProjectsParsed = false;
             string lastSuccessfullParsedProjectName = null;
             foreach (var projectIdentifier in projectIdentifiers)
             {
-                var project = await ParseProjectAsync(projectIdentifier);
+                var project = await ParseProjectAsync(projectIdentifier, snapshotVersion);
                 if (project != null)
                 {
                     projectList.Add(project);

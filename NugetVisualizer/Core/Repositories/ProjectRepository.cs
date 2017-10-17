@@ -30,7 +30,7 @@
                                       .ToList();
         }
 
-        public void Add(Project project, IEnumerable<int> packageIds)
+        public void Add(Project project, IEnumerable<int> packageIds, int snapshotVersion)
         {
             var existingProject = _dbContext.Projects.SingleOrDefault(x => x.Name == project.Name);
             if (existingProject == null)

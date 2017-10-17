@@ -24,6 +24,8 @@
 
         private IProjectParser _githubProjectParser;
 
+        private int _snapshotVersion = 1;
+
         private IEnumerable<Project> _projects;
 
         private List<IProjectIdentifier> _projectIdentifiers;
@@ -53,7 +55,7 @@
         private async Task WhenReadingThePackagesForTheProjects()
         {
             
-            _projects = (await _githubProjectParser.ParseProjectsAsync(_projectIdentifiers)).ParsedProjects;
+            _projects = (await _githubProjectParser.ParseProjectsAsync(_projectIdentifiers, _snapshotVersion)).ParsedProjects;
         }
 
         private void ThenThePackagesFilesContentsAreReturned()

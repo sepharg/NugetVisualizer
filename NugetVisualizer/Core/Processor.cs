@@ -18,23 +18,23 @@
             _projectParsingState = projectParsingState;
         }
 
-        public async Task<ProjectParsingResult> Process(string rootPath, string[] filters)
+        public async Task<ProjectParsingResult> Process(string rootPath, string[] filters, int snapshotVersion)
         {
             var latestParsedProject = _projectParsingState.GetLatestParsedProject();
             var projectIdentifiers = await _repositoryReader.GetProjectsAsync(rootPath, filters);
             if (string.IsNullOrEmpty(latestParsedProject))
             {
-                return await _projectParser.ParseProjectsAsync(projectIdentifiers);
+                return await _projectParser.ParseProjectsAsync(projectIdentifiers, snapshotVersion);
             }
 
             var alreadyProcessed = projectIdentifiers.FindIndex(pi => pi.Name.Equals(latestParsedProject)) + 1;
             var remainingProjectsToParse = projectIdentifiers.Skip(alreadyProcessed);
-            return await _projectParser.ParseProjectsAsync(remainingProjectsToParse);
+            return await _projectParser.ParseProjectsAsync(remainingProjectsToParse, snapshotVersion);
         }
     }
 
     public interface IProcessor
     {
-        Task<ProjectParsingResult> Process(string rootPath, string[] filters);
+        Task<ProjectParsingResult> Process(string rootPath, string[] filters, int snapshotVersion);
     }
 }

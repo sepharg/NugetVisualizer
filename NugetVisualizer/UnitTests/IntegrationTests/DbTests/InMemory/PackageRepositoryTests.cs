@@ -80,11 +80,11 @@
                                 new Package("FifthMostUsed", "5.0", string.Empty)
                             };
             _packageRepository.AddRange(_packages);
-            _projectRepository.Add(new Project("P1"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id, Enumerable.ElementAt<Package>(_packages, 6).Id, Enumerable.ElementAt<Package>(_packages, 11).Id });
-            _projectRepository.Add(new Project("P2"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 10).Id });
-            _projectRepository.Add(new Project("P3"), new[] { Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id, Enumerable.ElementAt<Package>(_packages, 7).Id, Enumerable.ElementAt<Package>(_packages, 8).Id, Enumerable.ElementAt<Package>(_packages, 9).Id, Enumerable.ElementAt<Package>(_packages, 10).Id, Enumerable.ElementAt<Package>(_packages, 13).Id });
-            _projectRepository.Add(new Project("UsagesP4"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 10).Id });
-            _projectRepository.Add(new Project("UsagesP5"), new[] { Enumerable.ElementAt<Package>(_packages, 11).Id, Enumerable.ElementAt<Package>(_packages, 12).Id });
+            _projectRepository.Add(new Project("P1"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id, Enumerable.ElementAt<Package>(_packages, 6).Id, Enumerable.ElementAt<Package>(_packages, 11).Id }, 1);
+            _projectRepository.Add(new Project("P2"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 10).Id }, 1);
+            _projectRepository.Add(new Project("P3"), new[] { Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id, Enumerable.ElementAt<Package>(_packages, 7).Id, Enumerable.ElementAt<Package>(_packages, 8).Id, Enumerable.ElementAt<Package>(_packages, 9).Id, Enumerable.ElementAt<Package>(_packages, 10).Id, Enumerable.ElementAt<Package>(_packages, 13).Id }, 1);
+            _projectRepository.Add(new Project("UsagesP4"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 10).Id }, 1);
+            _projectRepository.Add(new Project("UsagesP5"), new[] { Enumerable.ElementAt<Package>(_packages, 11).Id, Enumerable.ElementAt<Package>(_packages, 12).Id }, 1);
 
         }
 
@@ -118,9 +118,9 @@
                                 new Package("Package3", "5.1", string.Empty)
                             };
             _packageRepository.AddRange(_packages);
-            _projectRepository.Add(new Project("P1"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id } );
-            _projectRepository.Add(new Project("P2"), new []{ Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id } );
-            _projectRepository.Add(new Project("P3"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id } );
+            _projectRepository.Add(new Project("P1"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id }, 1);
+            _projectRepository.Add(new Project("P2"), new []{ Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id }, 1);
+            _projectRepository.Add(new Project("P3"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id }, 1);
 
         }
 

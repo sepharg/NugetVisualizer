@@ -99,7 +99,7 @@ namespace ConsoleVisualizer
 
         private static void DoProcess(IProcessor processor, string rootPath, string filters)
         {
-            var projectParsingResult = processor.Process(rootPath, filters.Split(' ')).GetAwaiter().GetResult();
+            var projectParsingResult = processor.Process(rootPath, filters.Split(' '), 1).GetAwaiter().GetResult();
             var projects = projectParsingResult.ParsedProjects.ToList();
 
             foreach (var project in projects)
