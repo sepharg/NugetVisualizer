@@ -131,7 +131,7 @@
 
         private void WhenGetMostUsedPackages()
         {
-            _mostUsedPackages = _packageRepository.GetPackageUses();
+            _mostUsedPackages = _packageRepository.GetPackageUses(1);
         }
 
         private void ThenCorrectOrderReturnedForMostUsedPackages()

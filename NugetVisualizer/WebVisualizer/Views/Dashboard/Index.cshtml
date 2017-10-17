@@ -61,11 +61,11 @@
     $(document).ready(function () {
         $("#ddlLeastUsedMaxToRetrieve").change(function () {
             var maxToRetrieve = $("#ddlLeastUsedMaxToRetrieve").val();
-            $("#leastUsedPackagesContainer").load('@(Url.Action("LeastUsed", "Dashboard",null))?maxToRetrieve=' + maxToRetrieve);
+            $("#leastUsedPackagesContainer").load('@Url.Action("LeastUsed", "Dashboard",null)?maxToRetrieve=' + maxToRetrieve);
         });
     $("#ddlMostUsedMaxToRetrieve").change(function () {
         var maxToRetrieve = $("#ddlMostUsedMaxToRetrieve").val();
-    $("#mostUsedPackagesContainer").load('@(Url.Action("MostUsed", "Dashboard",null))?maxToRetrieve=' + maxToRetrieve);
+    $("#mostUsedPackagesContainer").load('@Url.Action("MostUsed", "Dashboard",null)?maxToRetrieve=' + maxToRetrieve);
         });     
     });
 </script> 

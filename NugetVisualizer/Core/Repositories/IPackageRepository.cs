@@ -15,7 +15,7 @@ namespace NugetVisualizer.Core.Repositories
 
         Dictionary<Package, int> GetPackagesOrderedByVersionsCount();
 
-        Dictionary<Package, int> GetPackageUses();
+        Dictionary<Package, int> GetPackageUses(int snapshotVersion);
 
         List<string> GetPackageVersions(string packageName);
     }

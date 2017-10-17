@@ -35,23 +35,24 @@ namespace NugetVisualizer.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectPackage",
+                name: "ProjectPackages",
                 columns: table => new
                 {
                     ProjectName = table.Column<string>(type: "TEXT", nullable: false),
-                    PackageId = table.Column<int>(type: "INTEGER", nullable: false)
+                    PackageId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SnapshotVersion = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectPackage", x => new { x.ProjectName, x.PackageId });
+                    table.PrimaryKey("PK_ProjectPackages", x => new { x.ProjectName, x.PackageId, x.SnapshotVersion });
                     table.ForeignKey(
-                        name: "FK_ProjectPackage_Packages_PackageId",
+                        name: "FK_ProjectPackages_Packages_PackageId",
                         column: x => x.PackageId,
                         principalTable: "Packages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectPackage_Projects_ProjectName",
+                        name: "FK_ProjectPackages_Projects_ProjectName",
                         column: x => x.ProjectName,
                         principalTable: "Projects",
                         principalColumn: "Name",
@@ -65,15 +66,15 @@ namespace NugetVisualizer.Core.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectPackage_PackageId",
-                table: "ProjectPackage",
+                name: "IX_ProjectPackages_PackageId",
+                table: "ProjectPackages",
                 column: "PackageId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ProjectPackage");
+                name: "ProjectPackages");
 
             migrationBuilder.DropTable(
                 name: "Packages");

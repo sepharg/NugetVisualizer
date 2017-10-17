@@ -17,28 +17,28 @@ namespace WebVisualizer.Services
             _packageRepository = packageRepository;
         }
 
-        private Dictionary<Package, int> GetMostUsedPackages(int maxNumberToRetrieve)
+        private Dictionary<Package, int> GetMostUsedPackages(int maxNumberToRetrieve, int snapshotVersion)
         {
-            var packageUses = _packageRepository.GetPackageUses();
+            var packageUses = _packageRepository.GetPackageUses(snapshotVersion);
             return packageUses.OrderByDescending(x => x.Value).Take(maxNumberToRetrieve).ToDictionary(x => x.Key, x => x.Value);
         }
 
-        private Dictionary<Package, int> GetLeastUsedPackages(int maxNumberToRetrieve)
+        private Dictionary<Package, int> GetLeastUsedPackages(int maxNumberToRetrieve, int snapshotVersion)
         {
-            var packageUses = _packageRepository.GetPackageUses();
+            var packageUses = _packageRepository.GetPackageUses(snapshotVersion);
             return packageUses.OrderBy(x => x.Value).Take(maxNumberToRetrieve).ToDictionary(x => x.Key, x => x.Value);
         }
 
-        public UsedPackagesViewModel GetLeastUsedPackagesViewModel(int maxNumberToRetrieve)
+        public UsedPackagesViewModel GetLeastUsedPackagesViewModel(int maxNumberToRetrieve, int snapshotVersion)
         {
-            var mostUsedPackages = GetLeastUsedPackages(maxNumberToRetrieve);
+            var mostUsedPackages = GetLeastUsedPackages(maxNumberToRetrieve, snapshotVersion);
             var viewModel = new LeastUsedPackagesViewModel() { MaxToRetrieve = maxNumberToRetrieve };
             return SetViewmodelValues(viewModel, mostUsedPackages);
         }
 
-        public UsedPackagesViewModel GetMostUsedPackagesViewModel(int maxNumberToRetrieve)
+        public UsedPackagesViewModel GetMostUsedPackagesViewModel(int maxNumberToRetrieve, int snapshotVersion)
         {
-            var mostUsedPackages = GetMostUsedPackages(maxNumberToRetrieve);
+            var mostUsedPackages = GetMostUsedPackages(maxNumberToRetrieve, snapshotVersion);
             var viewModel = new MostUsedPackagesViewModel() { MaxToRetrieve = maxNumberToRetrieve };
             return SetViewmodelValues(viewModel, mostUsedPackages);
         }

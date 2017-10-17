@@ -10,7 +10,7 @@ using System;
 namespace NugetVisualizer.Core.Migrations
 {
     [DbContext(typeof(NugetVisualizerContext))]
-    [Migration("20170912115250_InitialCreate")]
+    [Migration("20171017140619_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,11 +54,13 @@ namespace NugetVisualizer.Core.Migrations
 
                     b.Property<int>("PackageId");
 
-                    b.HasKey("ProjectName", "PackageId");
+                    b.Property<int>("SnapshotVersion");
+
+                    b.HasKey("ProjectName", "PackageId", "SnapshotVersion");
 
                     b.HasIndex("PackageId");
 
-                    b.ToTable("ProjectPackage");
+                    b.ToTable("ProjectPackages");
                 });
 
             modelBuilder.Entity("NugetVisualizer.Core.Domain.ProjectPackage", b =>

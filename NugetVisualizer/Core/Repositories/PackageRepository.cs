@@ -60,7 +60,7 @@
             return groupBy;
         }
 
-        public Dictionary<Package, int> GetPackageUses()
+        public Dictionary<Package, int> GetPackageUses(int snapshotVersion)
         {
             var result = new Dictionary<Package, int>();
             var packagesWithIds = _context.Packages.GroupBy(p => new { p.Name })
