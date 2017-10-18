@@ -35,6 +35,19 @@ namespace NugetVisualizer.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Snapshots",
+                columns: table => new
+                {
+                    Version = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Snapshots", x => x.Version);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProjectPackages",
                 columns: table => new
                 {
@@ -75,6 +88,9 @@ namespace NugetVisualizer.Core.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ProjectPackages");
+
+            migrationBuilder.DropTable(
+                name: "Snapshots");
 
             migrationBuilder.DropTable(
                 name: "Packages");

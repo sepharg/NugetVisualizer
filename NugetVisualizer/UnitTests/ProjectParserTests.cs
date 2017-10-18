@@ -87,11 +87,11 @@ namespace UnitTests
 
         [Fact]
 
-        public async Task GivenAllProjectsCanBeParsed_WhenParsingProject_ThenEmptyIsSaved()
+        public async Task GivenAllProjectsCanBeParsed_WhenParsingProject_ThenProjectParsingStateIsDeleted()
         {
             this.Given(x => x.GivenAllProjectsCanBeParsed())
                 .When(x => x.WhenParsingProject())
-                .Then(x => x.ThenEmptyIsSaved())
+                .Then(x => x.ThenProjectParsingStateIsDeleted())
                 .BDDfy();
         }
 
@@ -131,9 +131,9 @@ namespace UnitTests
             _autoMocker.GetMock<IProjectParsingState>().Verify(x => x.SaveLatestParsedProject(It.IsAny<string>()), Times.Never);
         }
 
-        private void ThenEmptyIsSaved()
+        private void ThenProjectParsingStateIsDeleted()
         {
-            _autoMocker.GetMock<IProjectParsingState>().Verify(x => x.SaveLatestParsedProject(string.Empty));
+            _autoMocker.GetMock<IProjectParsingState>().Verify(x => x.DeleteLatestParsedProject());
         }
 
         private void ThenStopsAtFirstError()

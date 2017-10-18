@@ -17,6 +17,8 @@
             _configurationRoot = _configurationHelper.GetConfiguration();
         }
 
+        public virtual DbSet<Snapshot> Snapshots { get; set; }
+
         public virtual DbSet<Project> Projects { get; set; }
 
         public virtual DbSet<Package> Packages { get; set; }
@@ -33,6 +35,8 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Snapshot>().HasKey(x => x.Version);
+            modelBuilder.Entity<Snapshot>().Property(x => x.Version).ValueGeneratedOnAdd();
             modelBuilder.Entity<ProjectPackage>().HasKey(x => new { x.ProjectName, x.PackageId, x.SnapshotVersion });
             modelBuilder.Entity<ProjectPackage>().HasOne(x => x.Project)
                                                  .WithMany(x => x.ProjectPackages)

@@ -74,7 +74,7 @@
             }
             if (allExistingProjectsParsed)
             {
-                _projectParsingState.SaveLatestParsedProject(string.Empty);
+                _projectParsingState.DeleteLatestParsedProject();
             }
             return new ProjectParsingResult(projectList, allExistingProjectsParsed);
         }

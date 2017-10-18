@@ -9,6 +9,7 @@
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Repositories;
 
     using Shouldly;
 
@@ -43,6 +44,9 @@
                 .Setup(x => x.ParseProjectsAsync(It.IsAny<IEnumerable<IProjectIdentifier>>(), _snapshotVersion))
                 .ReturnsAsync(() => new ProjectParsingResult(null, false))
                 .Callback<IEnumerable<IProjectIdentifier>, int>((identifiers, snapshotVersion) => _parsedProjects = identifiers);
+            _autoMocker.GetMock<ISnapshotRepository>()
+                .Setup(x => x.Add(It.IsAny<Snapshot>()))
+                .Callback<Snapshot>(snapshot => snapshot.Version = _snapshotVersion);
         }
 
         [Fact]
@@ -51,7 +55,7 @@
         {
             this.Given(x => x.GivenNoProcessResumeNeeded())
                 .And(x => x.GivenThereAreProjectsToProcess())
-                .When(x => x.WhenProcess())
+                .When(x => x.WhenProcessForExistingSnapshot())
                 .Then(x => x.ThenAllItemsAreProcessed())
                 .BDDfy();
         }
@@ -62,9 +66,27 @@
         {
             this.Given(x => x.GivenProcessResumeNeeded())
                 .And(x => x.GivenThereAreProjectsToProcess())
-                .When(x => x.WhenProcess())
+                .When(x => x.WhenProcessForExistingSnapshot())
                 .Then(x => x.ThenOnlyRemainingItemsAreProcessed())
                 .BDDfy();
+        }
+
+        [Fact]
+
+        public void GivenSnapshotDoesntExist_WhenProcessForNewSnapshot_ThenSnapshotIsCreatedAndItemsAreProcessed()
+        {
+            this.Given(x => x.GivenSnapshotDoesntExist())
+                .And(x => x.GivenNoProcessResumeNeeded())
+                .And(x => x.GivenThereAreProjectsToProcess())
+                .When(x => x.WhenProcessForNewSnapshot("NewSnapshot"))
+                .Then(x => x.ThenNewSnapshotIsCreated("NewSnapshot"))
+                .And(x => x.ThenAllItemsAreProcessed())
+                .BDDfy();
+        }
+        
+        private void GivenSnapshotDoesntExist()
+        {
+            
         }
 
         private void GivenNoProcessResumeNeeded()
@@ -84,9 +106,14 @@
                 .ReturnsAsync(_projectIdentifiers);
         }
 
-        private async Task WhenProcess()
+        private async Task WhenProcessForExistingSnapshot()
         {
             await _processor.Process(string.Empty, null, _snapshotVersion);
+        }
+
+        private async Task WhenProcessForNewSnapshot(string snapshotName)
+        {
+            await _processor.Process(string.Empty, null, snapshotName);
         }
 
         private void ThenAllItemsAreProcessed()
@@ -98,6 +125,11 @@
         private void ThenOnlyRemainingItemsAreProcessed()
         {
             _parsedProjects.ShouldBe(_projectIdentifiers.Skip(2));
+        }
+
+        private void ThenNewSnapshotIsCreated(string snasnapshotName)
+        {
+            _autoMocker.GetMock<ISnapshotRepository>().Verify(x => x.Add(It.Is<Snapshot>(snapshot => snapshot.Name.Equals(snasnapshotName))), Times.Once);
         }
     }
 }

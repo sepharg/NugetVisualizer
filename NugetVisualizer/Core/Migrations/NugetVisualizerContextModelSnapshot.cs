@@ -62,6 +62,18 @@ namespace NugetVisualizer.Core.Migrations
                     b.ToTable("ProjectPackages");
                 });
 
+            modelBuilder.Entity("NugetVisualizer.Core.Domain.Snapshot", b =>
+                {
+                    b.Property<int>("Version")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Version");
+
+                    b.ToTable("Snapshots");
+                });
+
             modelBuilder.Entity("NugetVisualizer.Core.Domain.ProjectPackage", b =>
                 {
                     b.HasOne("NugetVisualizer.Core.Domain.Package", "Package")

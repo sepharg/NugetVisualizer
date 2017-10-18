@@ -84,6 +84,7 @@
 
             builder.RegisterType<PackageRepository>().As<IPackageRepository>();
             builder.RegisterType<ProjectRepository>().As<IProjectRepository>();
+            builder.RegisterType<SnapshotRepository>().As<ISnapshotRepository>();
             builder.RegisterType<ProjectParsingStateRepository>().As<IProjectParsingState>();
 
             builder.RegisterType<NugetVisualizerContext>().As<INugetVisualizerContext>().InstancePerLifetimeScope();

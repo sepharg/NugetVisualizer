@@ -12,6 +12,8 @@
 
         DbSet<ProjectPackage> ProjectPackages { get; set; }
 
+        DbSet<Snapshot> Snapshots { get; set; }
+
         int SaveChanges();
 
         void Dispose();

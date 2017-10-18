@@ -32,7 +32,8 @@
 
         public void Add(Project project, IEnumerable<int> packageIds, int snapshotVersion)
         {
-            var existingProject = _dbContext.Projects.SingleOrDefault(x => x.Name == project.Name);
+            var existingProject = _dbContext.Projects.Include(x => x.ProjectPackages)
+                                                     .SingleOrDefault(x => x.Name == project.Name);
             if (existingProject == null)
             {
                 foreach (var packageId in packageIds)
@@ -44,9 +45,9 @@
             }
             else
             {
-                foreach (var packageId in packageIds.Except(project.ProjectPackages.Where(pp => pp.SnapshotVersion == snapshotVersion).Select(x => x.PackageId)))
+                foreach (var packageId in packageIds.Except(existingProject.ProjectPackages.Where(pp => pp.SnapshotVersion == snapshotVersion).Select(x => x.PackageId)))
                 {
-                    project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = packageId, SnapshotVersion = snapshotVersion });
+                    existingProject.ProjectPackages.Add(new ProjectPackage() { ProjectName = existingProject.Name, PackageId = packageId, SnapshotVersion = snapshotVersion });
                 }
                 _dbContext.SaveChanges();
             }

@@ -37,19 +37,37 @@ namespace ConsoleVisualizer
                 case ConsoleKey.D1:
                 case ConsoleKey.NumPad1:
                     {
+                        var snapshots = container.Resolve<ISnapshotRepository>().GetAll();
+                        string snapshotName = string.Empty;
+                        int snapshotVersion = default(int);
+                        ReadSnapshotName(snapshots, ref snapshotName, ref snapshotVersion);
+                        
                         Console.WriteLine("Please enter the root path where the projects are located: ");
                         var rootPath = Console.ReadLine();
                         Console.WriteLine("Please enter a space separated list of filters: ");
                         var filters = Console.ReadLine();
 
                         var processor = container.Resolve<IProcessor>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.FileSystem));
+
+                        if (!string.IsNullOrEmpty(snapshotName))
+                        {
+                            DoProcess(processor, rootPath, filters, snapshotName);
+                        }
+                        else
+                        {
+                            DoProcess(processor, rootPath, filters, snapshotVersion);
+                        }
                         
-                        DoProcess(processor, rootPath, filters);
                         break;
                     }
                 case ConsoleKey.D2:
                 case ConsoleKey.NumPad2:
                     {
+                        var snapshots = container.Resolve<ISnapshotRepository>().GetAll();
+                        string snapshotName = string.Empty;
+                        int snapshotVersion = default(int);
+                        ReadSnapshotName(snapshots, ref snapshotName, ref snapshotVersion);
+
                         Console.WriteLine("Please enter the name of your github organization: ");
                         var rootPath = Console.ReadLine();
                         Console.WriteLine("Please enter a space separated list of filters: ");
@@ -57,7 +75,14 @@ namespace ConsoleVisualizer
 
                         var processor = container.Resolve<IProcessor>(new TypedParameter(typeof(ProjectParserType), ProjectParserType.Github));
 
-                        DoProcess(processor, rootPath, filters);
+                        if (!string.IsNullOrEmpty(snapshotName))
+                        {
+                            DoProcess(processor, rootPath, filters, snapshotName);
+                        }
+                        else
+                        {
+                            DoProcess(processor, rootPath, filters, snapshotVersion);
+                        }
                         break;
                     }
                 case ConsoleKey.D3:
@@ -97,9 +122,43 @@ namespace ConsoleVisualizer
             Console.ReadKey();
         }
 
-        private static void DoProcess(IProcessor processor, string rootPath, string filters)
+        private static void ReadSnapshotName(List<Snapshot> snapshots, ref string snapshotName, ref int snapshotVersion)
         {
-            var projectParsingResult = processor.Process(rootPath, filters.Split(' '), 1).GetAwaiter().GetResult();
+            if (snapshots.Count == 0)
+            {
+                Console.WriteLine("Please enter the name for the snapshot to save the data under: ");
+                snapshotName = Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine(
+                    "If you wish to append data to an existing snapshot, please type in the version number from one of the following. Otherwise, type in a new snapshot name:");
+                foreach (var snapshot in snapshots)
+                {
+                    Console.WriteLine($"[{snapshot.Version}] - {snapshot.Name}");
+                }
+                var input = Console.ReadLine();
+                if (!int.TryParse(input, out snapshotVersion))
+                {
+                    snapshotName = input;
+                }
+            }
+        }
+
+        private static void DoProcess(IProcessor processor, string rootPath, string filters, string newSnapshotName)
+        {
+            var projectParsingResult = processor.Process(rootPath, filters.Split(' '), newSnapshotName).GetAwaiter().GetResult();
+            OutputProcessResults(projectParsingResult);
+        }
+
+        private static void DoProcess(IProcessor processor, string rootPath, string filters, int versionNumber)
+        {
+            var projectParsingResult = processor.Process(rootPath, filters.Split(' '), versionNumber).GetAwaiter().GetResult();
+            OutputProcessResults(projectParsingResult);
+        }
+
+        private static void OutputProcessResults(ProjectParsingResult projectParsingResult)
+        {
             var projects = projectParsingResult.ParsedProjects.ToList();
 
             foreach (var project in projects)
