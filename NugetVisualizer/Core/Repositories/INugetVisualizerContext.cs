@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
 
     using NugetVisualizer.Core.Domain;
+    using System.Data.Common;
 
     public interface INugetVisualizerContext
     {
@@ -15,6 +16,8 @@
         DbSet<Snapshot> Snapshots { get; set; }
 
         int SaveChanges();
+
+        DbConnection GetDbConnection();
 
         void Dispose();
     }

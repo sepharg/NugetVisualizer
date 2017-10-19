@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Microsoft.EntityFrameworkCore;
 
@@ -51,27 +52,80 @@
             return _context.Packages.OrderBy(orderBy ?? defaultOrderByFunc).ToList();
         }
 
-        public Dictionary<Package, int> GetPackagesOrderedByVersionsCount()
+        public async Task<Dictionary<Package, int>> GetPackagesOrderedByVersionsCountAsync(int snapshotVersion)
         {
-            var groupBy = _context.Packages.GroupBy(p => new { p.Name })
-                                           .Select(group => new { Package = group.First(), Count = group.Count() })
-                                           .OrderByDescending(x => x.Count)
-                                           .ToDictionary(x => x.Package, x => x.Count);
-            return groupBy;
+            var conn = _context.GetDbConnection();
+            var result = new Dictionary<Package, int>();
+            try
+            {
+                await conn.OpenAsync();
+                using (var command = conn.CreateCommand())
+                {
+                    var query = @"SELECT p.Id, p.Name, p.TargetFramework, p.Version, Count(p.Name) as Count FROM Packages p
+                                     WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
+                                     GROUP BY p.Name
+                                     ORDER BY Count DESC";
+                    command.CommandText = query;
+                    var reader = await command.ExecuteReaderAsync();
+
+                    if (reader.HasRows)
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var package = new Package(
+                                                reader.GetString(1),
+                                                reader.GetString(3),
+                                                string.IsNullOrEmpty(reader.GetValue(2) as string) ? string.Empty : reader.GetString(2)) { Id = reader.GetInt32(0) };
+                            result.Add(package, reader.GetInt32(4));
+                        }
+                    }
+                    reader.Dispose();
+                }
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return result;
         }
 
-        public Dictionary<Package, int> GetPackageUses(int snapshotVersion)
+        public async Task<Dictionary<Package, int>> GetPackageUsesAsync(int snapshotVersion)
         {
             var result = new Dictionary<Package, int>();
-            var packagesWithIds = _context.Packages.GroupBy(p => new { p.Name })
-                                                   .Select(group => new { Package = group.First(), IdsForPackage = group.Select(package => package.Id)});
-
-            foreach (var packageWithIds in packagesWithIds)
+            var conn = _context.GetDbConnection();
+            try
             {
-                var usagesCountForPackage = _context.ProjectPackages.Count(y => packageWithIds.IdsForPackage.Contains(y.PackageId));
-                result.Add(packageWithIds.Package, usagesCountForPackage);
+                await conn.OpenAsync();
+                using (var command = conn.CreateCommand())
+                {
+                    var query = @"SELECT p.Id, p.Name, p.TargetFramework, p.Version, group_concat(p.Id) as PackageIds FROM Packages p
+                                     WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
+                                     GROUP BY p.Name";
+                    command.CommandText = query;
+                    var reader = await command.ExecuteReaderAsync();
+
+                    if (reader.HasRows)
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var package = new Package(
+                                              reader.GetString(1),
+                                              reader.GetString(3),
+                                              string.IsNullOrEmpty(reader.GetValue(2) as string) ? string.Empty : reader.GetString(2))
+                                              { Id = reader.GetInt32(0) };
+
+                            var idsForPackage = reader.GetString(4).Split(',').Select(int.Parse);
+                            var usagesCountForPackage = _context.ProjectPackages.Count(y => idsForPackage.Contains(y.PackageId) && y.SnapshotVersion == snapshotVersion);
+                            result.Add(package, usagesCountForPackage);
+                        }
+                    }
+                    reader.Dispose();
+                }
             }
-            
+            finally
+            {
+                conn.Close();
+            }
             return result;
         }
 

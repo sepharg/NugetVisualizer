@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Repositories;
@@ -27,10 +28,9 @@
             return distinctPackages;
         }
 
-        public Dictionary<Package, int> GetPackagesOrderedByVersions()
+        public async Task<Dictionary<Package, int>> GetPackagesOrderedByVersions(int snapshotVersion)
         {
-            var allPackages = _packageRepository.GetPackagesOrderedByVersionsCount();
-            return allPackages;
+            return await _packageRepository.GetPackagesOrderedByVersionsCountAsync(snapshotVersion);
         }
 
         public List<string> GetPackageVersions(string packageName)

@@ -1,5 +1,7 @@
 ﻿namespace WebVisualizer.Controllers
 {
+    using System.Threading.Tasks;
+
     using Microsoft.AspNetCore.Mvc;
 
     using WebVisualizer.Models;
@@ -15,26 +17,26 @@
         }
 
         // GET: /<controller>/
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var model = GetDefaultDashboardViewModel();
+            var model = await GetDefaultDashboardViewModel();
             return View(model);
         }
 
-        private DashboardViewModel GetDefaultDashboardViewModel()
+        private async Task<DashboardViewModel> GetDefaultDashboardViewModel()
         {
-            return new DashboardViewModel() { MostUsedPackagesViewModel = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(5, 1), LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(5, 1)};
+            return new DashboardViewModel() { MostUsedPackagesViewModel = (MostUsedPackagesViewModel)await _dashboardService.GetMostUsedPackagesViewModel(5, 2), LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)await _dashboardService.GetLeastUsedPackagesViewModel(5, 1)};
         }
 
-        public IActionResult MostUsed(int maxToRetrieve, int snapshotVersion)
+        public async Task<IActionResult> MostUsed(int maxToRetrieve, int snapshotVersion)
         {
-            var model = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(maxToRetrieve, snapshotVersion);
+            var model = (MostUsedPackagesViewModel)await _dashboardService.GetMostUsedPackagesViewModel(maxToRetrieve, snapshotVersion);
             return PartialView("Widgets/UsedPackages", model);
         }
 
-        public IActionResult LeastUsed(int maxToRetrieve, int snapshotVersion)
+        public async Task<IActionResult> LeastUsed(int maxToRetrieve, int snapshotVersion)
         {
-            var model = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(maxToRetrieve, snapshotVersion);
+            var model = (LeastUsedPackagesViewModel)await _dashboardService.GetLeastUsedPackagesViewModel(maxToRetrieve, snapshotVersion);
             return PartialView("Widgets/UsedPackages", model);
         }
     }

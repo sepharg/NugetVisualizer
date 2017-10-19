@@ -1,5 +1,7 @@
 ﻿namespace NugetVisualizer.Core.Repositories
 {
+    using System.Data.Common;
+
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
 
@@ -24,6 +26,11 @@
         public virtual DbSet<Package> Packages { get; set; }
 
         public virtual DbSet<ProjectPackage> ProjectPackages { get; set; }
+
+        public DbConnection GetDbConnection()
+        {
+            return Database.GetDbConnection();
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

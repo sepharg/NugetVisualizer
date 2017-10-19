@@ -5,6 +5,8 @@ using WebVisualizer.Models;
 
 namespace WebVisualizer.Controllers
 {
+    using System.Threading.Tasks;
+
     using WebVisualizer.Services;
 
     public class HomeController : Controller
@@ -16,19 +18,19 @@ namespace WebVisualizer.Controllers
             _packageSearchService = packageSearchService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var packagesViewModel = new PackagesViewModel();
-            packagesViewModel.SetPackagesOrderedByVersionCount(_packageSearchService.GetPackagesOrderedByVersions());
+            packagesViewModel.SetPackagesOrderedByVersionCount(await _packageSearchService.GetPackagesOrderedByVersions(1));
             return View(packagesViewModel);
         }
         
-        public IActionResult ShowPackagesOrderedByVersionPackageName(PackagesViewModel model)
+        public async Task<IActionResult> ShowPackagesOrderedByVersionPackageName(PackagesViewModel model)
         {
             if (ModelState.IsValid)
             {
                 model.Versions = _packageSearchService.GetPackageVersions(model.SelectedPackageName);
-                model.SetPackagesOrderedByVersionCount(_packageSearchService.GetPackagesOrderedByVersions());
+                model.SetPackagesOrderedByVersionCount(await _packageSearchService.GetPackagesOrderedByVersions(1));
                 model.ProjectRows = _packageSearchService.GetProjectRows(model.SelectedPackageName, model.Versions);
                 return View("Index", model);
             }

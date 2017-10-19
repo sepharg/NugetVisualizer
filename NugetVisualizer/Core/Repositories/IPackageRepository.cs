@@ -4,6 +4,7 @@ using NugetVisualizer.Core.Domain;
 namespace NugetVisualizer.Core.Repositories
 {
     using System;
+    using System.Threading.Tasks;
 
     public interface IPackageRepository
     {
@@ -13,9 +14,9 @@ namespace NugetVisualizer.Core.Repositories
 
         List<Package> GetPackages(Func<Package, string> orderBy = null);
 
-        Dictionary<Package, int> GetPackagesOrderedByVersionsCount();
+        Task<Dictionary<Package, int>> GetPackagesOrderedByVersionsCountAsync(int snapshotVersion);
 
-        Dictionary<Package, int> GetPackageUses(int snapshotVersion);
+        Task<Dictionary<Package, int>> GetPackageUsesAsync(int snapshotVersion);
 
         List<string> GetPackageVersions(string packageName);
     }
