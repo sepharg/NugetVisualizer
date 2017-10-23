@@ -129,13 +129,37 @@
             return result;
         }
 
-        public List<string> GetPackageVersions(string packageName)
+        public async Task<List<string>> GetPackageVersions(string packageName, int snapshotVersion)
         {
-            return _context.Packages.GroupBy(x => x.Name)
-                                    .Single(x => x.Key.Equals(packageName))
-                                    .OrderBy(x => x.Version)
-                                    .Select(x => x.Version)
-                                    .ToList();
+            var conn = _context.GetDbConnection();
+            var result = new List<string>();
+            try
+            {
+                await conn.OpenAsync();
+                using (var command = conn.CreateCommand())
+                {
+                    var query = @"SELECT p.Version FROM Packages p
+                                     WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
+                                     AND p.Name = '" + packageName + @"' 
+                                     ORDER BY p.Version ASC";
+                    command.CommandText = query;
+                    var reader = await command.ExecuteReaderAsync();
+
+                    if (reader.HasRows)
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(reader.GetString(0));
+                        }
+                    }
+                    reader.Dispose();
+                }
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return result;
         }
 
         public void Dispose()

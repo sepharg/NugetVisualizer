@@ -5,6 +5,7 @@ using WebVisualizer.Models;
 
 namespace WebVisualizer.Controllers
 {
+    using System.Linq;
     using System.Threading.Tasks;
 
     using WebVisualizer.Services;
@@ -21,16 +22,24 @@ namespace WebVisualizer.Controllers
         public async Task<IActionResult> Index()
         {
             var packagesViewModel = new PackagesViewModel();
-            packagesViewModel.SetPackagesOrderedByVersionCount(await _packageSearchService.GetPackagesOrderedByVersions(1));
+            var snapshots = _packageSearchService.GetSnapshots();
+            packagesViewModel.SetPackagesOrderedByVersionCount(await _packageSearchService.GetPackagesOrderedByVersions(snapshots.First().Version), snapshots);
             return View(packagesViewModel);
         }
-        
+
+        public async Task<IActionResult> ChangeSnapshot(PackagesViewModel model)
+        {
+            var snapshots = _packageSearchService.GetSnapshots();
+            model.SetPackagesOrderedByVersionCount(await _packageSearchService.GetPackagesOrderedByVersions(model.SelectedSnapshotId), snapshots);
+            return View("Index", model);
+        }
+
         public async Task<IActionResult> ShowPackagesOrderedByVersionPackageName(PackagesViewModel model)
         {
             if (ModelState.IsValid)
             {
-                model.Versions = _packageSearchService.GetPackageVersions(model.SelectedPackageName);
-                model.SetPackagesOrderedByVersionCount(await _packageSearchService.GetPackagesOrderedByVersions(1));
+                model.Versions = await _packageSearchService.GetPackageVersions(model.SelectedPackageName, model.SelectedSnapshotId);
+                model.SetPackagesOrderedByVersionCount(await _packageSearchService.GetPackagesOrderedByVersions(model.SelectedSnapshotId), _packageSearchService.GetSnapshots());
                 model.ProjectRows = _packageSearchService.GetProjectRows(model.SelectedPackageName, model.Versions);
                 return View("Index", model);
             }

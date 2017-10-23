@@ -17,14 +17,19 @@ namespace WebVisualizer.Models
             ProjectRows = new List<ProjectRow>();
         }
 
-        public void SetPackagesOrderedByVersionCount(Dictionary<Package, int> packages)
+        public void SetPackagesOrderedByVersionCount(Dictionary<Package, int> packages, List<Snapshot> snapshots)
         {
             PackagesOrderedByVersionCount = packages.Select(p => new SelectListItem() { Text = p.Key.Name + $"({p.Value})", Value = p.Key.Name }).ToList();
+            Snapshots = snapshots.Select(s => new SelectListItem() { Text = s.Name, Value = s.Version.ToString() }).ToList();
         }
 
         public string SelectedPackageName { get; set; }
+
+        public int SelectedSnapshotId { get; set; }
         
         public List<SelectListItem> PackagesOrderedByVersionCount { get; private set; }
+
+        public List<SelectListItem> Snapshots { get; private set; }
 
         public List<string> Versions { get; set; }
 

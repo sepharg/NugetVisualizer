@@ -18,6 +18,6 @@ namespace NugetVisualizer.Core.Repositories
 
         Task<Dictionary<Package, int>> GetPackageUsesAsync(int snapshotVersion);
 
-        List<string> GetPackageVersions(string packageName);
+        Task<List<string>> GetPackageVersions(string packageName, int snapshotVersion);
     }
 }
