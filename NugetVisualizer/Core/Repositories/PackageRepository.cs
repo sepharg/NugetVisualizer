@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -14,6 +15,8 @@
         private readonly INugetVisualizerContext _context;
 
         private static readonly Func<Package, string> defaultOrderByFunc = (p) => p.Name;
+
+        private delegate void ProcessReader<TReturnType>(DbDataReader reader, TReturnType result);
 
         public PackageRepository(INugetVisualizerContext context)
         {
@@ -54,94 +57,69 @@
 
         public async Task<Dictionary<Package, int>> GetPackagesOrderedByVersionsCountAsync(int snapshotVersion)
         {
-            var conn = _context.GetDbConnection();
-            var result = new Dictionary<Package, int>();
-            try
-            {
-                await conn.OpenAsync();
-                using (var command = conn.CreateCommand())
-                {
-                    var query = @"SELECT p.Id, p.Name, p.TargetFramework, p.Version, Count(p.Name) as Count FROM Packages p
-                                     WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
-                                     GROUP BY p.Name
-                                     ORDER BY Count DESC";
-                    command.CommandText = query;
-                    var reader = await command.ExecuteReaderAsync();
+            var query = @"SELECT p.Id, p.Name, p.TargetFramework, p.Version, Count(p.Name) as Count FROM Packages p
+                             WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
+                             GROUP BY p.Name
+                             ORDER BY Count DESC";
 
-                    if (reader.HasRows)
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var package = new Package(
-                                                reader.GetString(1),
-                                                reader.GetString(3),
-                                                string.IsNullOrEmpty(reader.GetValue(2) as string) ? string.Empty : reader.GetString(2)) { Id = reader.GetInt32(0) };
-                            result.Add(package, reader.GetInt32(4));
-                        }
-                    }
-                    reader.Dispose();
-                }
-            }
-            finally
-            {
-                conn.Close();
-            }
-            return result;
+            ProcessReader<Dictionary<Package, int>> processReader = (reader, res) =>
+                {
+                    var package = new Package(
+                                      reader.GetString(1),
+                                      reader.GetString(3),
+                                      string.IsNullOrEmpty(reader.GetValue(2) as string) ? string.Empty : reader.GetString(2))
+                                      { Id = reader.GetInt32(0) };
+                    res.Add(package, reader.GetInt32(4));
+                };
+
+            return await GetFromSql(query, processReader);
         }
 
         public async Task<Dictionary<Package, int>> GetPackageUsesAsync(int snapshotVersion)
         {
-            var result = new Dictionary<Package, int>();
-            var conn = _context.GetDbConnection();
-            try
-            {
-                await conn.OpenAsync();
-                using (var command = conn.CreateCommand())
+            var query = @"SELECT p.Id, p.Name, p.TargetFramework, p.Version, group_concat(p.Id) as PackageIds FROM Packages p
+                             WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
+                             GROUP BY p.Name";
+
+            ProcessReader<Dictionary<Package, int>> processReader = (reader, res) =>
                 {
-                    var query = @"SELECT p.Id, p.Name, p.TargetFramework, p.Version, group_concat(p.Id) as PackageIds FROM Packages p
-                                     WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
-                                     GROUP BY p.Name";
-                    command.CommandText = query;
-                    var reader = await command.ExecuteReaderAsync();
+                    var package = new Package(
+                                      reader.GetString(1),
+                                      reader.GetString(3),
+                                      string.IsNullOrEmpty(reader.GetValue(2) as string) ? string.Empty : reader.GetString(2)) { Id = reader.GetInt32(0) };
 
-                    if (reader.HasRows)
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var package = new Package(
-                                              reader.GetString(1),
-                                              reader.GetString(3),
-                                              string.IsNullOrEmpty(reader.GetValue(2) as string) ? string.Empty : reader.GetString(2))
-                                              { Id = reader.GetInt32(0) };
+                    var idsForPackage = reader.GetString(4).Split(',').Select(int.Parse);
+                    var usagesCountForPackage = _context.ProjectPackages.Count(y => idsForPackage.Contains(y.PackageId) && y.SnapshotVersion == snapshotVersion);
+                    res.Add(package, usagesCountForPackage);
+                };
 
-                            var idsForPackage = reader.GetString(4).Split(',').Select(int.Parse);
-                            var usagesCountForPackage = _context.ProjectPackages.Count(y => idsForPackage.Contains(y.PackageId) && y.SnapshotVersion == snapshotVersion);
-                            result.Add(package, usagesCountForPackage);
-                        }
-                    }
-                    reader.Dispose();
-                }
-            }
-            finally
-            {
-                conn.Close();
-            }
-            return result;
+            return await GetFromSql(query, processReader);
         }
 
         public async Task<List<string>> GetPackageVersions(string packageName, int snapshotVersion)
         {
+            var query = @"SELECT p.Version FROM Packages p
+                             WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
+                             AND p.Name = '" + packageName + @"' 
+                             ORDER BY p.Version ASC";
+
+            ProcessReader<List<string>> processReader = (reader, res) =>
+                {
+                    res.Add(reader.GetString(0));
+                };
+
+            return await GetFromSql(query, processReader);
+        }
+
+        private async Task<TReturnType> GetFromSql<TReturnType>(string query, ProcessReader<TReturnType> readerProcess) where TReturnType : new()
+        {
+            var result = new TReturnType();
             var conn = _context.GetDbConnection();
-            var result = new List<string>();
             try
             {
                 await conn.OpenAsync();
                 using (var command = conn.CreateCommand())
                 {
-                    var query = @"SELECT p.Version FROM Packages p
-                                     WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
-                                     AND p.Name = '" + packageName + @"' 
-                                     ORDER BY p.Version ASC";
                     command.CommandText = query;
                     var reader = await command.ExecuteReaderAsync();
 
@@ -149,7 +127,7 @@
                     {
                         while (await reader.ReadAsync())
                         {
-                            result.Add(reader.GetString(0));
+                            readerProcess(reader, result);
                         }
                     }
                     reader.Dispose();
