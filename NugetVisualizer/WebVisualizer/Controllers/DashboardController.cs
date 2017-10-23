@@ -1,8 +1,10 @@
 ﻿namespace WebVisualizer.Controllers
 {
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
 
     using WebVisualizer.Models;
     using WebVisualizer.Services;
@@ -25,7 +27,23 @@
 
         private async Task<DashboardViewModel> GetDefaultDashboardViewModel()
         {
-            return new DashboardViewModel() { MostUsedPackagesViewModel = (MostUsedPackagesViewModel)await _dashboardService.GetMostUsedPackagesViewModel(5, 2), LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)await _dashboardService.GetLeastUsedPackagesViewModel(5, 1)};
+            var snapshots = _dashboardService.GetSnapshots();
+            var mostUsedPackagesViewModel = await _dashboardService.GetMostUsedPackagesViewModel(5, snapshots.First().Version);
+            var leastUsedPackagesViewModel = await _dashboardService.GetLeastUsedPackagesViewModel(5, snapshots.First().Version);
+            return new DashboardViewModel()
+                       {
+                           MostUsedPackagesViewModel = (MostUsedPackagesViewModel)mostUsedPackagesViewModel,
+                           LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)leastUsedPackagesViewModel,
+                           Snapshots = snapshots.Select(s => new SelectListItem() { Text = s.Name, Value = s.Version.ToString() }).ToList() 
+                       };
+        }
+
+        public async Task<IActionResult> ChangeSnapshot(DashboardViewModel model)
+        {
+            model.Snapshots = _dashboardService.GetSnapshots().Select(s => new SelectListItem() { Text = s.Name, Value = s.Version.ToString() }).ToList();
+            model.MostUsedPackagesViewModel = (MostUsedPackagesViewModel)await _dashboardService.GetMostUsedPackagesViewModel(5, model.SelectedSnapshotId);
+            model.LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)await _dashboardService.GetLeastUsedPackagesViewModel(5, model.SelectedSnapshotId);
+            return View("Index", model);
         }
 
         public async Task<IActionResult> MostUsed(int maxToRetrieve, int snapshotVersion)
