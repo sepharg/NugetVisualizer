@@ -17,7 +17,7 @@
     <form asp-controller="Dashboard" asp-action="ChangeSnapshot" method="post" class="form" name="snapshotForm" >
         <div class="form-group">
             <label for="ddlSnapshots">Snapshots:</label>
-            <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control" onchange="document.snapshotForm.submit();document.getElementById('hiddenSnapshotIdLeastUsed').value = document.getElementById('ddlSnapshots').value;document.getElementById('hiddenSnapshotIdMostUsed').value = document.getElementById('ddlSnapshots').value;"></select>
+            <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control" onchange="document.snapshotForm.submit();"></select>
         </div>
     </form>
     <div class="clearfix">
@@ -27,7 +27,6 @@
             </div>
             <div style="text-align: center; padding-top: 10px;">
                 <form asp-for="maxToRetrieve" asp-controller="Dashboard" asp-action="LeastUsed" method="post">
-                    <input type="hidden" name="snapshotVersion" id="hiddenSnapshotIdLeastUsed" />
                     @Html.DropDownListFor(model => model.LeastUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() { new SelectListItem() { Text = "5", Value = "5" }, new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { id = "ddlLeastUsedMaxToRetrieve" })
                 </form>
             </div>
@@ -38,7 +37,6 @@
             </div>
             <div style="text-align: center; padding-top: 10px;">
                 <form asp-for="maxToRetrieve" asp-controller="Dashboard" asp-action="MostUsed" method="post">
-                    <input type="hidden" name="snapshotVersion" id="hiddenSnapshotIdMostUsed" />
                     @Html.DropDownListFor(model => model.MostUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() { new SelectListItem() { Text = "5", Value = "5" }, new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { id = "ddlMostUsedMaxToRetrieve" })
                 </form>
             </div>
@@ -69,13 +67,14 @@
     $(document).ready(function () {
         $("#ddlLeastUsedMaxToRetrieve").change(function () {
             var maxToRetrieve = $("#ddlLeastUsedMaxToRetrieve").val();
-            document.getElementById('hiddenSnapshotIdLeastUsed').value = document.getElementById('ddlSnapshots').value;
             $("#leastUsedPackagesContainer").load('@Url.Action("LeastUsed", "Dashboard",null)?maxToRetrieve=' + maxToRetrieve + '&snapshotVersion=' + document.getElementById('ddlSnapshots').value);
         });
     $("#ddlMostUsedMaxToRetrieve").change(function () {
         var maxToRetrieve = $("#ddlMostUsedMaxToRetrieve").val();
-        document.getElementById('hiddenSnapshotIdMostUsed').value = document.getElementById('ddlSnapshots').value;
         $("#mostUsedPackagesContainer").load('@Url.Action("MostUsed", "Dashboard",null)?maxToRetrieve=' + maxToRetrieve + '&snapshotVersion=' + document.getElementById('ddlSnapshots').value);
         });     
+    $("#ddlLeastUsedMaxToRetrieve").change(function () {
+            document.snapshotForm.submit();
+        });
     });
 </script> 

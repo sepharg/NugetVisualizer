@@ -7,7 +7,7 @@
 <form asp-controller="Home" asp-action="ChangeSnapshot" method="post" class="form" name="snapshotForm" >
     <div class="form-group">
         <label for="ddlSnapshots">Snapshots:</label>
-        <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control" onchange="document.snapshotForm.submit();"></select>
+        <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control"></select>
     </div>
 </form>
 
@@ -31,7 +31,7 @@
         <input id="search" class="awesomplete form-control" list="dlAutoComplete" data-minchars="1" data-maxitems="20"/>
     </div>
 
-        <button type="submit" class="btn btn-primary btn-sm" onclick="document.getElementById('hiddenSnapshotId').value = document.getElementById('ddlSnapshots').value; document.searchForm.submit();">Show project usages</button>
+        <button id="btnSubmit" type="submit" class="btn btn-primary btn-sm">Show project usages</button>
         <p />
 </form>
     @if (Model.SelectedPackageName != null)
@@ -62,7 +62,18 @@
             }
     
 <script type="text/javascript">
-    document.getElementById('search').addEventListener('awesomplete-selectcomplete', function(obj) {
-        document.getElementById('ddlPackages').value = obj.text.value;
+    $(document).ready(function () {
+        document.getElementById('search').addEventListener('awesomplete-selectcomplete', function(obj) {
+            document.getElementById('ddlPackages').value = obj.text.value;
+        });
+        $("#ddlSnapshots").change(function() {
+             document.snapshotForm.submit();
+        });
+        $("#btnSubmit").click(function() {
+            document.getElementById('hiddenSnapshotId').value = document.getElementById('ddlSnapshots').value;
+            document.searchForm.submit();
+        });
     });
+
+    
 </script>
