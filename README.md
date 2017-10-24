@@ -46,6 +46,16 @@ This can be used as a template:
 Just run them normally. At the moment of writing, Resharper's test runner doesn't work on .net core, so use the visual studio test runner.
 The Integration Tests that connect to github cannot be run locally, because a token is needed for a dummy organization i've created. Github doesn't let me check in tokens into source control for security reasons, so these tests run only on the travis build.	
 	
+##### Sample Screenshots
+
+![Dashboard Example](dashboard.PNG?raw=true "Dashboard Example")
+
+Example dashboard with widgets (more to come in future versions)
+
+![Package List With Versions](packageList.PNG?raw=true "Package List With Versions")
+
+Main page where the packages are ordered by distinct versions count and we can see which repository uses which version
+
 ##### Useful Tools
 
 https://github.com/sqlitebrowser/sqlitebrowser/
