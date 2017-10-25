@@ -17,7 +17,7 @@
     <form asp-controller="Dashboard" asp-action="ChangeSnapshot" method="post" class="form" name="snapshotForm" >
         <div class="form-group">
             <label for="ddlSnapshots">Snapshots:</label>
-            <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control" onchange="document.snapshotForm.submit();"></select>
+            <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control"></select>
         </div>
     </form>
     <div class="clearfix">
@@ -73,7 +73,7 @@
         var maxToRetrieve = $("#ddlMostUsedMaxToRetrieve").val();
         $("#mostUsedPackagesContainer").load('@Url.Action("MostUsed", "Dashboard",null)?maxToRetrieve=' + maxToRetrieve + '&snapshotVersion=' + document.getElementById('ddlSnapshots').value);
         });     
-    $("#ddlLeastUsedMaxToRetrieve").change(function () {
+    $("#ddlSnapshots").change(function () {
             document.snapshotForm.submit();
         });
     });
