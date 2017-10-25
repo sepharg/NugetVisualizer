@@ -25,5 +25,13 @@
             }
             return null;
         }
+
+        public void DeleteLatestParsedProject()
+        {
+            if (File.Exists(_projectParsingFileFullPath))
+            {
+                File.Delete(_projectParsingFileFullPath);
+            }
+        }
     }
 }

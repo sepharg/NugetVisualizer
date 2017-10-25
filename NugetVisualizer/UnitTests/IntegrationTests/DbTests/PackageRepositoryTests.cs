@@ -1,7 +1,8 @@
-﻿namespace UnitTests.IntegrationTests.DbTests.InMemory
+﻿namespace UnitTests.IntegrationTests.DbTests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Autofac;
 
@@ -14,7 +15,7 @@
 
     using Xunit;
 
-    public class PackageRepositoryTests : InMemoryDbTest
+    public class PackageRepositoryTests : DbTest
     {
         private IProjectRepository _projectRepository;
 
@@ -28,8 +29,8 @@
 
         public PackageRepositoryTests()
         {
-            _projectRepository = ResolutionExtensions.Resolve<IProjectRepository>(Container);
-            _packageRepository = ResolutionExtensions.Resolve<IPackageRepository>(Container);
+            _projectRepository = ResolutionExtensions.Resolve<IProjectRepository>(base.Container);
+            _packageRepository = ResolutionExtensions.Resolve<IPackageRepository>(base.Container);
         }
 
         [Fact]
@@ -77,15 +78,19 @@
                                 new Package("ThirdMostUsed", "4.3", string.Empty), 
                                 new Package("FourthMostUsed", "2.0", string.Empty), 
                                 new Package("FourthMostUsed", "2.11", string.Empty),
-                                new Package("FifthMostUsed", "5.0", string.Empty)
+                                new Package("FifthMostUsed", "5.0", string.Empty),
+                                new Package("SECONDSNAPSHOTPACKAGE", "1.0", string.Empty)
                             };
             _packageRepository.AddRange(_packages);
-            _projectRepository.Add(new Project("P1"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id, Enumerable.ElementAt<Package>(_packages, 6).Id, Enumerable.ElementAt<Package>(_packages, 11).Id });
-            _projectRepository.Add(new Project("P2"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 10).Id });
-            _projectRepository.Add(new Project("P3"), new[] { Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id, Enumerable.ElementAt<Package>(_packages, 7).Id, Enumerable.ElementAt<Package>(_packages, 8).Id, Enumerable.ElementAt<Package>(_packages, 9).Id, Enumerable.ElementAt<Package>(_packages, 10).Id, Enumerable.ElementAt<Package>(_packages, 13).Id });
-            _projectRepository.Add(new Project("UsagesP4"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 10).Id });
-            _projectRepository.Add(new Project("UsagesP5"), new[] { Enumerable.ElementAt<Package>(_packages, 11).Id, Enumerable.ElementAt<Package>(_packages, 12).Id });
+            _projectRepository.Add(new Project("P1"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id, Enumerable.ElementAt<Package>(_packages, 6).Id, Enumerable.ElementAt<Package>(_packages, 11).Id }, 1);
+            _projectRepository.Add(new Project("P2"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 10).Id }, 1);
+            _projectRepository.Add(new Project("P3"), new[] { Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id, Enumerable.ElementAt<Package>(_packages, 7).Id, Enumerable.ElementAt<Package>(_packages, 8).Id, Enumerable.ElementAt<Package>(_packages, 9).Id, Enumerable.ElementAt<Package>(_packages, 10).Id, Enumerable.ElementAt<Package>(_packages, 13).Id }, 1);
+            _projectRepository.Add(new Project("UsagesP4"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 10).Id }, 1);
+            _projectRepository.Add(new Project("UsagesP5"), new[] { Enumerable.ElementAt<Package>(_packages, 11).Id, Enumerable.ElementAt<Package>(_packages, 12).Id }, 1);
 
+            // A couple of random stuff for another snapshot
+            _projectRepository.Add(new Project("ANOTHERSNAPSHOTP1"), new[] { Enumerable.ElementAt<Package>(_packages, 11).Id, Enumerable.ElementAt<Package>(_packages, 12).Id, Enumerable.ElementAt<Package>(_packages, 14).Id }, 2);
+            _projectRepository.Add(new Project("ANOTHERSNAPSHOTP2"), new[] { Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id, Enumerable.ElementAt<Package>(_packages, 6).Id, Enumerable.ElementAt<Package>(_packages, 11).Id }, 2);
         }
 
         private void GivenAnInitialState()
@@ -118,31 +123,30 @@
                                 new Package("Package3", "5.1", string.Empty)
                             };
             _packageRepository.AddRange(_packages);
-            _projectRepository.Add(new Project("P1"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id } );
-            _projectRepository.Add(new Project("P2"), new []{ Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id } );
-            _projectRepository.Add(new Project("P3"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id } );
+            _projectRepository.Add(new Project("P1"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id, Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 3).Id, Enumerable.ElementAt<Package>(_packages, 4).Id }, 1);
+            _projectRepository.Add(new Project("P2"), new []{ Enumerable.ElementAt<Package>(_packages, 1).Id, Enumerable.ElementAt<Package>(_packages, 2).Id, Enumerable.ElementAt<Package>(_packages, 5).Id }, 1);
+            _projectRepository.Add(new Project("P3"), new []{ Enumerable.ElementAt<Package>(_packages, 0).Id }, 1);
 
         }
 
-        private void WhenGetPackagesOrderedByVersionCount()
+        private async Task WhenGetPackagesOrderedByVersionCount()
         {
-            _packagesOrderedByVersionsCount = _packageRepository.GetPackagesOrderedByVersionsCount();
+            _packagesOrderedByVersionsCount = await _packageRepository.GetPackagesOrderedByVersionsCountAsync(1);
         }
 
-        private void WhenGetMostUsedPackages()
+        private async Task WhenGetMostUsedPackages()
         {
-            _mostUsedPackages = _packageRepository.GetPackageUses();
+            _mostUsedPackages = await _packageRepository.GetPackageUsesAsync(1);
         }
 
         private void ThenCorrectOrderReturnedForMostUsedPackages()
         {
-            var filteredResults = Enumerable.Where<KeyValuePair<Package, int>>(_mostUsedPackages, x => new [] { "MostUsed", "SecondMostUsed", "ThirdMostUsed", "FourthMostUsed", "FifthMostUsed" }.Contains(x.Key.Name)).ToDictionary(x => x.Key, x => x.Value); // this is a workaround because the tests share the database. should be fixed as part of https://github.com/sepharg/NugetVisualizer/issues/5 (basically remove the filter)
-            filteredResults.Keys.Count.ShouldBe(5);
-            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("MostUsed"))].ShouldBe(9);
-            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("SecondMostUsed"))].ShouldBe(6);
-            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("ThirdMostUsed"))].ShouldBe(3);
-            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("FourthMostUsed"))].ShouldBe(3);
-            filteredResults[filteredResults.Keys.Single(p => p.Name.Equals("FifthMostUsed"))].ShouldBe(1);
+            ShouldBeTestExtensions.ShouldBe(_mostUsedPackages.Keys.Count, 5);
+            ShouldBeTestExtensions.ShouldBe(_mostUsedPackages[Enumerable.Single<Package>(_mostUsedPackages.Keys, p => p.Name.Equals("MostUsed"))], 9);
+            ShouldBeTestExtensions.ShouldBe(_mostUsedPackages[Enumerable.Single<Package>(_mostUsedPackages.Keys, p => p.Name.Equals("SecondMostUsed"))], 6);
+            ShouldBeTestExtensions.ShouldBe(_mostUsedPackages[Enumerable.Single<Package>(_mostUsedPackages.Keys, p => p.Name.Equals("ThirdMostUsed"))], 3);
+            ShouldBeTestExtensions.ShouldBe(_mostUsedPackages[Enumerable.Single<Package>(_mostUsedPackages.Keys, p => p.Name.Equals("FourthMostUsed"))], 3);
+            ShouldBeTestExtensions.ShouldBe(_mostUsedPackages[Enumerable.Single<Package>(_mostUsedPackages.Keys, p => p.Name.Equals("FifthMostUsed"))], 1);
         }
 
         private void ThenCorrectOrderReturned()

@@ -61,10 +61,10 @@
                                    new Project("P4")
                                };
 
-            _projectRepository.Add(projects[0], new List<int>() { package.Id });
-            _projectRepository.Add(projects[1], new List<int>() { package.Id });
-            _projectRepository.Add(projects[2], new List<int>() { package.Id });
-            _projectRepository.Add(projects[3], new List<int>() { package.Id });
+            _projectRepository.Add(projects[0], new List<int>() { package.Id }, 1);
+            _projectRepository.Add(projects[1], new List<int>() { package.Id }, 1);
+            _projectRepository.Add(projects[2], new List<int>() { package.Id }, 1);
+            _projectRepository.Add(projects[3], new List<int>() { package.Id }, 1);
         }
 
         private void WhenLoadingProjects()
@@ -120,7 +120,7 @@
             // proj0 - package0, package1, package2, proj1 - package3, package4, package5, ....
             for (int i = 0; i < 10; i++)
             {
-                _projectRepository.Add(createdProjects[i], Enumerable.Skip<Package>(packagesToCreate, taken).Take(3).Select(p => p.Id));
+                _projectRepository.Add(createdProjects[i], Enumerable.Skip<Package>(packagesToCreate, taken).Take(3).Select(p => p.Id), 1);
                 taken += 3;
             }
         }

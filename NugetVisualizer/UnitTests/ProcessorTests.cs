@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TestStack.BDDfy;
-
-namespace UnitTests
+﻿namespace UnitTests
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -13,8 +9,11 @@ namespace UnitTests
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Repositories;
 
     using Shouldly;
+
+    using TestStack.BDDfy;
 
     using Xunit;
 
@@ -24,8 +23,8 @@ namespace UnitTests
 
         private Processor _processor;
 
-        private ProjectParsingResult _processResult;
-
+        private int _snapshotVersion = 3;
+        
         private List<IProjectIdentifier> _projectIdentifiers;
 
         private IEnumerable<IProjectIdentifier> _parsedProjects;
@@ -41,13 +40,13 @@ namespace UnitTests
                                           new ProjectIdentifier("third", "path3"),
                                           new ProjectIdentifier("fourth", "path4"),
                                       };
-           /* _autoMocker.GetMock<IProjectParser>()
-                .Setup(x => x.ParseProjectsAsync(It.IsAny<IEnumerable<IProjectIdentifier>>()))
-                .Callback<IEnumerable<IProjectIdentifier>>((identifiers) => _parsedProjects = identifiers);*/
             _autoMocker.GetMock<IProjectParser>()
-                .Setup(x => x.ParseProjectsAsync(It.IsAny<IEnumerable<IProjectIdentifier>>()))
+                .Setup(x => x.ParseProjectsAsync(It.IsAny<IEnumerable<IProjectIdentifier>>(), _snapshotVersion))
                 .ReturnsAsync(() => new ProjectParsingResult(null, false))
-                .Callback<IEnumerable<IProjectIdentifier>>((identifiers) => _parsedProjects = identifiers);
+                .Callback<IEnumerable<IProjectIdentifier>, int>((identifiers, snapshotVersion) => _parsedProjects = identifiers);
+            _autoMocker.GetMock<ISnapshotRepository>()
+                .Setup(x => x.Add(It.IsAny<Snapshot>()))
+                .Callback<Snapshot>(snapshot => snapshot.Version = _snapshotVersion);
         }
 
         [Fact]
@@ -56,7 +55,7 @@ namespace UnitTests
         {
             this.Given(x => x.GivenNoProcessResumeNeeded())
                 .And(x => x.GivenThereAreProjectsToProcess())
-                .When(x => x.WhenProcess())
+                .When(x => x.WhenProcessForExistingSnapshot())
                 .Then(x => x.ThenAllItemsAreProcessed())
                 .BDDfy();
         }
@@ -67,9 +66,27 @@ namespace UnitTests
         {
             this.Given(x => x.GivenProcessResumeNeeded())
                 .And(x => x.GivenThereAreProjectsToProcess())
-                .When(x => x.WhenProcess())
+                .When(x => x.WhenProcessForExistingSnapshot())
                 .Then(x => x.ThenOnlyRemainingItemsAreProcessed())
                 .BDDfy();
+        }
+
+        [Fact]
+
+        public void GivenSnapshotDoesntExist_WhenProcessForNewSnapshot_ThenSnapshotIsCreatedAndItemsAreProcessed()
+        {
+            this.Given(x => x.GivenSnapshotDoesntExist())
+                .And(x => x.GivenNoProcessResumeNeeded())
+                .And(x => x.GivenThereAreProjectsToProcess())
+                .When(x => x.WhenProcessForNewSnapshot("NewSnapshot"))
+                .Then(x => x.ThenNewSnapshotIsCreated("NewSnapshot"))
+                .And(x => x.ThenAllItemsAreProcessed())
+                .BDDfy();
+        }
+        
+        private void GivenSnapshotDoesntExist()
+        {
+            
         }
 
         private void GivenNoProcessResumeNeeded()
@@ -84,26 +101,35 @@ namespace UnitTests
 
         private void GivenThereAreProjectsToProcess()
         {
-
             _autoMocker.GetMock<IRepositoryReader>()
                 .Setup(x => x.GetProjectsAsync(string.Empty, null))
                 .ReturnsAsync(_projectIdentifiers);
         }
 
-        private async Task WhenProcess()
+        private async Task WhenProcessForExistingSnapshot()
         {
-            _processResult = await _processor.Process(string.Empty, null);
+            await _processor.Process(string.Empty, null, _snapshotVersion);
+        }
+
+        private async Task WhenProcessForNewSnapshot(string snapshotName)
+        {
+            await _processor.Process(string.Empty, null, snapshotName);
         }
 
         private void ThenAllItemsAreProcessed()
         {
             _parsedProjects.ShouldBeSameAs(_projectIdentifiers);
-            _autoMocker.GetMock<IProjectParser>().Verify(x => x.ParseProjectsAsync(It.IsAny<IEnumerable<IProjectIdentifier>>()));
+            _autoMocker.GetMock<IProjectParser>().Verify(x => x.ParseProjectsAsync(It.IsAny<IEnumerable<IProjectIdentifier>>(), _snapshotVersion));
         }
 
         private void ThenOnlyRemainingItemsAreProcessed()
         {
             _parsedProjects.ShouldBe(_projectIdentifiers.Skip(2));
+        }
+
+        private void ThenNewSnapshotIsCreated(string snasnapshotName)
+        {
+            _autoMocker.GetMock<ISnapshotRepository>().Verify(x => x.Add(It.Is<Snapshot>(snapshot => snapshot.Name.Equals(snasnapshotName))), Times.Once);
         }
     }
 }

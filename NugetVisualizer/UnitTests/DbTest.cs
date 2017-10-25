@@ -16,7 +16,7 @@
 
         public DbTest() : base(new TestConfigurationHelper(true))
         {
-            TempTestDbName = $"integrationTestDb_{DateTime.Now.Ticks}";
+            TempTestDbName = $"integrationTestDb_{Guid.NewGuid()}";
             IntegrationTestConfiguration.Add("Dbpath", TempTestDbName);
             InitializeTestDb();
         }

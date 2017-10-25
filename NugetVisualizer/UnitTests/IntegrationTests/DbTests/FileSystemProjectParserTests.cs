@@ -25,6 +25,8 @@
 
         private IProjectParser _fileSystemProjectParser;
 
+        private int _snapshotVersion = 2;
+
         private List<Project> _projects;
 
         private string _projecName;
@@ -58,10 +60,8 @@
 
         private async Task WhenParsingProject()
         {
-            _projects = (await _fileSystemProjectParser.ParseProjectsAsync(new IProjectIdentifier[1] { new ProjectIdentifier(_projecName, _projectPath) } )).ParsedProjects;
+            _projects = (await _fileSystemProjectParser.ParseProjectsAsync(new IProjectIdentifier[1] { new ProjectIdentifier(_projecName, _projectPath) }, _snapshotVersion)).ParsedProjects;
         }
-
-        
 
         private void ThenAProjectWithExpectedPackagesIsReturned()
         {

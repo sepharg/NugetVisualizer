@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Repositories;
@@ -14,10 +15,13 @@
 
         private readonly IProjectRepository _projectRepository;
 
-        public PackageSearchService(IPackageRepository packageRepository, IProjectRepository projectRepository)
+        private readonly ISnapshotRepository _snapshotRepository;
+
+        public PackageSearchService(IPackageRepository packageRepository, IProjectRepository projectRepository, ISnapshotRepository snapshotRepository)
         {
             _packageRepository = packageRepository;
             _projectRepository = projectRepository;
+            _snapshotRepository = snapshotRepository;
         }
 
         public List<Package> GetPackages()
@@ -27,15 +31,19 @@
             return distinctPackages;
         }
 
-        public Dictionary<Package, int> GetPackagesOrderedByVersions()
+        public async Task<Dictionary<Package, int>> GetPackagesOrderedByVersions(int snapshotVersion)
         {
-            var allPackages = _packageRepository.GetPackagesOrderedByVersionsCount();
-            return allPackages;
+            return await _packageRepository.GetPackagesOrderedByVersionsCountAsync(snapshotVersion);
         }
 
-        public List<string> GetPackageVersions(string packageName)
+        public async Task<List<string>> GetPackageVersions(string packageName, int snapshotVersion)
         {
-            return _packageRepository.GetPackageVersions(packageName);
+            return await _packageRepository.GetPackageVersions(packageName, snapshotVersion);
+        }
+
+        public List<Snapshot> GetSnapshots()
+        {
+            return _snapshotRepository.GetAll();
         }
 
         public List<ProjectRow> GetProjectRows(string packageName, List<string> packageVersionsList)

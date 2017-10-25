@@ -4,10 +4,19 @@
     ViewData["Title"] = "Package List";
 }
 
-<form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post" class="form" >
+<form asp-controller="Home" asp-action="ChangeSnapshot" method="post" class="form" name="snapshotForm" >
+    <div class="form-group">
+        <label for="ddlSnapshots">Snapshots:</label>
+        <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control"></select>
+    </div>
+</form>
+
+<form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post" class="form" name="searchForm" >
+    
     <div class="form-group">
         <label for="ddlPackages">Packages ordered by version count:</label>
         <select id="ddlPackages" asp-for="SelectedPackageName" asp-items="Model.PackagesOrderedByVersionCount" class="form-control"></select>
+        <input type="hidden" name="SelectedSnapshotId" id="hiddenSnapshotId"/>
     </div>
     
     <div class="form-group">
@@ -22,7 +31,7 @@
         <input id="search" class="awesomplete form-control" list="dlAutoComplete" data-minchars="1" data-maxitems="20"/>
     </div>
 
-        <button type="submit" class="btn btn-primary btn-sm">Show project usages</button>
+        <button id="btnSubmit" type="submit" class="btn btn-primary btn-sm">Show project usages</button>
         <p />
 </form>
     @if (Model.SelectedPackageName != null)
@@ -53,7 +62,18 @@
             }
     
 <script type="text/javascript">
-    document.getElementById('search').addEventListener('awesomplete-selectcomplete', function(obj) {
-        document.getElementById('ddlPackages').value = obj.text.value;
+    $(document).ready(function () {
+        document.getElementById('search').addEventListener('awesomplete-selectcomplete', function(obj) {
+            document.getElementById('ddlPackages').value = obj.text.value;
+        });
+        $("#ddlSnapshots").change(function() {
+             document.snapshotForm.submit();
+        });
+        $("#btnSubmit").click(function() {
+            document.getElementById('hiddenSnapshotId').value = document.getElementById('ddlSnapshots').value;
+            document.searchForm.submit();
+        });
     });
+
+    
 </script>

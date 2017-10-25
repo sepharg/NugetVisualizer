@@ -14,6 +14,12 @@
             <h1>Nuget Packages Overview</h1>
         </div>
     </header>
+    <form asp-controller="Dashboard" asp-action="ChangeSnapshot" method="post" class="form" name="snapshotForm" >
+        <div class="form-group">
+            <label for="ddlSnapshots">Snapshots:</label>
+            <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control"></select>
+        </div>
+    </form>
     <div class="clearfix">
         <div class="half widget">
             <div id="leastUsedPackagesContainer">
@@ -21,7 +27,7 @@
             </div>
             <div style="text-align: center; padding-top: 10px;">
                 <form asp-for="maxToRetrieve" asp-controller="Dashboard" asp-action="LeastUsed" method="post">
-                    @Html.DropDownListFor(model => model.LeastUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() {  new SelectListItem() {  Text = "5", Value = "5"} , new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { id = "ddlLeastUsedMaxToRetrieve" })
+                    @Html.DropDownListFor(model => model.LeastUsedPackagesViewModel.MaxToRetrieve, new SelectList(new List<SelectListItem>() { new SelectListItem() { Text = "5", Value = "5" }, new SelectListItem() { Text = "10", Value = "10" }, new SelectListItem() { Text = "15", Value = "15" } }, "Text", "Value"), new { id = "ddlLeastUsedMaxToRetrieve" })
                 </form>
             </div>
         </div>
@@ -61,11 +67,14 @@
     $(document).ready(function () {
         $("#ddlLeastUsedMaxToRetrieve").change(function () {
             var maxToRetrieve = $("#ddlLeastUsedMaxToRetrieve").val();
-            $("#leastUsedPackagesContainer").load('@(Url.Action("LeastUsed", "Dashboard",null))?maxToRetrieve=' + maxToRetrieve);
+            $("#leastUsedPackagesContainer").load('@Url.Action("LeastUsed", "Dashboard",null)?maxToRetrieve=' + maxToRetrieve + '&snapshotVersion=' + document.getElementById('ddlSnapshots').value);
         });
     $("#ddlMostUsedMaxToRetrieve").change(function () {
         var maxToRetrieve = $("#ddlMostUsedMaxToRetrieve").val();
-    $("#mostUsedPackagesContainer").load('@(Url.Action("MostUsed", "Dashboard",null))?maxToRetrieve=' + maxToRetrieve);
+        $("#mostUsedPackagesContainer").load('@Url.Action("MostUsed", "Dashboard",null)?maxToRetrieve=' + maxToRetrieve + '&snapshotVersion=' + document.getElementById('ddlSnapshots').value);
         });     
+    $("#ddlSnapshots").change(function () {
+            document.snapshotForm.submit();
+        });
     });
 </script> 

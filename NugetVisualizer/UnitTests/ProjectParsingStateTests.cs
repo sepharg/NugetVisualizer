@@ -48,12 +48,24 @@
 
         [Fact]
 
-        public void GivenProjectParsingStateFiletExists_WhenGettingProject_ThenProjectIsReturned()
+        public void GivenProjectParsingStateFileExists_WhenGettingProject_ThenProjectIsReturned()
         {
             this.Given(x => x.GivenAProjectToSave())
                 .And(x => x.WhenSavingProject())
                 .When(x => x.WhenGettingProject())
                 .Then(x => x.ThenProjectIsReturned())
+                .BDDfy();
+        }
+
+        [Fact]
+
+        public void GivenProjectParsingStateFileExists_WhenDeletingProjectState_ThenNothingIsReturned()
+        {
+            this.Given(x => x.GivenAProjectToSave())
+                .And(x => x.WhenSavingProject())
+                .And(x => x.WhenDeletingProject())
+                .When(x => x.WhenGettingProject())
+                .Then(x => x.ThenNothingIsReturned())
                 .BDDfy();
         }
 
@@ -84,6 +96,11 @@
         private void WhenSavingProject()
         {
             _projectParsingState.SaveLatestParsedProject(_projectName);
+        }
+
+        private void WhenDeletingProject()
+        {
+            _projectParsingState.DeleteLatestParsedProject();
         }
 
         private void WhenGettingProject()

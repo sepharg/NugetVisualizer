@@ -10,11 +10,11 @@
 
     public class ProjectRepository : IDisposable, IProjectRepository
     {
-        private readonly NugetVisualizerContext _dbContext;
+        private readonly INugetVisualizerContext _dbContext;
 
-        public ProjectRepository(DbContext dbContext)
+        public ProjectRepository(INugetVisualizerContext dbContext)
         {
-            _dbContext = dbContext as NugetVisualizerContext;
+            _dbContext = dbContext;
         }
 
         public List<Project> LoadProjects()
@@ -30,16 +30,25 @@
                                       .ToList();
         }
 
-        public void Add(Project project, IEnumerable<int> packageIds)
+        public void Add(Project project, IEnumerable<int> packageIds, int snapshotVersion)
         {
-            var existingProject = _dbContext.Projects.SingleOrDefault(x => x.Name == project.Name);
+            var existingProject = _dbContext.Projects.Include(x => x.ProjectPackages)
+                                                     .SingleOrDefault(x => x.Name == project.Name);
             if (existingProject == null)
             {
                 foreach (var packageId in packageIds)
                 {
-                    project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = packageId });
+                    project.ProjectPackages.Add(new ProjectPackage() { ProjectName = project.Name, PackageId = packageId, SnapshotVersion = snapshotVersion});
                 }
                 _dbContext.Projects.Add(project);
+                _dbContext.SaveChanges();
+            }
+            else
+            {
+                foreach (var packageId in packageIds.Except(existingProject.ProjectPackages.Where(pp => pp.SnapshotVersion == snapshotVersion).Select(x => x.PackageId)))
+                {
+                    existingProject.ProjectPackages.Add(new ProjectPackage() { ProjectName = existingProject.Name, PackageId = packageId, SnapshotVersion = snapshotVersion });
+                }
                 _dbContext.SaveChanges();
             }
         }

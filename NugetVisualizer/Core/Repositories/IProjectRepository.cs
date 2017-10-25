@@ -5,7 +5,7 @@ namespace NugetVisualizer.Core.Repositories
 {
     public interface IProjectRepository
     {
-        void Add(Project project, IEnumerable<int> packageIds);
+        void Add(Project project, IEnumerable<int> packageIds, int snapshotVersion);
         List<Project> LoadProjects();
 
         List<Project> GetProjectsForPackage(string packageName);

@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace WebVisualizer.Services
 {
+    using System.Threading.Tasks;
+
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Repositories;
 
@@ -12,33 +14,41 @@ namespace WebVisualizer.Services
     {
         private readonly IPackageRepository _packageRepository;
 
-        public DashboardService(IPackageRepository packageRepository)
+        private readonly ISnapshotRepository _snapshotRepository;
+
+        public DashboardService(IPackageRepository packageRepository, ISnapshotRepository snapshotRepository)
         {
             _packageRepository = packageRepository;
+            _snapshotRepository = snapshotRepository;
         }
 
-        private Dictionary<Package, int> GetMostUsedPackages(int maxNumberToRetrieve)
+        public List<Snapshot> GetSnapshots()
         {
-            var packageUses = _packageRepository.GetPackageUses();
+            return _snapshotRepository.GetAll();
+        }
+
+        private async Task<Dictionary<Package, int>> GetMostUsedPackages(int maxNumberToRetrieve, int snapshotVersion)
+        {
+            var packageUses = await _packageRepository.GetPackageUsesAsync(snapshotVersion);
             return packageUses.OrderByDescending(x => x.Value).Take(maxNumberToRetrieve).ToDictionary(x => x.Key, x => x.Value);
         }
 
-        private Dictionary<Package, int> GetLeastUsedPackages(int maxNumberToRetrieve)
+        private async Task<Dictionary<Package, int>> GetLeastUsedPackages(int maxNumberToRetrieve, int snapshotVersion)
         {
-            var packageUses = _packageRepository.GetPackageUses();
+            var packageUses = await _packageRepository.GetPackageUsesAsync(snapshotVersion);
             return packageUses.OrderBy(x => x.Value).Take(maxNumberToRetrieve).ToDictionary(x => x.Key, x => x.Value);
         }
 
-        public UsedPackagesViewModel GetLeastUsedPackagesViewModel(int maxNumberToRetrieve)
+        public async Task<UsedPackagesViewModel> GetLeastUsedPackagesViewModel(int maxNumberToRetrieve, int snapshotVersion)
         {
-            var mostUsedPackages = GetLeastUsedPackages(maxNumberToRetrieve);
+            var mostUsedPackages = await GetLeastUsedPackages(maxNumberToRetrieve, snapshotVersion);
             var viewModel = new LeastUsedPackagesViewModel() { MaxToRetrieve = maxNumberToRetrieve };
             return SetViewmodelValues(viewModel, mostUsedPackages);
         }
 
-        public UsedPackagesViewModel GetMostUsedPackagesViewModel(int maxNumberToRetrieve)
+        public async Task<UsedPackagesViewModel> GetMostUsedPackagesViewModel(int maxNumberToRetrieve, int snapshotVersion)
         {
-            var mostUsedPackages = GetMostUsedPackages(maxNumberToRetrieve);
+            var mostUsedPackages = await GetMostUsedPackages(maxNumberToRetrieve, snapshotVersion);
             var viewModel = new MostUsedPackagesViewModel() { MaxToRetrieve = maxNumberToRetrieve };
             return SetViewmodelValues(viewModel, mostUsedPackages);
         }

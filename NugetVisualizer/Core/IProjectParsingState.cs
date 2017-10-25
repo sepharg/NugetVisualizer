@@ -5,5 +5,7 @@ namespace NugetVisualizer.Core
         void SaveLatestParsedProject(string projectName);
 
         string GetLatestParsedProject();
+
+        void DeleteLatestParsedProject();
     }
 }

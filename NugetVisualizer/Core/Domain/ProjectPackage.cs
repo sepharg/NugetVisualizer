@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NugetVisualizer.Core.Domain
+﻿namespace NugetVisualizer.Core.Domain
 {
     public class ProjectPackage
     {
@@ -13,5 +9,7 @@ namespace NugetVisualizer.Core.Domain
         public int PackageId { get; set; }
 
         public Package Package { get; set; }
+
+        public int SnapshotVersion { get; set; }
     }
 }

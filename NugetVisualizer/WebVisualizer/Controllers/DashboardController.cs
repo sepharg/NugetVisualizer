@@ -1,6 +1,10 @@
 ﻿namespace WebVisualizer.Controllers
 {
+    using System.Linq;
+    using System.Threading.Tasks;
+
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
 
     using WebVisualizer.Models;
     using WebVisualizer.Services;
@@ -15,26 +19,42 @@
         }
 
         // GET: /<controller>/
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var model = GetDefaultDashboardViewModel();
+            var model = await GetDefaultDashboardViewModel();
             return View(model);
         }
 
-        private DashboardViewModel GetDefaultDashboardViewModel()
+        private async Task<DashboardViewModel> GetDefaultDashboardViewModel()
         {
-            return new DashboardViewModel() { MostUsedPackagesViewModel = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(5), LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(5)};
+            var snapshots = _dashboardService.GetSnapshots();
+            var mostUsedPackagesViewModel = await _dashboardService.GetMostUsedPackagesViewModel(5, snapshots.First().Version);
+            var leastUsedPackagesViewModel = await _dashboardService.GetLeastUsedPackagesViewModel(5, snapshots.First().Version);
+            return new DashboardViewModel()
+                       {
+                           MostUsedPackagesViewModel = (MostUsedPackagesViewModel)mostUsedPackagesViewModel,
+                           LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)leastUsedPackagesViewModel,
+                           Snapshots = snapshots.Select(s => new SelectListItem() { Text = s.Name, Value = s.Version.ToString() }).ToList() 
+                       };
         }
 
-        public IActionResult MostUsed(int maxToRetrieve)
+        public async Task<IActionResult> ChangeSnapshot(DashboardViewModel model)
         {
-            var model = (MostUsedPackagesViewModel)_dashboardService.GetMostUsedPackagesViewModel(maxToRetrieve);
+            model.Snapshots = _dashboardService.GetSnapshots().Select(s => new SelectListItem() { Text = s.Name, Value = s.Version.ToString() }).ToList();
+            model.MostUsedPackagesViewModel = (MostUsedPackagesViewModel)await _dashboardService.GetMostUsedPackagesViewModel(5, model.SelectedSnapshotId);
+            model.LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)await _dashboardService.GetLeastUsedPackagesViewModel(5, model.SelectedSnapshotId);
+            return View("Index", model);
+        }
+
+        public async Task<IActionResult> MostUsed(int maxToRetrieve, int snapshotVersion)
+        {
+            var model = (MostUsedPackagesViewModel)await _dashboardService.GetMostUsedPackagesViewModel(maxToRetrieve, snapshotVersion);
             return PartialView("Widgets/UsedPackages", model);
         }
 
-        public IActionResult LeastUsed(int maxToRetrieve)
+        public async Task<IActionResult> LeastUsed(int maxToRetrieve, int snapshotVersion)
         {
-            var model = (LeastUsedPackagesViewModel)_dashboardService.GetLeastUsedPackagesViewModel(maxToRetrieve);
+            var model = (LeastUsedPackagesViewModel)await _dashboardService.GetLeastUsedPackagesViewModel(maxToRetrieve, snapshotVersion);
             return PartialView("Widgets/UsedPackages", model);
         }
     }
