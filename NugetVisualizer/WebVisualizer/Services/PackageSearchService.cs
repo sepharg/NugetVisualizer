@@ -14,14 +14,11 @@
         private readonly IPackageRepository _packageRepository;
 
         private readonly IProjectRepository _projectRepository;
-
-        private readonly ISnapshotRepository _snapshotRepository;
-
-        public PackageSearchService(IPackageRepository packageRepository, IProjectRepository projectRepository, ISnapshotRepository snapshotRepository)
+        
+        public PackageSearchService(IPackageRepository packageRepository, IProjectRepository projectRepository)
         {
             _packageRepository = packageRepository;
             _projectRepository = projectRepository;
-            _snapshotRepository = snapshotRepository;
         }
 
         public List<Package> GetPackages()
@@ -41,15 +38,10 @@
             return await _packageRepository.GetPackageVersions(packageName, snapshotVersion);
         }
 
-        public List<Snapshot> GetSnapshots()
-        {
-            return _snapshotRepository.GetAll();
-        }
-
-        public List<ProjectRow> GetProjectRows(string packageName, List<string> packageVersionsList)
+        public async Task<List<ProjectRow>> GetProjectRows(string packageName, List<string> packageVersionsList, int snapshotVersion)
         {
             var projectRows = new List<ProjectRow>();
-            var projectsThatContainPackage = _projectRepository.GetProjectsForPackage(packageName);
+            var projectsThatContainPackage = await _projectRepository.GetProjectsForPackage(packageName, snapshotVersion);
             foreach (var project in projectsThatContainPackage)
             {
                 var projectRow = new ProjectRow() { ProjectName = project.Name };
