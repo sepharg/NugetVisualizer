@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Autofac;
 
@@ -72,9 +73,9 @@
             _projects = _projectRepository.LoadProjects();
         }
 
-        private void WhenGettingProjects(string package)
+        private async Task WhenGettingProjects(string package)
         {
-            _projects = _projectRepository.GetProjectsForPackage(package);
+            _projects = await _projectRepository.GetProjectsForPackage(package, 1);
         }
 
         private void ThenProjectsAreReturned()

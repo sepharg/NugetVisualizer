@@ -2,12 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-
-    using Microsoft.EntityFrameworkCore;
-
+    
     using NugetVisualizer.Core.Domain;
 
     public class PackageRepository : IDisposable, IPackageRepository
@@ -15,8 +12,6 @@
         private readonly INugetVisualizerContext _context;
 
         private static readonly Func<Package, string> defaultOrderByFunc = (p) => p.Name;
-
-        private delegate void ProcessReader<TReturnType>(DbDataReader reader, TReturnType result);
 
         public PackageRepository(INugetVisualizerContext context)
         {
@@ -62,7 +57,7 @@
                              GROUP BY p.Name
                              ORDER BY Count DESC";
 
-            ProcessReader<Dictionary<Package, int>> processReader = (reader, res) =>
+            SqlHelper.ProcessReader<Dictionary<Package, int>> processReader = (reader, res) =>
                 {
                     var package = new Package(
                                       reader.GetString(1),
@@ -72,7 +67,7 @@
                     res.Add(package, reader.GetInt32(4));
                 };
 
-            return await GetFromSql(query, processReader);
+            return await _context.GetFromSql(query, processReader);
         }
 
         public async Task<Dictionary<Package, int>> GetPackageUsesAsync(int snapshotVersion)
@@ -81,7 +76,7 @@
                              WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")
                              GROUP BY p.Name";
 
-            ProcessReader<Dictionary<Package, int>> processReader = (reader, res) =>
+            SqlHelper.ProcessReader<Dictionary<Package, int>> processReader = (reader, res) =>
                 {
                     var package = new Package(
                                       reader.GetString(1),
@@ -93,7 +88,7 @@
                     res.Add(package, usagesCountForPackage);
                 };
 
-            return await GetFromSql(query, processReader);
+            return await _context.GetFromSql(query, processReader);
         }
 
         public async Task<List<string>> GetPackageVersions(string packageName, int snapshotVersion)
@@ -103,41 +98,12 @@
                              AND p.Name = '" + packageName + @"' 
                              ORDER BY p.Version ASC";
 
-            ProcessReader<List<string>> processReader = (reader, res) =>
+            SqlHelper.ProcessReader<List<string>> processReader = (reader, res) =>
                 {
                     res.Add(reader.GetString(0));
                 };
 
-            return await GetFromSql(query, processReader);
-        }
-
-        private async Task<TReturnType> GetFromSql<TReturnType>(string query, ProcessReader<TReturnType> readerProcess) where TReturnType : new()
-        {
-            var result = new TReturnType();
-            var conn = _context.GetDbConnection();
-            try
-            {
-                await conn.OpenAsync();
-                using (var command = conn.CreateCommand())
-                {
-                    command.CommandText = query;
-                    var reader = await command.ExecuteReaderAsync();
-
-                    if (reader.HasRows)
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            readerProcess(reader, result);
-                        }
-                    }
-                    reader.Dispose();
-                }
-            }
-            finally
-            {
-                conn.Close();
-            }
-            return result;
+            return await _context.GetFromSql(query, processReader);
         }
 
         public void Dispose()

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Microsoft.EntityFrameworkCore;
 
@@ -22,12 +23,39 @@
             return _dbContext.Projects.Include(x => x.ProjectPackages).ThenInclude(y => y.Package).ToList();
         }
 
-        public List<Project> GetProjectsForPackage(string packageName)
+        public async Task<List<Project>> GetProjectsForPackage(string packageName, int snapshotVersion)
         {
-            return _dbContext.Projects.Where(p => p.ProjectPackages.Any(pp => pp.Package.Name.Equals(packageName)))
-                                      .Include(x => x.ProjectPackages)
-                                      .ThenInclude(x => x.Package)
-                                      .ToList();
+            /*var projectsQuery = @"SELECT p.Id, p.Name, p.TargetFramework, p.Version
+                                     FROM Packages p
+                                     WHERE p.Id IN (SELECT PackageId FROM ProjectPackages WHERE SnapshotVersion = " + snapshotVersion + @")";
+
+            var projectPackagesQuery = @"SELECT ProjectName, PackageId
+                                            FROM ProjectPackages
+                                            WHERE SnapShotVersion = " + snapshotVersion;
+
+            SqlHelper.ProcessReader<List<Package>> packageProcessReader = (reader, res) =>
+                {
+                    var package = new Package(
+                                      reader.GetString(1),
+                                      reader.GetString(3),
+                                      string.IsNullOrEmpty(reader.GetValue(2) as string) ? string.Empty : reader.GetString(2))
+                                      { Id = reader.GetInt32(0) };
+                    res.Add(package);
+                };
+
+            SqlHelper.ProcessReader<List<ProjectPackage>> projectPackageProcessReader = (reader, res) =>
+                {
+                    var projectPackage = new ProjectPackage() { PackageId = reader.GetInt32(1), ProjectName = reader.GetString(0) };
+                    res.Add(projectPackage);
+                };
+
+            var projects = await _dbContext.GetFromSql(projectsQuery, packageProcessReader);
+            var projectPackages = await _dbContext.GetFromSql(projectPackagesQuery, projectPackageProcessReader);*/
+
+            return _dbContext.Projects.Where(p => p.ProjectPackages.Any(pp => pp.Package.Name.Equals(packageName) && pp.SnapshotVersion == snapshotVersion))
+                .Include(x => x.ProjectPackages)
+                .ThenInclude(x => x.Package)
+                .ToList();
         }
 
         public void Add(Project project, IEnumerable<int> packageIds, int snapshotVersion)
