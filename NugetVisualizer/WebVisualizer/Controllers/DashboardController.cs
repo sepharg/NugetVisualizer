@@ -13,9 +13,12 @@
     {
         private readonly DashboardService _dashboardService;
 
-        public DashboardController(DashboardService dashboardService)
+        private readonly SnapshotService _snapshotService;
+
+        public DashboardController(DashboardService dashboardService, SnapshotService snapshotService)
         {
             _dashboardService = dashboardService;
+            _snapshotService = snapshotService;
         }
 
         // GET: /<controller>/
@@ -27,7 +30,7 @@
 
         private async Task<DashboardViewModel> GetDefaultDashboardViewModel()
         {
-            var snapshots = _dashboardService.GetSnapshots();
+            var snapshots = _snapshotService.GetSnapshots();
             var mostUsedPackagesViewModel = await _dashboardService.GetMostUsedPackagesViewModel(5, snapshots.First().Version);
             var leastUsedPackagesViewModel = await _dashboardService.GetLeastUsedPackagesViewModel(5, snapshots.First().Version);
             return new DashboardViewModel()
@@ -40,7 +43,7 @@
 
         public async Task<IActionResult> ChangeSnapshot(DashboardViewModel model)
         {
-            model.Snapshots = _dashboardService.GetSnapshots().Select(s => new SelectListItem() { Text = s.Name, Value = s.Version.ToString() }).ToList();
+            model.Snapshots = _snapshotService.GetSnapshots().Select(s => new SelectListItem() { Text = s.Name, Value = s.Version.ToString() }).ToList();
             model.MostUsedPackagesViewModel = (MostUsedPackagesViewModel)await _dashboardService.GetMostUsedPackagesViewModel(5, model.SelectedSnapshotId);
             model.LeastUsedPackagesViewModel = (LeastUsedPackagesViewModel)await _dashboardService.GetLeastUsedPackagesViewModel(5, model.SelectedSnapshotId);
             return View("Index", model);
