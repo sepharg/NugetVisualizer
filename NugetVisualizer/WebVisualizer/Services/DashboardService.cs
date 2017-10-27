@@ -14,17 +14,9 @@ namespace WebVisualizer.Services
     {
         private readonly IPackageRepository _packageRepository;
 
-        private readonly ISnapshotRepository _snapshotRepository;
-
-        public DashboardService(IPackageRepository packageRepository, ISnapshotRepository snapshotRepository)
+        public DashboardService(IPackageRepository packageRepository)
         {
             _packageRepository = packageRepository;
-            _snapshotRepository = snapshotRepository;
-        }
-
-        public List<Snapshot> GetSnapshots()
-        {
-            return _snapshotRepository.GetAll();
         }
 
         private async Task<Dictionary<Package, int>> GetMostUsedPackages(int maxNumberToRetrieve, int snapshotVersion)
