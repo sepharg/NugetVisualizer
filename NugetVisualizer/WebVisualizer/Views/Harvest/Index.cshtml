@@ -1,0 +1,36 @@
+﻿@model HarvestViewModel
+
+@{
+    ViewData["Title"] = "Harvest Data";
+}
+
+<div class="panel panel-default" style="margin-top: 12px;">
+    <div class="panel-body">
+        <form asp-controller="Harvest" asp-action="CreateSnapshot" method="post" class="form">
+            <div class="form-group">
+                <input type="hidden" asp-for="Append" value="true" />
+                <input type="hidden" asp-for="SnapshotName" id="hdnSnapshotName" />
+                <label for="ddlSnapshots">Snapshots:</label>
+                <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control"></select>
+            </div>
+
+            <button id="btnAppend" type="submit" class="btn btn-primary btn-sm">Append to Snapshot</button>
+        </form>    
+    </div>
+</div>
+<div >
+    <form asp-controller="Harvest" asp-action="CreateSnapshot" method="get" class="form">
+        <button id="btnNew" type="submit" class="btn btn-primary btn-sm">Create New Snapshot</button>
+    </form>        
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#hdnSnapshotName").val($("#ddlSnapshots option:selected").text());
+
+        $("#ddlSnapshots").change(function () {
+            $("#hdnSnapshotName").val($("#ddlSnapshots option:selected").text());
+        });
+    });
+</script> 
