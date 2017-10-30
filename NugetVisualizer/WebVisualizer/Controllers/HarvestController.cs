@@ -28,12 +28,21 @@
         public async Task<IActionResult> Index()
         {
             var model = GetDefaultViewModel();
+            if (model == null)
+            {
+                return RedirectToAction("CreateSnapshot", "Harvest");
+            }
             return View(model);
         }
 
         private HarvestViewModel GetDefaultViewModel()
         {
             var snapshots = _snapshotService.GetSnapshots();
+
+            if (snapshots.Count == 0)
+            {
+                return null;
+            }
 
             return new HarvestViewModel()
                        {

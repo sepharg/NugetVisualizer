@@ -25,7 +25,12 @@
         {
             var packagesViewModel = new PackagesViewModel();
             var snapshots = _snapshotService.GetSnapshots();
+            if (snapshots.Count == 0)
+            {
+                return RedirectToAction("CreateSnapshot", "Harvest");
+            }
             packagesViewModel.SetPackagesOrderedByVersionCount(await _packageSearchService.GetPackagesOrderedByVersions(snapshots.First().Version), snapshots);
+
             return View(packagesViewModel);
         }
 

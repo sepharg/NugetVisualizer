@@ -25,14 +25,24 @@
         public async Task<IActionResult> Index()
         {
             var model = await GetDefaultDashboardViewModel();
+            if (model == null)
+            {
+                return RedirectToAction("CreateSnapshot", "Harvest");
+            }
             return View(model);
         }
 
         private async Task<DashboardViewModel> GetDefaultDashboardViewModel()
         {
             var snapshots = _snapshotService.GetSnapshots();
+            if (snapshots.Count == 0)
+            {
+                return null;
+            }
+
             var mostUsedPackagesViewModel = await _dashboardService.GetMostUsedPackagesViewModel(5, snapshots.First().Version);
             var leastUsedPackagesViewModel = await _dashboardService.GetLeastUsedPackagesViewModel(5, snapshots.First().Version);
+
             return new DashboardViewModel()
                        {
                            MostUsedPackagesViewModel = (MostUsedPackagesViewModel)mostUsedPackagesViewModel,

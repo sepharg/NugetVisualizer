@@ -12,6 +12,8 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
+    using NugetVisualizer.Core.Repositories;
+
     using WebVisualizer.IoC;
 
     public class Startup
@@ -34,6 +36,7 @@
             builder.RegisterModule<WebModuleInstaller>();
             builder.Populate(services);
             ApplicationContainer = builder.Build();
+            ApplicationContainer.Resolve<NugetVisualizerContext>().Database.EnsureCreated();
 
             return new AutofacServiceProvider(ApplicationContainer);
         }
