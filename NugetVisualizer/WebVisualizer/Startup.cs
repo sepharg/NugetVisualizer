@@ -1,18 +1,20 @@
-﻿using System;
-
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace WebVisualizer
+﻿namespace WebVisualizer
 {
+    using System;
+
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
 
     using Boostrapper;
 
-    using WebVisualizer.Services;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+
+    using NugetVisualizer.Core.Repositories;
+
+    using WebVisualizer.IoC;
 
     public class Startup
     {
@@ -31,12 +33,10 @@ namespace WebVisualizer
             services.AddMvc();
 
             var builder = AutofacContainerFactory.GetBuilder();
-            // ToDo : move this into IoC project
-            builder.RegisterType<PackageSearchService>();
-            builder.RegisterType<DashboardService>();
-            builder.RegisterType<SnapshotService>();
+            builder.RegisterModule<WebModuleInstaller>();
             builder.Populate(services);
             ApplicationContainer = builder.Build();
+            ApplicationContainer.Resolve<NugetVisualizerContext>().Database.EnsureCreated();
 
             return new AutofacServiceProvider(ApplicationContainer);
         }

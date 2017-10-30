@@ -1,0 +1,84 @@
+﻿@model HarvestViewModel
+
+@{
+    ViewData["Title"] = "Create Snapshot";
+}
+
+<div class="panel panel-default" style="margin-top: 12px;">
+    <div class="panel-body">
+        <form asp-controller="Harvest" asp-action="DoCreateSnapshot" method="post" class="form">
+            <div class="form-group">
+                <input type="hidden" asp-for="Append"/>
+                <input type="hidden" asp-for="SelectedSnapshotId"/>
+                <label for="txtNewSnapshotName">Snapshot Name</label>
+                @if (Model.Append)
+                {
+                    <input type="text" asp-for="SnapshotName" class="form-control" id="txtNewSnapshotName" readonly="readonly" />
+                }
+                else
+                {
+                    <input type="text" asp-for="SnapshotName" class="form-control" id="txtNewSnapshotName" />
+                }
+                
+                <span asp-validation-for="SnapshotName" class="text-danger"></span>
+                <p/>
+
+                <label for="ddlParserType">Parser Type</label>
+                <select id="ddlParserType" asp-for="ParserType" asp-items="Model.ParserTypes" class="form-control"></select>
+                <p/>
+
+                <label for="txtRootPath" id="lblRootPath">Full root path to where the projects are located</label>
+                <input type="text" asp-for="RootPath" class="form-control" id="txtRootPath" placeholder="i.e. C:\Development\MyProjects\Repositories">
+                <span asp-validation-for="RootPath" class="text-danger"></span>
+                <p/>
+
+                <label for="txtFilters">Filters (optional)</label>
+                <input type="text" asp-for="Filters" class="form-control" id="txtFilters" placeholder="space separated list of filters">
+                <p/>
+
+                <button id="btnNew" type="submit" class="btn btn-primary btn-sm" @((Model.ProjectParsingResult != null) ? "disabled" : String.Empty)>Create</button>
+            </div>
+        </form>
+        
+        <div id="processedItems" style="display: @( (Model.ProjectParsingResult == null) ? "none" : String.Empty)">
+            The following projects where parsed: <p/>
+            <ul >
+                @if (Model.ProjectParsingResult != null)
+                {
+                    foreach (var parsedProject in Model.ProjectParsingResult.ParsedProjects)
+                    {
+                        <li>@parsedProject.Name</li>
+                    }
+                }
+            </ul>
+            @if (Model.ProjectParsingResult != null)
+            {
+                if (Model.ProjectParsingResult.AllExistingProjectsParsed)
+                {
+                    <p/>
+                    <span>All Projects where parsed.</span>
+                }
+                else
+                {
+                    <p/>
+                    <span>Not all projects could be parsed, please rerun to continue after the last successful parsed project.</span>
+                }
+            }
+        </div>
+        
+    </div>
+</div>
+
+<script type="text/javascript">  
+    $(document).ready(function () {
+        $("#ddlParserType").change(function () {
+            if ($("#ddlParserType").val() === 'FileSystem') {
+                $('#lblRootPath').text("Full root path to where the projects are located");
+                $('#txtRootPath').attr("placeholder", "i.e. C:\Development\MyProjects\Repositories");
+            } else {
+                $('#lblRootPath').text("Github Organization name");
+                $('#txtRootPath').attr("placeholder", "i.e. Microsoft");
+            }
+        });
+    });
+</script> 
