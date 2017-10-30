@@ -7,6 +7,7 @@ Tool intended to help visualize all of the nuget packages and their correspondin
 
 Initially, the data must be harvested. This can be done via the file system or by using the github API.
 A console app is provided for testing purposes (and can be used as code examples on how to use)
+The data can be harvested from the Harvest menu on the web.
 Once the data is harvested, it can be visualized
 All data is stored in a Sqlite database
 
@@ -27,9 +28,7 @@ The following variables are supported:
 
 ##### Database
 
-The database is initially created when the console app runs, it is created under the path defined by the *Dbpath* variable
-
-ToDo: add support for *dotnet ef database update* command
+The database is initially created when the console app or website runs, it is created under the path defined by the *Dbpath* variable
 
 ##### Configuration
 
@@ -47,6 +46,14 @@ Just run them normally. At the moment of writing, Resharper's test runner doesn'
 The Integration Tests that connect to github cannot be run locally, because a token is needed for a dummy organization i've created. Github doesn't let me check in tokens into source control for security reasons, so these tests run only on the travis build.	
 	
 ##### Sample Screenshots
+
+![Create Snapshot](create-snapshot.PNG?raw=true "Create Snapshot")
+
+Snapshot creation (data harvest) page
+
+![Append Snapshot](append-snapshot.PNG?raw=true "Append Snapshot")
+
+Once a Snapshot is created, data can be appended to it (make sure you're not adding the same repositories twice though)
 
 ![Dashboard Example](dashboard.PNG?raw=true "Dashboard Example")
 
