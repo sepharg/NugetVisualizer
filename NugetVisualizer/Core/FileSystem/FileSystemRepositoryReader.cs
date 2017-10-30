@@ -13,12 +13,18 @@
         {
             var projectDirectories = Directory.GetDirectories(rootPath, $"*{string.Join("*", filters)}*");
 
-            var directories = new List<IProjectIdentifier>();
+            var projects = new List<IProjectIdentifier>();
             foreach (var projectDirectory in projectDirectories)
             {
-                directories.Add(new ProjectIdentifier(Path.GetFileName(projectDirectory), projectDirectory));
+                var allSolutions = Directory.GetFiles(projectDirectory, "*.sln", SearchOption.AllDirectories);
+                foreach (var solution in allSolutions)
+                {
+                    var fileName = Path.GetFileName(solution);
+                    var directoryName = Path.GetDirectoryName(solution);
+                    projects.Add(new ProjectIdentifier(fileName.Substring(0, fileName.Length - 4), directoryName));
+                }
             }
-            return directories;
+            return projects;
         }
 
         public Task<List<IProjectIdentifier>> GetProjectsAsync(string rootPath, string[] filters)
