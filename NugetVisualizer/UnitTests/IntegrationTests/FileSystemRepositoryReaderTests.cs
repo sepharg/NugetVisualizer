@@ -57,7 +57,7 @@
             _projectIdentifiers.Count.ShouldBe(3);
             var oneProject = _projectIdentifiers.SingleOrDefault(x => x.Name.Equals("MySol1"));
             oneProject.ShouldNotBeNull();
-            oneProject.Path.ShouldEndWith("TestData\\FolderWithTwoSolutions\\Sol1");
+            oneProject.Path.ShouldEndWith($"TestData{Path.DirectorySeparatorChar}FolderWithTwoSolutions{Path.DirectorySeparatorChar}Sol1");
             _projectIdentifiers.SingleOrDefault(x => x.Name.Equals("Sol2")).ShouldNotBeNull();
             _projectIdentifiers.SingleOrDefault(x => x.Name.Equals("NoPackages")).ShouldNotBeNull();
         }
