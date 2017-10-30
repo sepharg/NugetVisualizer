@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace NugetVisualizer.Core
 {
@@ -8,13 +6,16 @@ namespace NugetVisualizer.Core
 
     public class ProjectParsingResult
     {
-        public ProjectParsingResult(List<Project> parsedProjects, bool allExistingProjectsParsed)
+        public ProjectParsingResult(List<Project> parsedProjects, List<string> parsingErrors, bool allExistingProjectsParsed)
         {
             ParsedProjects = parsedProjects;
             AllExistingProjectsParsed = allExistingProjectsParsed;
+            ParsingErrors = parsingErrors;
         }
 
         public List<Project> ParsedProjects { get; }
+
+        public List<string> ParsingErrors { get; }
 
         public bool AllExistingProjectsParsed { get; }
     }

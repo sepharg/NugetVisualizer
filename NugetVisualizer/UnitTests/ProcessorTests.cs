@@ -42,7 +42,7 @@
                                       };
             _autoMocker.GetMock<IProjectParser>()
                 .Setup(x => x.ParseProjectsAsync(It.IsAny<IEnumerable<IProjectIdentifier>>(), _snapshotVersion))
-                .ReturnsAsync(() => new ProjectParsingResult(null, false))
+                .ReturnsAsync(() => new ProjectParsingResult(null, null, false))
                 .Callback<IEnumerable<IProjectIdentifier>, int>((identifiers, snapshotVersion) => _parsedProjects = identifiers);
             _autoMocker.GetMock<ISnapshotRepository>()
                 .Setup(x => x.Add(It.IsAny<Snapshot>()))

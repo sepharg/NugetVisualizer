@@ -5,6 +5,8 @@ using TestStack.BDDfy;
 
 namespace UnitTests
 {
+    using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
@@ -55,9 +57,9 @@ namespace UnitTests
 
         [Fact]
 
-        public async Task GivenAProjectCannotBeParsed_WhenParsingProject_ThenNotAllExistingProjectsCanBeParsed()
+        public async Task GivenAProjectCannotBeParsedFatal_WhenParsingProject_ThenNotAllExistingProjectsCanBeParsed()
         {
-            this.Given(x => x.GivenAProjectCannotBeParsed())
+            this.Given(x => x.GivenAProjectCannotBeParsedFatal())
                 .When(x => x.WhenParsingProject())
                 .Then(x => x.ThenNotAllExistingProjectsCanBeParsed())
                 .And(x => x.ThenStopsAtFirstError())
@@ -66,9 +68,21 @@ namespace UnitTests
 
         [Fact]
 
-        public async Task GivenAProjectCannotBeParsed_WhenParsingProject_ThenSavesProjectUntilItFails()
+        public async Task GivenAProjectCannotBeParsedSoft_WhenParsingProject_ThenNotAllExistingProjectsCanBeParsed()
         {
-            this.Given(x => x.GivenAProjectCannotBeParsed())
+            this.Given(x => x.GivenAProjectCannotBeParsedSoft())
+                .When(x => x.WhenParsingProject())
+                .Then(x => x.ThenNotAllExistingProjectsCanBeParsed())
+                .And(x => x.ThenParsesWhatItCan())
+                .And(x => x.ThenPartialParsingErrorsAreReturned())
+                .BDDfy();
+        }
+
+        [Fact]
+
+        public async Task GivenAProjectCannotBeParsedFatal_WhenParsingProject_ThenSavesProjectUntilItFails()
+        {
+            this.Given(x => x.GivenAProjectCannotBeParsedFatal())
                 .When(x => x.WhenParsingProject())
                 .Then(x => x.ThenLastSuccessfullParsedProjectIsSaved())
                 .And(x => x.ThenWorkingProjectsAreSaved())
@@ -77,9 +91,9 @@ namespace UnitTests
 
         [Fact]
 
-        public async Task GivenFirstProjectCannotBeParsed_WhenParsingProject_ThenNothingIsSaved()
+        public async Task GivenFirstProjectCannotBeParsedFatal_WhenParsingProject_ThenNothingIsSaved()
         {
-            this.Given(x => x.GivenFirstProjectCannotBeParsed())
+            this.Given(x => x.GivenFirstProjectCannotBeParsedFatal())
                 .When(x => x.WhenParsingProject())
                 .Then(x => x.ThenLastSuccessfullParsedProjectIsNotSaved())
                 .BDDfy();
@@ -102,14 +116,24 @@ namespace UnitTests
                 .ReturnsAsync(new List<XDocument>());
         }
 
-        private void GivenAProjectCannotBeParsed()
+        private void GivenAProjectCannotBeParsedFatal()
         {
             _autoMocker.GetMock<IPackageReader>()
                        .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Contains("notwork"))))
-                       .Throws<CannotGetPackagesContentsException>();
+                       .Throws<CannotGetPackagesContentsException>(); // cannot get any packages contents from now on. i.e.: github api token limit exceeded.
         }
 
-        private void GivenFirstProjectCannotBeParsed()
+        private void GivenAProjectCannotBeParsedSoft()
+        {
+            _autoMocker.GetMock<IPackageReader>()
+                .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Contains("notwork"))))
+                .Throws<IOException>(); // file is accessed exclusively by another process. will skip
+            _autoMocker.GetMock<IPackageReader>()
+                .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Contains("notwork2"))))
+                .Throws<IOException>(); // file is accessed exclusively by another process. will skip
+        }
+
+        private void GivenFirstProjectCannotBeParsedFatal()
         {
             _autoMocker.GetMock<IPackageReader>()
                 .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Contains("first"))))
@@ -146,9 +170,26 @@ namespace UnitTests
             _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("last"))), Times.Never);
         }
 
+        private void ThenParsesWhatItCan()
+        {
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("first"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("second"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("notwork"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("third"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("notwork2"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("last"))));
+        }
+
         private void ThenNotAllExistingProjectsCanBeParsed()
         {
             _projectParsingResult.AllExistingProjectsParsed.ShouldBeFalse();
+        }
+
+        private void ThenPartialParsingErrorsAreReturned()
+        {
+            _projectParsingResult.ParsingErrors.Count.ShouldBe(2);
+            _projectParsingResult.ParsingErrors.FirstOrDefault(x => x.Contains("notwork")).ShouldNotBeNull();
+            _projectParsingResult.ParsingErrors.SingleOrDefault(x => x.Contains("notwork2")).ShouldNotBeNull();
         }
 
         private void ThenWorkingProjectsAreSaved()

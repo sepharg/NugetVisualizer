@@ -40,20 +40,26 @@
             </div>
         </form>
         
-        <div id="processedItems" style="display: @( (Model.ProjectParsingResult == null) ? "none" : String.Empty)">
-            The following projects where parsed: <p/>
-            <ul >
-                @if (Model.ProjectParsingResult != null)
-                {
-                    foreach (var parsedProject in Model.ProjectParsingResult.ParsedProjects)
+        @if (Model.ProjectParsingResult != null)
+        {
+            <div id="processedItems">
+                The following projects where parsed: <p/>
+                <ul>
+                    @foreach (var parsedProject in Model.ProjectParsingResult.ParsedProjects)
                     {
-                        <li>@parsedProject.Name</li>
+                    <li>@parsedProject.Name</li>
                     }
-                }
-            </ul>
-            @if (Model.ProjectParsingResult != null)
-            {
-                if (Model.ProjectParsingResult.AllExistingProjectsParsed)
+                </ul>
+                <p />
+                The following projects could not be parsed: <p/>
+                <ul>
+                    @foreach (var parsingError in Model.ProjectParsingResult.ParsingErrors)
+                    {
+                    <li>@parsingError</li>
+                    }
+                </ul>
+                <p />
+                @if (Model.ProjectParsingResult.AllExistingProjectsParsed)
                 {
                     <p/>
                     <span>All Projects where parsed.</span>
@@ -63,8 +69,8 @@
                     <p/>
                     <span>Not all projects could be parsed, please rerun to continue after the last successful parsed project.</span>
                 }
-            }
-        </div>
+            </div>
+        }
         
     </div>
 </div>
