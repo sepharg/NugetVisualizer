@@ -61,7 +61,7 @@
 
         private async Task<string[]> GetPackagesFiles(IProjectIdentifier projectIdentifier)
         {
-            var searchCodeRequest = new SearchCodeRequest() { FileName = "packages.config" };
+            var searchCodeRequest = new SearchCodeRequest() { FileName = "packages.config", Path = projectIdentifier.Path };
             searchCodeRequest.Repos.Add($"{_configurationRoot["GithubOrganization"]}/{projectIdentifier.Name}");
             var searchResult = await _gitHubClient.Search.SearchCode(searchCodeRequest);
             return Enumerable.Select<SearchCode, string>(searchResult.Items, x => x.Url.Substring(x.Url.IndexOf("contents") + 8)).ToArray(); // blablabla/contents/{filepath}

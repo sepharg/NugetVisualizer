@@ -10,6 +10,8 @@
     using NugetVisualizer.Core.Exceptions;
     using NugetVisualizer.Core.Repositories;
 
+    using Octokit;
+
     using Project = Domain.Project;
 
     public class ProjectParser : IProjectParser
@@ -61,13 +63,19 @@
                 }
                 catch (CannotGetPackagesContentsException e)
                 {
-                    project = null;
                     fatalParsingError = true;
+                    project = null;
+                    parsingErrors.Add($"Project {projectIdentifier.Name} cannot be parsed : {e.Message}");
                 }
                 catch (IOException e)
                 {
                     project = null;
                     parsingErrors.Add($"Project {projectIdentifier.Name} cannot be parsed : {e.Message}");
+                }
+                catch (ApiValidationException apiValidationException)
+                {
+                    project = null;
+                    parsingErrors.Add($"Project {projectIdentifier.Name} cannot be parsed : {apiValidationException.Message}");
                 }
                 
                 if (project != null)

@@ -48,7 +48,7 @@
 
         private async Task GivenAGithubOrganisationWithProjectsAndPackages()
         {
-            var githubRepositoryReader = new GithubRepositoryReader(new ConfigurationHelper());
+            var githubRepositoryReader = new GithubRepositoryReader(new ConfigurationHelper(), new GithubClientFactory());
             _projectIdentifiers = await githubRepositoryReader.GetProjectsAsync("sephargorganization", new[] { "testrepo" });
         }
 
