@@ -51,6 +51,7 @@
   <ItemGroup>
     <None Include="TestData\FolderWithTwoSolutions\Sol1\MySol1.sln" />
     <None Include="TestData\FolderWithTwoSolutions\Something\Sol2\Sol2.sln" />
+    <None Include="TestData\RootSol.sln" />
     <None Include="TestData\SolutionWithoutPackages\NoPackages.sln" />
   </ItemGroup>
 
