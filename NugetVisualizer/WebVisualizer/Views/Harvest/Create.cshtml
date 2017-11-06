@@ -47,18 +47,25 @@
                 <ul>
                     @foreach (var parsedProject in Model.ProjectParsingResult.ParsedProjects)
                     {
-                    <li>@parsedProject.Name</li>
+                        <li>@parsedProject.Name</li>
                     }
                 </ul>
                 <p />
-                The following projects could not be parsed: <p/>
-                <ul>
-                    @foreach (var parsingError in Model.ProjectParsingResult.ParsingErrors)
-                    {
-                    <li>@parsingError</li>
-                    }
-                </ul>
-                <p />
+                
+                @if (Model.ProjectParsingResult.ParsingErrors.Count != 0)
+                {
+                    <div>
+                        The following projects could not be parsed: <p/>
+                        <ul>
+                            @foreach (var parsingError in Model.ProjectParsingResult.ParsingErrors)
+                            {
+                                <li>@parsingError</li>
+                            }
+                        </ul>
+                        <p />
+                    </div>
+                }
+                
                 @if (Model.ProjectParsingResult.AllExistingProjectsParsed)
                 {
                     <p/>

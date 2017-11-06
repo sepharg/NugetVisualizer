@@ -1,10 +1,16 @@
 ﻿namespace NugetVisualizer.Core
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Repositories;
+
+    using Octokit;
+
+    using Project = NugetVisualizer.Core.Domain.Project;
 
     public class Processor : IProcessor
     {
@@ -27,7 +33,16 @@
         public async Task<ProjectParsingResult> Process(string rootPath, string[] filters, int snapshotVersion)
         {
             var latestParsedProject = _projectParsingState.GetLatestParsedProject();
-            var projectIdentifiers = await _repositoryReader.GetProjectsAsync(rootPath, filters);
+            List<IProjectIdentifier> projectIdentifiers;
+            try
+            {
+                projectIdentifiers = await _repositoryReader.GetProjectsAsync(rootPath, filters);
+            }
+            catch (RateLimitExceededException limitExceededException)
+            {
+                return new ProjectParsingResult(new List<Project>(), new List<string> { $"Couldn't get the list of projects : {limitExceededException.Message}" }, false);
+            }
+            
             if (string.IsNullOrEmpty(latestParsedProject))
             {
                 return await _projectParser.ParseProjectsAsync(projectIdentifiers, snapshotVersion);
