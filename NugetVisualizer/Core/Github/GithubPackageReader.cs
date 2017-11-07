@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Xml;
@@ -34,6 +35,9 @@
             var ret = new List<XDocument>();
             try
             {
+                var counter = new Stopwatch();
+                var searchApiCalls = 0;
+                counter.Start();
                 foreach (var packagesFile in await GetPackagesFiles(projectIdentifier))
                 {
                     var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(_configurationRoot["GithubOrganization"], projectIdentifier.RepositoryName, packagesFile)).Single();
@@ -47,7 +51,17 @@
                     catch (XmlException e)
                     {
                         // ToDo : Log this in a better way
-                        Console.WriteLine($"Error {e.Message} while parsing {packagesFile} for {projectIdentifier.SolutionName}");
+                        Trace.WriteLine($"Error {e.Message} while parsing {packagesFile} for {projectIdentifier.SolutionName}");
+                    }
+
+                    searchApiCalls++;
+                    // Github's search API has a custom limit of 30 requests per minute, so we have to throttle otherwise we get kicked out. https://developer.github.com/v3/search/#rate-limit 
+                    if (searchApiCalls == 29 && counter.ElapsedMilliseconds < 60000)
+                    {
+                        int remainingTimeUntilMinuteHasPassed = (int)((1000 * 60) - counter.ElapsedMilliseconds);
+                        await Task.Delay(remainingTimeUntilMinuteHasPassed).ConfigureAwait(false);
+                        searchApiCalls = 0;
+                        counter.Restart();
                     }
                 }
             }
@@ -65,7 +79,7 @@
             var searchCodeRequest = new SearchCodeRequest() { FileName = "packages.config", Path = projectIdentifier.Path };
             searchCodeRequest.Repos.Add($"{_configurationRoot["GithubOrganization"]}/{projectIdentifier.RepositoryName}");
             var searchResult = await _gitHubClient.Search.SearchCode(searchCodeRequest);
-            return Enumerable.Select<SearchCode, string>(searchResult.Items, x => x.Url.Substring(x.Url.IndexOf("contents") + 8)).ToArray(); // blablabla/contents/{filepath}
+            return searchResult.Items.Select(x => x.Url.Substring(x.Url.IndexOf("contents") + 8)).ToArray(); // blablabla/contents/{filepath}
         }
 
         private string GetDownloadedFileContent(RepositoryContent downloadedFile)
