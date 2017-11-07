@@ -25,7 +25,7 @@
         {
             _githubClientFactory = githubClientFactory;
             _configurationRoot = configurationHelper.GetConfiguration();
-            InMemoryCredentialStore credentials = new InMemoryCredentialStore(new Credentials(_configurationRoot["GithubToken"]));
+            var credentials = new InMemoryCredentialStore(new Credentials(_configurationRoot["GithubToken"]));
             _gitHubClient = _githubClientFactory.GetClient(_configurationRoot["GithubOrganization"], credentials);
         }
 
@@ -33,36 +33,24 @@
         {
             // Github's search API has a custom limit of 30 requests per minute, so we have to throttle otherwise we get kicked out very likely. https://developer.github.com/v3/search/#rate-limit
             var projects = new List<IProjectIdentifier>();
-            var result = await _gitHubClient.Repository.GetAllForOrg(rootPath);
+            
+            var searchRequest = new SearchCodeRequest($"org:{rootPath} filename:*.sln");
+            var keepSearching = true;
+            var page = 0;
+            var parsedSoFar = 0;
 
-            var counter = new Stopwatch();
-            int processed = 0;
-
-            counter.Start();
-            foreach (var repository in result.Where(x => filters.All(filter => x.Name.ToLowerInvariant().Contains(filter.ToLowerInvariant()))))
+            do
             {
-                // get all sln files from the repo and treat them as projects
-                var searchRequest = new SearchCodeRequest($"filename:*.sln+repo:{rootPath}/{repository.Name}");
-
-                if ((counter.ElapsedMilliseconds <= 1000 * 60) && processed >= 30)
-                {
-                    counter.Stop();
-                    // wait until a full minute has passed, then start again with 30 available requests to process
-                    var extraSlack = 3000;
-                    int remainingTimeUntilMinuteHasPassed = (int)(((1000 * 60) + extraSlack) - counter.ElapsedMilliseconds);
-                    await Task.Delay(remainingTimeUntilMinuteHasPassed).ConfigureAwait(false);
-                    counter.Start();
-                    processed = 0;
-                }
+                searchRequest.Page = ++page;
                 var searchResult = await _gitHubClient.Search.SearchCode(searchRequest);
-                processed++;
+                keepSearching = searchResult.TotalCount > parsedSoFar;
 
-                foreach (var searchResultItem in searchResult.Items)
+                foreach (var searchResultItem in searchResult.Items.Where(x => filters.All(filter => x.Repository.Name.ToLowerInvariant().Contains(filter.ToLowerInvariant()))))
                 {
                     var projectPath = searchResultItem.Path;
-                    string solutionName = String.Empty;
-                    string solutionPath = String.Empty;
-                    
+                    string solutionName;
+                    var solutionPath = string.Empty;
+
                     if (projectPath.LastIndexOf('/') != -1)
                     {
                         solutionName = projectPath.Substring(projectPath.LastIndexOf('/') + 1)
@@ -74,9 +62,12 @@
                         solutionName = projectPath.Substring(0, projectPath.Length - 4);
                     }
 
-                    projects.Add(new ProjectIdentifier(solutionName, repository.Name, solutionPath));
+                    projects.Add(new ProjectIdentifier(solutionName, searchResultItem.Repository.Name, solutionPath));
                 }
+                parsedSoFar += searchResult.Items.Count;
             }
+            while (keepSearching);
+            
             return projects;
         }
 

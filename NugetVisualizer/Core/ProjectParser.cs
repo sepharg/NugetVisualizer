@@ -54,7 +54,6 @@
             string lastSuccessfullParsedProjectName = null;
             foreach (var projectIdentifier in projectIdentifiers)
             {
-                // ToDo : Handle System.IO.IOException (file used by another process)
                 Project project;
                 fatalParsingError = false;
                 try
