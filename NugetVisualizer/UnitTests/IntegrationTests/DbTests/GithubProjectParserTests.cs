@@ -62,6 +62,7 @@
         {
             ShouldBeNullExtensions.ShouldNotBeNull<IEnumerable<Project>>(_projects);
             Enumerable.Count<Project>(_projects).ShouldBeGreaterThan(0);
+            _projects.First().ProjectPackages.Count.ShouldBe(29);
         }
     }
 }
