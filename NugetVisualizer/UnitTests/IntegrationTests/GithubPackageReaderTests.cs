@@ -41,7 +41,8 @@
 
         private void GivenAGithubProjectWithPackages()
         {
-            _projectIdentifier = new ProjectIdentifier("testrepo", "");
+            // ToDo : need to adapt dummy repository in github so that the test passes.
+            _projectIdentifier = new ProjectIdentifier("testrepo", "testrepo", "");
         }
 
         private async Task WhenReadingThePackagesForTheProject()

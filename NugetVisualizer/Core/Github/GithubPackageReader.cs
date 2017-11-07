@@ -36,7 +36,7 @@
             {
                 foreach (var packagesFile in await GetPackagesFiles(projectIdentifier))
                 {
-                    var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(_configurationRoot["GithubOrganization"], projectIdentifier.Name, packagesFile)).Single();
+                    var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(_configurationRoot["GithubOrganization"], projectIdentifier.RepositoryName, packagesFile)).Single();
 
                     var downloadedFileContent = GetDownloadedFileContent(downloadedFile);
                     try
@@ -47,7 +47,7 @@
                     catch (XmlException e)
                     {
                         // ToDo : Log this in a better way
-                        Console.WriteLine($"Error {e.Message} while parsing {packagesFile} for {projectIdentifier.Name}");
+                        Console.WriteLine($"Error {e.Message} while parsing {packagesFile} for {projectIdentifier.SolutionName}");
                     }
                 }
             }
@@ -61,8 +61,9 @@
 
         private async Task<string[]> GetPackagesFiles(IProjectIdentifier projectIdentifier)
         {
+            // ToDo : add throttling here too
             var searchCodeRequest = new SearchCodeRequest() { FileName = "packages.config", Path = projectIdentifier.Path };
-            searchCodeRequest.Repos.Add($"{_configurationRoot["GithubOrganization"]}/{projectIdentifier.Name}");
+            searchCodeRequest.Repos.Add($"{_configurationRoot["GithubOrganization"]}/{projectIdentifier.RepositoryName}");
             var searchResult = await _gitHubClient.Search.SearchCode(searchCodeRequest);
             return Enumerable.Select<SearchCode, string>(searchResult.Items, x => x.Url.Substring(x.Url.IndexOf("contents") + 8)).ToArray(); // blablabla/contents/{filepath}
         }

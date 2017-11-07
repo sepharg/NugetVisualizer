@@ -36,7 +36,7 @@
         private async Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier, int snapshotVersion)
         {
             var packagesContents = await _packageReader.GetPackagesContentsAsync(projectIdentifier);
-            var project = new Project(projectIdentifier.Name);
+            var project = new Project(projectIdentifier.SolutionName);
             var groupedPackagesByVersion = packagesContents.SelectMany(x => _packageParser.ParsePackages(x)).GroupBy(package => new { package.Name, package.Version }); // getting the first item of the group is fancy version of "distinct"
             var packages = groupedPackagesByVersion.Select(group => group.First()).ToList();
             _packageRepository.AddRange(packages);
@@ -65,17 +65,17 @@
                 {
                     fatalParsingError = true;
                     project = null;
-                    parsingErrors.Add($"Project {projectIdentifier.Name} cannot be parsed : {e.Message}");
+                    parsingErrors.Add($"Project {projectIdentifier.SolutionName} cannot be parsed : {e.Message}");
                 }
                 catch (IOException e)
                 {
                     project = null;
-                    parsingErrors.Add($"Project {projectIdentifier.Name} cannot be parsed : {e.Message}");
+                    parsingErrors.Add($"Project {projectIdentifier.SolutionName} cannot be parsed : {e.Message}");
                 }
                 catch (ApiValidationException apiValidationException)
                 {
                     project = null;
-                    parsingErrors.Add($"Project {projectIdentifier.Name} cannot be parsed : {apiValidationException.Message}");
+                    parsingErrors.Add($"Project {projectIdentifier.SolutionName} cannot be parsed : {apiValidationException.Message}");
                 }
                 
                 if (project != null)

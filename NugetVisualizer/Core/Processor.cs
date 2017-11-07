@@ -48,7 +48,7 @@
                 return await _projectParser.ParseProjectsAsync(projectIdentifiers, snapshotVersion);
             }
 
-            var alreadyProcessed = projectIdentifiers.FindIndex(pi => pi.Name.Equals(latestParsedProject)) + 1;
+            var alreadyProcessed = projectIdentifiers.FindIndex(pi => pi.SolutionName.Equals(latestParsedProject)) + 1;
             var remainingProjectsToParse = projectIdentifiers.Skip(alreadyProcessed);
             return await _projectParser.ParseProjectsAsync(remainingProjectsToParse, snapshotVersion);
         }

@@ -35,7 +35,7 @@
             {
                 var fileName = Path.GetFileName(solution);
                 var directoryName = Path.GetDirectoryName(solution);
-                projects.Add(new ProjectIdentifier(fileName.Substring(0, fileName.Length - 4), directoryName));
+                projects.Add(new ProjectIdentifier(fileName.Substring(0, fileName.Length - 4), directoryName, directoryName));
             }
         }
     }

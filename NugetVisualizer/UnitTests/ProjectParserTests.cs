@@ -46,12 +46,12 @@ namespace UnitTests
                         .ReturnsAsync(new List<XDocument>());
             _projectIdentifiers = new List<IProjectIdentifier>()
                                       {
-                                          new ProjectIdentifier("first", "firstpath"),
-                                          new ProjectIdentifier("second", "secondpath"),
-                                          new ProjectIdentifier("notwork", "notworkpath"),
-                                          new ProjectIdentifier("third", "thirdpath"),
-                                          new ProjectIdentifier("notwork2", "notwork2path"),
-                                          new ProjectIdentifier("last", "lastpath")
+                                          new ProjectIdentifier("first", "repo", "firstpath"),
+                                          new ProjectIdentifier("second", "repo", "secondpath"),
+                                          new ProjectIdentifier("notwork", "repo", "notworkpath"),
+                                          new ProjectIdentifier("third", "repo", "thirdpath"),
+                                          new ProjectIdentifier("notwork2", "repo", "notwork2path"),
+                                          new ProjectIdentifier("last", "repo", "lastpath")
                                       };
         }
 
@@ -119,24 +119,24 @@ namespace UnitTests
         private void GivenAProjectCannotBeParsedFatal()
         {
             _autoMocker.GetMock<IPackageReader>()
-                       .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Contains("notwork"))))
+                       .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Contains("notwork"))))
                        .Throws<CannotGetPackagesContentsException>(); // cannot get any packages contents from now on. i.e.: github api token limit exceeded.
         }
 
         private void GivenAProjectCannotBeParsedSoft()
         {
             _autoMocker.GetMock<IPackageReader>()
-                .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Contains("notwork"))))
+                .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Contains("notwork"))))
                 .Throws<IOException>(); // file is accessed exclusively by another process. will skip
             _autoMocker.GetMock<IPackageReader>()
-                .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Contains("notwork2"))))
+                .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Contains("notwork2"))))
                 .Throws<IOException>(); // file is accessed exclusively by another process. will skip
         }
 
         private void GivenFirstProjectCannotBeParsedFatal()
         {
             _autoMocker.GetMock<IPackageReader>()
-                .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Contains("first"))))
+                .Setup(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Contains("first"))))
                 .Throws<CannotGetPackagesContentsException>();
         }
 
@@ -162,22 +162,22 @@ namespace UnitTests
 
         private void ThenStopsAtFirstError()
         {
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("first"))));
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("second"))));
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("notwork"))));
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("third"))), Times.Never);
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("notwork2"))), Times.Never);
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("last"))), Times.Never);
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("first"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("second"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("notwork"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("third"))), Times.Never);
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("notwork2"))), Times.Never);
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("last"))), Times.Never);
         }
 
         private void ThenParsesWhatItCan()
         {
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("first"))));
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("second"))));
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("notwork"))));
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("third"))));
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("notwork2"))));
-            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.Name.Equals("last"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("first"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("second"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("notwork"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("third"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("notwork2"))));
+            _autoMocker.GetMock<IPackageReader>().Verify(x => x.GetPackagesContentsAsync(It.Is<IProjectIdentifier>(pi => pi.SolutionName.Equals("last"))));
         }
 
         private void ThenNotAllExistingProjectsCanBeParsed()

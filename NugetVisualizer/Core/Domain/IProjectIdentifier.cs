@@ -2,21 +2,26 @@
 {
     public interface IProjectIdentifier
     {
-        string Name { get; }
+        string SolutionName { get; }
 
         string Path { get; }
+
+        string RepositoryName { get; }
     }
 
     public class ProjectIdentifier : IProjectIdentifier
     {
-        public ProjectIdentifier(string name, string path)
+        public ProjectIdentifier(string solutionName, string repositoryName, string path)
         {
-            Name = name;
+            SolutionName = solutionName;
+            RepositoryName = repositoryName;
             Path = path;
         }
 
-        public string Name { get; }
+        public string SolutionName { get; }
 
         public string Path { get; }
+
+        public string RepositoryName { get; }
     }
 }

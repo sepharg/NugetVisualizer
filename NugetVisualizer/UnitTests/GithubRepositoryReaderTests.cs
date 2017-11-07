@@ -150,15 +150,17 @@ namespace UnitTests
         private void ThenNameAndPathAreParsedCorrectly()
         {
             _projectIdentifiers.Count.ShouldBe(3);
-            _projectIdentifiers.First().Name.ShouldBe("AtTheRoot");
+            _projectIdentifiers.First().SolutionName.ShouldBe("AtTheRoot");
+            _projectIdentifiers.First().RepositoryName.ShouldBe(_repoName);
             _projectIdentifiers.First().Path.ShouldBe("");
 
-            _projectIdentifiers.ElementAt(1).Name.ShouldBe("infolder");
+            _projectIdentifiers.ElementAt(1).SolutionName.ShouldBe("infolder");
+            _projectIdentifiers.ElementAt(1).RepositoryName.ShouldBe(_repoName);
             _projectIdentifiers.ElementAt(1).Path.ShouldBe("src/folder");
 
-            _projectIdentifiers.ElementAt(2).Name.ShouldBe("another");
+            _projectIdentifiers.ElementAt(2).SolutionName.ShouldBe("another");
+            _projectIdentifiers.ElementAt(2).RepositoryName.ShouldBe(_repoName);
             _projectIdentifiers.ElementAt(2).Path.ShouldBe("src/folder2/folder11");
         }
-       
     }
 }
