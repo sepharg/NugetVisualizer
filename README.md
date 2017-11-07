@@ -5,11 +5,19 @@ Tool intended to help visualize all of the nuget packages and their correspondin
 
 ### Process
 
-Initially, the data must be harvested. This can be done via the file system or by using the github API.
-A console app is provided for testing purposes (and can be used as code examples on how to use)
-The data can be harvested from the Harvest menu on the web.
+Initially, the data must be harvested. This can be done via the file system or by using the github API.  
+A console app is provided for testing purposes (and can be used as code examples on how to use)  
+The data can be harvested from the Harvest menu on the web.  
 Once the data is harvested, it can be visualized
 All data is stored in a Sqlite database
+
+The harvesting process looks for .sln files in the hierarchy, and creates a Project for each solution. Then it looks for packages.config files in all children directories and associates those packages with the project, creating new Packages each time a new one (package name + version) is found.
+.net core projects are -still- not supported
+
+#### Github API caveats
+
+The Github API has several limitations. For example, it only allows 30 code search requests per minute, and it also limits the number of requests per IP address. This means that some throttling needs to be done to avoid the Github API from bouncing off requests when reading large repositories.  
+In order to minimize this effect, consider using filters when harvesting to reduce the returned results.
 
 ### Requirements
 
