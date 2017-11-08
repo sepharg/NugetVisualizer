@@ -9,6 +9,7 @@
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Dto;
     using NugetVisualizer.Core.Github;
 
     using Shouldly;
@@ -26,7 +27,7 @@
 
         private int _snapshotVersion = 1;
 
-        private IEnumerable<Project> _projects;
+        private IEnumerable<ParsedProject> _projects;
 
         private List<IProjectIdentifier> _projectIdentifiers;
 
@@ -60,9 +61,9 @@
 
         private void ThenThePackagesFilesContentsAreReturned()
         {
-            ShouldBeNullExtensions.ShouldNotBeNull<IEnumerable<Project>>(_projects);
-            Enumerable.Count<Project>(_projects).ShouldBeGreaterThan(0);
-            _projects.First().ProjectPackages.Count.ShouldBe(29);
+            ShouldBeNullExtensions.ShouldNotBeNull<IEnumerable<ParsedProject>>(_projects);
+            Enumerable.Count<ParsedProject>(_projects).ShouldBeGreaterThan(0);
+            _projects.First().ProjectPackageCount.ShouldBe(29);
         }
     }
 }

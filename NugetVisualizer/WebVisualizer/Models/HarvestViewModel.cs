@@ -6,9 +6,21 @@
     using Microsoft.AspNetCore.Mvc.Rendering;
 
     using NugetVisualizer.Core;
+    using NugetVisualizer.Core.Dto;
 
     public class HarvestViewModel
     {
+        public string GithubOrganization { get; set; }
+
+        public HarvestViewModel()
+        {
+        }
+
+        public HarvestViewModel(string githubOrganization)
+        {
+            GithubOrganization = githubOrganization;
+        }
+
         public int SelectedSnapshotId { get; set; }
         public List<SelectListItem> Snapshots { get; set; }
 

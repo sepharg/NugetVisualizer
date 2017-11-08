@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
 
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Dto;
     using NugetVisualizer.Core.Exceptions;
     using NugetVisualizer.Core.Repositories;
 
@@ -33,7 +34,7 @@
             _projectParsingState = projectParsingState;
         }
 
-        private async Task<Project> ParseProjectAsync(IProjectIdentifier projectIdentifier, int snapshotVersion)
+        private async Task<(Project, int)> ParseProjectAsync(IProjectIdentifier projectIdentifier, int snapshotVersion)
         {
             var packagesContents = await _packageReader.GetPackagesContentsAsync(projectIdentifier);
             var project = new Project(projectIdentifier.SolutionName);
@@ -42,12 +43,12 @@
             _packageRepository.AddRange(packages);
             _projectRepository.Add(project, packages.Select(p => p.Id), snapshotVersion);
 
-            return project;
+            return (project, packages.Count);
         }
 
         public async Task<ProjectParsingResult> ParseProjectsAsync(IEnumerable<IProjectIdentifier> projectIdentifiers, int snapshotVersion)
         {
-            var projectList = new List<Project>();
+            var projectList = new List<ParsedProject>();
             bool allExistingProjectsParsed = false;
             bool fatalParsingError;
             var parsingErrors = new List<string>();
@@ -55,10 +56,12 @@
             foreach (var projectIdentifier in projectIdentifiers)
             {
                 Project project;
+                (Project, int) projectParseResult = (null, 0);
                 fatalParsingError = false;
                 try
                 {
-                    project = await ParseProjectAsync(projectIdentifier, snapshotVersion);
+                    projectParseResult = await ParseProjectAsync(projectIdentifier, snapshotVersion);
+                    project = projectParseResult.Item1;
                 }
                 catch (CannotGetPackagesContentsException e)
                 {
@@ -79,7 +82,7 @@
                 
                 if (project != null)
                 {
-                    projectList.Add(project);
+                    projectList.Add(new ParsedProject(projectIdentifier.SolutionName, projectIdentifier.RepositoryName, projectParseResult.Item2));
                     lastSuccessfullParsedProjectName = project.Name;
                 }
                 allExistingProjectsParsed = project != null && !parsingErrors.Any();

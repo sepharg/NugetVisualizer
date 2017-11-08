@@ -43,7 +43,6 @@
             {
                 searchRequest.Page = ++page;
                 var searchResult = await _gitHubClient.Search.SearchCode(searchRequest);
-                keepSearching = searchResult.TotalCount > parsedSoFar;
 
                 foreach (var searchResultItem in searchResult.Items.Where(x => filters.All(filter => x.Repository.Name.ToLowerInvariant().Contains(filter.ToLowerInvariant()))))
                 {
@@ -65,10 +64,11 @@
                     projects.Add(new ProjectIdentifier(solutionName, searchResultItem.Repository.Name, solutionPath));
                 }
                 parsedSoFar += searchResult.Items.Count;
+                keepSearching = searchResult.TotalCount > parsedSoFar;
             }
             while (keepSearching);
             
-            return projects;
+            return projects.OrderBy(proj => proj.RepositoryName).ToList();
         }
 
         public List<IProjectIdentifier> GetProjects(string rootPath, string[] filters)

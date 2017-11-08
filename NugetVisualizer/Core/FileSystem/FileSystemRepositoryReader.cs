@@ -20,7 +20,7 @@
                 ParseDirectory(projectDirectory, projects, SearchOption.AllDirectories);
             }
 
-            return projects;
+            return projects.OrderBy(proj => proj.RepositoryName).ToList();
         }
 
         public Task<List<IProjectIdentifier>> GetProjectsAsync(string rootPath, string[] filters)

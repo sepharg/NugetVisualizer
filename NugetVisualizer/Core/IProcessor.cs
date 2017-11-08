@@ -2,6 +2,8 @@
 {
     using System.Threading.Tasks;
 
+    using NugetVisualizer.Core.Dto;
+
     public interface IProcessor
     {
         /// <summary>

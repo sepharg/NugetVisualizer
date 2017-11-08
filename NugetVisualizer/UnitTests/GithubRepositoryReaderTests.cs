@@ -66,46 +66,47 @@ namespace UnitTests
 
         private void GivenAGithubRepositoryWithSomeSolutions()
         {
+            var repository = new Repository(
+                "url",
+                "htmlUrl",
+                "cloneUrl",
+                "gitUrl",
+                "sshUrl",
+                "svnUrl",
+                "mirrorUrl",
+                1,
+                null,
+                _repoName,
+                "fullName",
+                "description",
+                "homepage",
+                "language",
+                false,
+                false,
+                1,
+                1,
+                "defaultBranch",
+                1,
+                null,
+                DateTimeOffset.Now,
+                DateTimeOffset.Now,
+                null,
+                null,
+                null,
+                false,
+                false,
+                false,
+                false,
+                1,
+                1,
+                false,
+                false,
+                false);
             _githubclientMock.Setup(x => x.Repository.GetAllForOrg(_githubOrganization))
                 .ReturnsAsync(
                     new List<Repository>()
                         {
-                            new Repository(
-                                "url",
-                                "htmlUrl",
-                                "cloneUrl",
-                                "gitUrl",
-                                "sshUrl",
-                                "svnUrl",
-                                "mirrorUrl",
-                                1,
-                                null,
-                                _repoName,
-                                "fullName",
-                                "description",
-                                "homepage",
-                                "language",
-                                false,
-                                false,
-                                1,
-                                1,
-                                "defaultBranch",
-                                1,
-                                null,
-                                DateTimeOffset.Now,
-                                DateTimeOffset.Now,
-                                null,
-                                null,
-                                null,
-                                false,
-                                false,
-                                false,
-                                false,
-                                1,
-                                1,
-                                false,
-                                false,
-                                false)
+                            repository
                         });
             
             _githubclientMock.Setup(x => x.Search.SearchCode(It.IsAny<SearchCodeRequest>()))
@@ -122,7 +123,7 @@ namespace UnitTests
                                     "url",
                                     "giturl",
                                     "htmlurl",
-                                    null),
+                                    repository),
                                 new SearchCode(
                                     "name",
                                     _secondPath,
@@ -130,7 +131,7 @@ namespace UnitTests
                                     "url",
                                     "giturl",
                                     "htmlurl",
-                                    null),
+                                    repository),
                                 new SearchCode(
                                     "name",
                                     _thirdPath,
@@ -138,7 +139,7 @@ namespace UnitTests
                                     "url",
                                     "giturl",
                                     "htmlurl",
-                                    null)
+                                    repository)
                             }));
         }
 

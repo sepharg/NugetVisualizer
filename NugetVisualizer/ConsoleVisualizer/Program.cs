@@ -13,6 +13,7 @@ namespace ConsoleVisualizer
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Dto;
     using NugetVisualizer.Core.Repositories;
 
     class Program
@@ -163,7 +164,7 @@ namespace ConsoleVisualizer
 
             foreach (var project in projects)
             {
-                Console.WriteLine($"{project.Name} parsed");
+                Console.WriteLine($"{project.ProjectName} ({project.RepositoryName} parsed");
             }
             if (!projectParsingResult.AllExistingProjectsParsed)
             {

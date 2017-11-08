@@ -10,6 +10,7 @@
             <div class="form-group">
                 <input type="hidden" asp-for="Append"/>
                 <input type="hidden" asp-for="SelectedSnapshotId"/>
+                <input type="hidden" asp-for="GithubOrganization"/>
                 <label for="txtNewSnapshotName">Snapshot Name</label>
                 @if (Model.Append)
                 {
@@ -47,7 +48,7 @@
                 <ul>
                     @foreach (var parsedProject in Model.ProjectParsingResult.ParsedProjects)
                     {
-                        <li>@parsedProject.Name</li>
+                        <li>@parsedProject.RepositoryName - Project <span style="font-weight: bold">@parsedProject.ProjectName</span> with @parsedProject.ProjectPackageCount packages</li>
                     }
                 </ul>
                 <p />
@@ -82,16 +83,27 @@
     </div>
 </div>
 
-<script type="text/javascript">  
+<script type="text/javascript">
+
+    function UpdateParserTypeDropdown() {
+        
+        if ($("#ddlParserType").val() === 'FileSystem') {
+            $('#lblRootPath').text("Full root path to where the projects are located");
+            $('#txtRootPath').val('');
+            $('#txtRootPath').removeAttr('readonly');
+            $('#txtRootPath').attr("placeholder", "i.e. C:\Development\MyProjects\Repositories");
+        } else {
+            $('#lblRootPath').text("Github Organization name");
+            $('#txtRootPath').val("@Model.GithubOrganization");
+            $('#txtRootPath').removeAttr('placeholder');
+            $('#txtRootPath').attr('readonly', 'readonly');
+        }
+    }
+
     $(document).ready(function () {
+        UpdateParserTypeDropdown();
         $("#ddlParserType").change(function () {
-            if ($("#ddlParserType").val() === 'FileSystem') {
-                $('#lblRootPath').text("Full root path to where the projects are located");
-                $('#txtRootPath').attr("placeholder", "i.e. C:\Development\MyProjects\Repositories");
-            } else {
-                $('#lblRootPath').text("Github Organization name");
-                $('#txtRootPath').attr("placeholder", "i.e. Microsoft");
-            }
+            UpdateParserTypeDropdown();
         });
     });
 </script> 

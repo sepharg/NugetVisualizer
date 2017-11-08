@@ -11,6 +11,7 @@
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Dto;
 
     using Shouldly;
 
@@ -27,7 +28,7 @@
 
         private int _snapshotVersion = 2;
 
-        private List<Project> _projects;
+        private List<ParsedProject> _projects;
 
         private string _projecName;
 
@@ -65,8 +66,8 @@
 
         private void ThenAProjectWithExpectedPackagesIsReturned()
         {
-            ShouldBeStringTestExtensions.ShouldBe(Enumerable.Single<Project>(_projects).Name, _projecName);
-            Enumerable.Single<Project>(_projects).ProjectPackages.Count.ShouldBe(29);
+            ShouldBeStringTestExtensions.ShouldBe(Enumerable.Single<ParsedProject>(_projects).ProjectName, _projecName);
+            _projects.Single().ProjectPackageCount.ShouldBe(29);
         }
     }
 }

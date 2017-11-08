@@ -9,6 +9,7 @@
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Dto;
     using NugetVisualizer.Core.Repositories;
 
     using Shouldly;

@@ -15,6 +15,7 @@ namespace UnitTests
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Dto;
     using NugetVisualizer.Core.Exceptions;
     using NugetVisualizer.Core.Repositories;
 
