@@ -21,11 +21,9 @@
             _projectRepository = projectRepository;
         }
 
-        public List<Package> GetPackages()
+        public List<Package> GetPackagesForProject(string projectName, int snapshotVersion)
         {
-            var allPackages = _packageRepository.GetPackages();
-            var distinctPackages = allPackages.GroupBy(x => x.Name).Select(x => x.First()).ToList(); // distinct packages by name
-            return distinctPackages;
+            return _packageRepository.GetPackagesForProject(projectName, snapshotVersion);
         }
 
         public async Task<Dictionary<Package, int>> GetPackagesOrderedByVersions(int snapshotVersion)

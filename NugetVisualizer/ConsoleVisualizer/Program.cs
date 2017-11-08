@@ -18,8 +18,6 @@ namespace ConsoleVisualizer
 
     class Program
     {
-        private static IEnumerable<Package> allPackages;
-
         private static IEnumerable<Project> projectsThatContainPackage;
 
         static void Main(string[] args)
@@ -89,7 +87,12 @@ namespace ConsoleVisualizer
                 case ConsoleKey.D3:
                 case ConsoleKey.NumPad3:
                     {
-                        var projects = container.Resolve<IProjectRepository>().LoadProjects();
+                        var snapshots = container.Resolve<ISnapshotRepository>().GetAll();
+                        string snapshotName = string.Empty;
+                        int snapshotVersion = default(int);
+                        ReadSnapshotName(snapshots, ref snapshotName, ref snapshotVersion);
+
+                        var projects = container.Resolve<IProjectRepository>().LoadProjects(snapshotVersion);
                         var allPackages = container.Resolve<IPackageRepository>().GetPackages();
 
                         var distinctPackageNames = allPackages.GroupBy(x => x.Name).Select(x => x.First().Name);

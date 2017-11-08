@@ -67,7 +67,7 @@
         private void ThenAProjectWithExpectedPackagesIsReturned()
         {
             ShouldBeStringTestExtensions.ShouldBe(Enumerable.Single<ParsedProject>(_projects).ProjectName, _projecName);
-            _projects.Single().ProjectPackageCount.ShouldBe(29);
+            Enumerable.Single(_projects).ProjectPackageCount.ShouldBe(29);
         }
     }
 }

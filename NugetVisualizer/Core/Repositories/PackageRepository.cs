@@ -50,6 +50,13 @@
             return _context.Packages.OrderBy(orderBy ?? defaultOrderByFunc).ToList();
         }
 
+        public List<Package> GetPackagesForProject(string projectName, int snapshotVersion)
+        {
+            return _context.Packages.Where(p => p.ProjectPackages.Any(pp => pp.SnapshotVersion == snapshotVersion && pp.ProjectName == projectName))
+                                    .OrderBy(p => p.Name)
+                                    .ToList();
+        }
+
         public async Task<Dictionary<Package, int>> GetPackagesOrderedByVersionsCountAsync(int snapshotVersion)
         {
             var query = @"SELECT p.Id, p.Name, p.TargetFramework, p.Version, Count(p.Name) as Count FROM Packages p
