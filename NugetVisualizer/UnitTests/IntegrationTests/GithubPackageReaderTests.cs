@@ -41,7 +41,6 @@
 
         private void GivenAGithubProjectWithPackages()
         {
-            // ToDo : need to adapt dummy repository in github so that the test passes.
             _projectIdentifier = new ProjectIdentifier("testrepo", "testrepo", "");
         }
 

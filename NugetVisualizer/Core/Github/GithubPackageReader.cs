@@ -55,6 +55,7 @@
                     }
 
                     searchApiCalls++;
+
                     // Github's search API has a custom limit of 30 requests per minute, so we have to throttle otherwise we get kicked out. https://developer.github.com/v3/search/#rate-limit 
                     if (searchApiCalls == 29 && counter.ElapsedMilliseconds < 60000)
                     {
@@ -75,7 +76,6 @@
 
         private async Task<string[]> GetPackagesFiles(IProjectIdentifier projectIdentifier)
         {
-            // ToDo : add throttling here too
             var searchCodeRequest = new SearchCodeRequest() { FileName = "packages.config", Path = projectIdentifier.Path };
             searchCodeRequest.Repos.Add($"{_configurationRoot["GithubOrganization"]}/{projectIdentifier.RepositoryName}");
             var searchResult = await _gitHubClient.Search.SearchCode(searchCodeRequest);
