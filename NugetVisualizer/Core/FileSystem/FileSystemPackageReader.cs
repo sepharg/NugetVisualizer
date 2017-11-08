@@ -12,7 +12,18 @@
     {
         private List<XDocument> GetPackagesContents(IProjectIdentifier projectIdentifier)
         {
-            return Enumerable.Select(GetPackagesFiles(projectIdentifier.Path), packagesFile => XDocument.Load(new FileStream(packagesFile, FileMode.Open))).ToList();
+            return GetPackagesFiles(projectIdentifier.Path)
+                .Select(
+                    packagesFile =>
+                        {
+                            {
+                                using (var fs = new FileStream(packagesFile, FileMode.Open))
+                                {
+                                    return XDocument.Load(fs);
+                                }
+                            }
+                        })
+                .ToList();
         }
 
         public Task<List<XDocument>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)

@@ -87,6 +87,8 @@
             builder.RegisterType<SnapshotRepository>().As<ISnapshotRepository>();
             builder.RegisterType<ProjectParsingStateRepository>().As<IProjectParsingState>();
 
+            builder.RegisterType<GithubClientFactory>().As<IGithubClientFactory>();
+
             builder.RegisterType<NugetVisualizerContext>().As<INugetVisualizerContext>().InstancePerLifetimeScope();
             builder.RegisterType<NugetVisualizerContext>().InstancePerLifetimeScope();
             builder.RegisterType<DbContextOptions<NugetVisualizerContext>>();

@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
 
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Dto;
 
     public interface IProjectParser
     {

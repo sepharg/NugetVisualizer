@@ -41,7 +41,7 @@
 
         private void GivenAGithubProjectWithPackages()
         {
-            _projectIdentifier = new ProjectIdentifier("testrepo", "");
+            _projectIdentifier = new ProjectIdentifier("testrepo", "testrepo", "");
         }
 
         private async Task WhenReadingThePackagesForTheProject()

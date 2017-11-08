@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
 
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Dto;
     using NugetVisualizer.Core.Repositories;
 
     public class Processor : IProcessor
@@ -28,12 +29,13 @@
         {
             var latestParsedProject = _projectParsingState.GetLatestParsedProject();
             var projectIdentifiers = await _repositoryReader.GetProjectsAsync(rootPath, filters);
+            
             if (string.IsNullOrEmpty(latestParsedProject))
             {
                 return await _projectParser.ParseProjectsAsync(projectIdentifiers, snapshotVersion);
             }
 
-            var alreadyProcessed = projectIdentifiers.FindIndex(pi => pi.Name.Equals(latestParsedProject)) + 1;
+            var alreadyProcessed = projectIdentifiers.FindIndex(pi => pi.SolutionName.Equals(latestParsedProject)) + 1;
             var remainingProjectsToParse = projectIdentifiers.Skip(alreadyProcessed);
             return await _projectParser.ParseProjectsAsync(remainingProjectsToParse, snapshotVersion);
         }

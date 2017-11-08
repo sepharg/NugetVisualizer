@@ -9,6 +9,7 @@
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Dto;
     using NugetVisualizer.Core.Repositories;
 
     using Shouldly;
@@ -35,14 +36,14 @@
             _processor = _autoMocker.CreateInstance<Processor>();
             _projectIdentifiers = new List<IProjectIdentifier>()
                                       {
-                                          new ProjectIdentifier("first", "path"),
-                                          new ProjectIdentifier("second", "path2"),
-                                          new ProjectIdentifier("third", "path3"),
-                                          new ProjectIdentifier("fourth", "path4"),
+                                          new ProjectIdentifier("first", "repo", "path"),
+                                          new ProjectIdentifier("second", "repo", "path2"),
+                                          new ProjectIdentifier("third", "repo", "path3"),
+                                          new ProjectIdentifier("fourth", "repo", "path4"),
                                       };
             _autoMocker.GetMock<IProjectParser>()
                 .Setup(x => x.ParseProjectsAsync(It.IsAny<IEnumerable<IProjectIdentifier>>(), _snapshotVersion))
-                .ReturnsAsync(() => new ProjectParsingResult(null, false))
+                .ReturnsAsync(() => new ProjectParsingResult(null, null, false))
                 .Callback<IEnumerable<IProjectIdentifier>, int>((identifiers, snapshotVersion) => _parsedProjects = identifiers);
             _autoMocker.GetMock<ISnapshotRepository>()
                 .Setup(x => x.Add(It.IsAny<Snapshot>()))

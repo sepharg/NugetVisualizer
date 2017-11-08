@@ -11,19 +11,32 @@
     {
         public List<IProjectIdentifier> GetProjects(string rootPath, string[] filters)
         {
-            var projectDirectories = Directory.GetDirectories(rootPath, $"*{string.Join("*", filters)}*");
+            var projects = new List<IProjectIdentifier>();
+            ParseDirectory(rootPath, projects, SearchOption.TopDirectoryOnly);
 
-            var directories = new List<IProjectIdentifier>();
+            var projectDirectories = Directory.GetDirectories(rootPath, $"*{string.Join("*", filters)}*");
             foreach (var projectDirectory in projectDirectories)
             {
-                directories.Add(new ProjectIdentifier(Path.GetFileName(projectDirectory), projectDirectory));
+                ParseDirectory(projectDirectory, projects, SearchOption.AllDirectories);
             }
-            return directories;
+
+            return projects.OrderBy(proj => proj.RepositoryName).ToList();
         }
 
         public Task<List<IProjectIdentifier>> GetProjectsAsync(string rootPath, string[] filters)
         {
             return Task.FromResult(GetProjects(rootPath, filters));
+        }
+
+        private void ParseDirectory(string projectDirectory, List<IProjectIdentifier> projects, SearchOption searchOption)
+        {
+            var allSolutions = Directory.GetFiles(projectDirectory, "*.sln", searchOption);
+            foreach (var solution in allSolutions)
+            {
+                var fileName = Path.GetFileName(solution);
+                var directoryName = Path.GetDirectoryName(solution);
+                projects.Add(new ProjectIdentifier(fileName.Substring(0, fileName.Length - 4), directoryName, directoryName));
+            }
         }
     }
 }

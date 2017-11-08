@@ -9,6 +9,7 @@
     using Microsoft.AspNetCore.Mvc.Rendering;
 
     using NugetVisualizer.Core;
+    using NugetVisualizer.Core.Dto;
 
     using WebVisualizer.Models;
     using WebVisualizer.Services;
@@ -19,10 +20,13 @@
 
         private readonly IComponentContext _context;
 
+        private string _githubOrganization;
+
         public HarvestController(SnapshotService snapshotService, IComponentContext  context)
         {
             _snapshotService = snapshotService;
             _context = context;
+            _githubOrganization = _context.Resolve<IConfigurationHelper>().GetConfiguration()["GithubOrganization"];
         }
 
         public async Task<IActionResult> Index()
@@ -44,7 +48,7 @@
                 return null;
             }
 
-            return new HarvestViewModel()
+            return new HarvestViewModel(_githubOrganization)
                        {
                            Snapshots = snapshots.Select(s => new SelectListItem() { Text = s.Name, Value = s.Version.ToString()}).ToList()
                        };
@@ -54,7 +58,7 @@
         public async Task<ActionResult> CreateSnapshot()
         {
             //Create
-            return View("Create", new HarvestViewModel());
+            return View("Create", new HarvestViewModel(_githubOrganization));
         }
 
         [HttpPost]
@@ -64,6 +68,7 @@
             return View("Create", model);
         }
 
+        [HttpPost]
         public async Task<IActionResult> DoCreateSnapshot(HarvestViewModel model)
         {
             if (ModelState.IsValid)

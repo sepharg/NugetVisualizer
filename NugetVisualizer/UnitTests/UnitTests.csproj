@@ -49,6 +49,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="TestData\FolderWithTwoSolutions\Sol1\MySol1.sln" />
+    <None Include="TestData\FolderWithTwoSolutions\Something\Sol2\Sol2.sln" />
+    <None Include="TestData\RootSol.sln" />
+    <None Include="TestData\SolutionWithoutPackages\NoPackages.sln" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="TestData\Project1\Folder2\Folder21\packages.config">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
@@ -69,6 +76,10 @@
   </Target>
 
   <Target Name="MakeTestDataDirs" AfterTargets="BeforeBuild">
+    <MakeDir Directories="$(OutDir)TestData\FolderWithNoSolution" />
+    <MakeDir Directories="$(OutDir)TestData\SolutionWithoutPackages" />
+    <MakeDir Directories="$(OutDir)TestData\FolderWithTwoSolutions\Sol1\Folder\PackagesHere" />
+    <MakeDir Directories="$(OutDir)TestData\FolderWithTwoSolutions\Something\Sol2\Something2" />
     <MakeDir Directories="$(OutDir)TestData\Project1\Folder1" />
     <MakeDir Directories="$(OutDir)TestData\Project1\Folder2\Folder21" />
     <MakeDir Directories="$(OutDir)TestData\Project1\Folder3" />
@@ -78,8 +89,10 @@
   <Target Name="CopyTestDataFiles" AfterTargets="BeforeBuild">
     <ItemGroup>
       <AllFolderFiles Include="TestData\**\*.config" />
+      <AllSlnFiles Include="TestData\**\*.sln" />
     </ItemGroup>
     <Copy SourceFiles="@(AllFolderFiles)" DestinationFiles="$(OutDir)\TestData\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="@(AllSlnFiles)" DestinationFiles="$(OutDir)\TestData\%(RecursiveDir)%(Filename)%(Extension)" />
   </Target>
 
 </Project>

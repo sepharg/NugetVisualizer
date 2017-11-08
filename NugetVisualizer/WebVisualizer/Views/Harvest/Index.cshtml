@@ -10,6 +10,7 @@
             <div class="form-group">
                 <input type="hidden" asp-for="Append" value="true" />
                 <input type="hidden" asp-for="SnapshotName" id="hdnSnapshotName" />
+                <input type="hidden" asp-for="GithubOrganization" />
                 <label for="ddlSnapshots">Snapshots:</label>
                 <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control"></select>
             </div>
