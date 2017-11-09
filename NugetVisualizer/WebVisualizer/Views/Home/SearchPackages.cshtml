@@ -1,0 +1,23 @@
+﻿@model PackagesViewModel
+
+<form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post" class="form" name="searchPackagesForm" >
+    <div class="form-group">
+        <label for="ddlPackages">Packages ordered by version count:</label>
+        <select id="ddlPackages" asp-for="SearchPackagesViewModel.SelectedPackageName" asp-items="Model.SearchPackagesViewModel.PackagesOrderedByVersionCount" class="form-control"></select>
+    </div>
+    
+    <div class="form-group">
+        <datalist id="dlAutoCompletePackages">
+            @foreach (var package in Model.SearchPackagesViewModel.PackagesOrderedByVersionCount)
+            {
+                <option value="@package.Value">@package.Text</option>
+            }
+        </datalist>
+
+        <label for="search">Quick Search:</label>
+        <input id="searchPackages" class="awesomplete form-control" list="dlAutoCompletePackages" data-minchars="1" data-maxitems="20"/>
+    </div>
+
+    <button id="btnSearchPackagesSubmit" type="submit" class="btn btn-primary btn-sm">Show project usages</button>
+    <p />
+</form>

@@ -50,9 +50,9 @@
         {
             if (ModelState.IsValid)
             {
-                model.Versions = await _packageSearchService.GetPackageVersions(model.SelectedPackageName, model.SelectedSnapshotId);
+                model.SearchPackagesViewModel.Versions = await _packageSearchService.GetPackageVersions(model.SearchPackagesViewModel.SelectedPackageName, model.SelectedSnapshotId);
                 model.SetDropdowns(await _packageSearchService.GetPackagesOrderedByVersions(model.SelectedSnapshotId), await _projectSearchService.GetProjects(model.SelectedSnapshotId), _snapshotService.GetSnapshots());
-                model.ProjectRows = await _packageSearchService.GetProjectRows(model.SelectedPackageName, model.Versions, model.SelectedSnapshotId);
+                model.SearchPackagesViewModel.ProjectRows = await _packageSearchService.GetProjectRows(model.SearchPackagesViewModel.SelectedPackageName, model.SearchPackagesViewModel.Versions, model.SelectedSnapshotId);
                 return View("Index", model);
             }
 
@@ -66,7 +66,7 @@
             if (ModelState.IsValid)
             {
                 model.SetDropdowns(await _packageSearchService.GetPackagesOrderedByVersions(model.SelectedSnapshotId), await _projectSearchService.GetProjects(model.SelectedSnapshotId), _snapshotService.GetSnapshots());
-                model.PackagesForSelectedProject = _packageSearchService.GetPackagesForProject(model.SelectedProjectName, model.SelectedSnapshotId);
+                model.SearchProjectsViewModel.PackagesForSelectedProject = _packageSearchService.GetPackagesForProject(model.SearchProjectsViewModel.SelectedProjectName, model.SelectedSnapshotId);
                 return View("Index", model);
             }
 

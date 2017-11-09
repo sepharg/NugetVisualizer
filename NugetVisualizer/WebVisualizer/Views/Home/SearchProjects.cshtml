@@ -1,0 +1,24 @@
+﻿@model PackagesViewModel
+
+<form asp-controller="Home" asp-action="ShowPackagesForProject" method="post" class="form" name="searchProjectsForm">
+
+    <div class="form-group">
+        <label for="ddlProjects">Projects:</label>
+        <select id="ddlProjects" asp-for="SearchProjectsViewModel.SelectedProjectName" asp-items="Model.SearchProjectsViewModel.Projects" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <datalist id="dlAutoCompleteProjects">
+            @foreach (var project in Model.SearchProjectsViewModel.Projects)
+            {
+                <option value="@project.Value">@project.Text</option>
+            }
+        </datalist>
+
+        <label for="searchProjects">Quick Search:</label>
+        <input id="searchProjects" class="awesomplete form-control" list="dlAutoCompleteProjects" data-minchars="1" data-maxitems="20" />
+    </div>
+
+    <button id="btnSearchProjectsSubmit" type="submit" class="btn btn-primary btn-sm">Show packages</button>
+    <p />
+</form>

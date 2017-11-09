@@ -14,70 +14,28 @@
 <input type="hidden" name="SelectedSnapshotId" id="hiddenSnapshotId" />
 <div class="row ">
     <div class="col-sm-5 panel panel-default panel-body">
-        <form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post" class="form" name="searchPackagesForm" >
-    
-            <div class="form-group">
-                <label for="ddlPackages">Packages ordered by version count:</label>
-                <select id="ddlPackages" asp-for="SelectedPackageName" asp-items="Model.PackagesOrderedByVersionCount" class="form-control"></select>
-            </div>
-    
-            <div class="form-group">
-                <datalist id="dlAutoCompletePackages">
-                    @foreach (var package in Model.PackagesOrderedByVersionCount)
-                    {
-                        <option value="@package.Value">@package.Text</option>
-                    }
-                </datalist>
-
-                <label for="search">Quick Search:</label>
-                <input id="searchPackages" class="awesomplete form-control" list="dlAutoCompletePackages" data-minchars="1" data-maxitems="20"/>
-            </div>
-
-            <button id="btnSearchPackagesSubmit" type="submit" class="btn btn-primary btn-sm">Show project usages</button>
-            <p />
-        </form>
+        @{ Html.RenderPartial("SearchPackages", Model);}
     </div>
     <div class="col-sm-2"></div>
     <div class="col-sm-5 panel panel-default panel-body">
-        <form asp-controller="Home" asp-action="ShowPackagesForProject" method="post" class="form" name="searchProjectsForm">
-
-            <div class="form-group">
-                <label for="ddlProjects">Projects:</label>
-                <select id="ddlProjects" asp-for="SelectedProjectName" asp-items="Model.Projects" class="form-control"></select>
-            </div>
-
-            <div class="form-group">
-                <datalist id="dlAutoCompleteProjects">
-                    @foreach (var project in Model.Projects)
-                    {
-                        <option value="@project.Value">@project.Text</option>
-                    }
-                </datalist>
-
-                <label for="searchProjects">Quick Search:</label>
-                <input id="searchProjects" class="awesomplete form-control" list="dlAutoCompleteProjects" data-minchars="1" data-maxitems="20" />
-            </div>
-
-            <button id="btnSearchProjectsSubmit" type="submit" class="btn btn-primary btn-sm">Show packages</button>
-            <p />
-        </form>
+        @{ Html.RenderPartial("SearchProjects", Model);}
     </div>
 </div>
 
-    @if (Model.SelectedPackageName != null)
+    @if (Model.SearchPackagesViewModel.SelectedPackageName != null)
     {
         <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr>
-                <th style="background-color: floralwhite;">@Model.SelectedPackageName</th>
-                @foreach (var version in Model.Versions)
+                <th style="background-color: floralwhite;">@Model.SearchPackagesViewModel.SelectedPackageName</th>
+                @foreach (var version in Model.SearchPackagesViewModel.Versions)
                 {
                     <th style="text-align: center">@version</th>
                 }
             </tr>
             </thead>
             <tbody>
-            @foreach (var projectRowValue in Model.ProjectRows)
+            @foreach (var projectRowValue in Model.SearchPackagesViewModel.ProjectRows)
             {
                 <tr>
                     <th>@projectRowValue.ProjectName</th>
@@ -91,10 +49,10 @@
         </table>
     }
     
-    @if (Model.SelectedProjectName != null)
+    @if (Model.SearchProjectsViewModel.SelectedProjectName != null)
     {
         <ul>
-            @foreach (var package in Model.PackagesForSelectedProject)
+            @foreach (var package in Model.SearchProjectsViewModel.PackagesForSelectedProject)
             {
                 <li>@package.Name @package.Version</li>
             }
