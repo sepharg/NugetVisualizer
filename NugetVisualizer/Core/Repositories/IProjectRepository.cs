@@ -8,7 +8,7 @@ namespace NugetVisualizer.Core.Repositories
     public interface IProjectRepository
     {
         void Add(Project project, IEnumerable<int> packageIds, int snapshotVersion);
-        List<Project> LoadProjects();
+        List<Project> LoadProjects(int snapshotVersion);
 
         Task<List<Project>> GetProjectsForPackage(string packageName, int snapshotVersion);
     }

@@ -9,6 +9,7 @@
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<PackageSearchService>();
+            builder.RegisterType<ProjectSearchService>();
             builder.RegisterType<DashboardService>();
             builder.RegisterType<SnapshotService>();
         }

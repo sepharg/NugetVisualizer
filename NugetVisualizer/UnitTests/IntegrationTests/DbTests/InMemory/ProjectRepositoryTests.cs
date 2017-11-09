@@ -17,6 +17,8 @@
 
     public class ProjectRepositoryTests : InMemoryDbTest
     {
+        private const int _snapshotVersion = 1;
+
         private IProjectRepository _projectRepository;
 
         private List<Project> _projects;
@@ -62,15 +64,15 @@
                                    new Project("P4")
                                };
 
-            _projectRepository.Add(projects[0], new List<int>() { package.Id }, 1);
-            _projectRepository.Add(projects[1], new List<int>() { package.Id }, 1);
-            _projectRepository.Add(projects[2], new List<int>() { package.Id }, 1);
-            _projectRepository.Add(projects[3], new List<int>() { package.Id }, 1);
+            _projectRepository.Add(projects[0], new List<int>() { package.Id }, _snapshotVersion);
+            _projectRepository.Add(projects[1], new List<int>() { package.Id }, _snapshotVersion);
+            _projectRepository.Add(projects[2], new List<int>() { package.Id }, _snapshotVersion);
+            _projectRepository.Add(projects[3], new List<int>() { package.Id }, _snapshotVersion);
         }
 
         private void WhenLoadingProjects()
         {
-            _projects = _projectRepository.LoadProjects();
+            _projects = _projectRepository.LoadProjects(_snapshotVersion);
         }
 
         private async Task WhenGettingProjects(string package)

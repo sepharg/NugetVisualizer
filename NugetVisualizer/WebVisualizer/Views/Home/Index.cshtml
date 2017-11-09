@@ -11,67 +11,74 @@
     </div>
 </form>
 
-<form asp-controller="Home" asp-action="ShowPackagesOrderedByVersionPackageName" method="post" class="form" name="searchForm" >
-    
-    <div class="form-group">
-        <label for="ddlPackages">Packages ordered by version count:</label>
-        <select id="ddlPackages" asp-for="SelectedPackageName" asp-items="Model.PackagesOrderedByVersionCount" class="form-control"></select>
-        <input type="hidden" name="SelectedSnapshotId" id="hiddenSnapshotId"/>
+<input type="hidden" name="SelectedSnapshotId" id="hiddenSnapshotId" />
+<div class="row ">
+    <div class="col-sm-5 panel panel-default panel-body">
+        @{ Html.RenderPartial("SearchPackages", Model);}
     </div>
-    
-    <div class="form-group">
-        <datalist id="dlAutoComplete">
-            @foreach (var package in Model.PackagesOrderedByVersionCount)
-            {
-                <option value="@package.Value">@package.Text</option>
-            }
-        </datalist>
-
-        <label for="search">Quick Search:</label>
-        <input id="search" class="awesomplete form-control" list="dlAutoComplete" data-minchars="1" data-maxitems="20"/>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-5 panel panel-default panel-body">
+        @{ Html.RenderPartial("SearchProjects", Model);}
     </div>
+</div>
 
-        <button id="btnSubmit" type="submit" class="btn btn-primary btn-sm">Show project usages</button>
-        <p />
-</form>
-    @if (Model.SelectedPackageName != null)
+    @if (Model.SearchPackagesViewModel.SelectedPackageName != null)
     {
-            <table class="table table-bordered table-striped table-hover">
-                <thead>
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+            <tr>
+                <th style="background-color: floralwhite;">@Model.SearchPackagesViewModel.SelectedPackageName</th>
+                @foreach (var version in Model.SearchPackagesViewModel.Versions)
+                {
+                    <th style="text-align: center">@version</th>
+                }
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var projectRowValue in Model.SearchPackagesViewModel.ProjectRows)
+            {
                 <tr>
-                    <th style="background-color: floralwhite;">@Model.SelectedPackageName</th>
-                    @foreach (var version in Model.Versions)
+                    <th>@projectRowValue.ProjectName</th>
+                    @foreach (var value in projectRowValue.ValuesList)
                     {
-                        <th style="text-align: center">@version</th>
+                        <td style="text-align: center">@if (value) { <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> }</td>
                     }
                 </tr>
-                </thead>
-                <tbody>
-                @foreach (var projectRowValue in Model.ProjectRows)
-                {
-                    <tr>
-                        <th>@projectRowValue.ProjectName</th>
-                        @foreach (var value in projectRowValue.ValuesList)
-                        {
-                            <td style="text-align: center">@if (value) { <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> }</td>
-                        }
-                    </tr>
-                }
-                </tbody>
-            </table>
             }
+            </tbody>
+        </table>
+    }
+    
+    @if (Model.SearchProjectsViewModel.SelectedProjectName != null)
+    {
+        <ul>
+            @foreach (var package in Model.SearchProjectsViewModel.PackagesForSelectedProject)
+            {
+                <li>@package.Name @package.Version</li>
+            }
+        </ul>
+    }
     
 <script type="text/javascript">
     $(document).ready(function () {
-        document.getElementById('search').addEventListener('awesomplete-selectcomplete', function(obj) {
+        document.getElementById('searchPackages').addEventListener('awesomplete-selectcomplete', function(obj) {
             document.getElementById('ddlPackages').value = obj.text.value;
+        });
+        document.getElementById('searchProjects').addEventListener('awesomplete-selectcomplete', function (obj) {
+            document.getElementById('ddlProjects').value = obj.text.value;
         });
         $("#ddlSnapshots").change(function() {
              document.snapshotForm.submit();
         });
-        $("#btnSubmit").click(function() {
+        $("#btnSearchPackagesSubmit").click(function() {
             document.getElementById('hiddenSnapshotId').value = document.getElementById('ddlSnapshots').value;
-            document.searchForm.submit();
+            document.searchPackagesForm.appendChild(document.getElementById('hiddenSnapshotId')); 
+            document.searchPackagesForm.submit();
+        });
+        $("#btnSearchProjectsSubmit").click(function () {
+            document.getElementById('hiddenSnapshotId').value = document.getElementById('ddlSnapshots').value;
+            document.searchProjectsForm.appendChild(document.getElementById('hiddenSnapshotId')); 
+            document.searchProjectsForm.submit();
         });
     });
 

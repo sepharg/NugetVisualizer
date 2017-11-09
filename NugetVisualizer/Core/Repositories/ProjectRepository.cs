@@ -18,17 +18,20 @@
             _dbContext = dbContext;
         }
 
-        public List<Project> LoadProjects()
+        public List<Project> LoadProjects(int snapshotVersion)
         {
-            return _dbContext.Projects.Include(x => x.ProjectPackages).ThenInclude(y => y.Package).ToList();
+            return _dbContext.Projects.Where(p => p.ProjectPackages.Any(pp => pp.SnapshotVersion == snapshotVersion))
+                                      .Include(x => x.ProjectPackages)
+                                      .ThenInclude(y => y.Package)
+                                      .ToList();
         }
 
         public async Task<List<Project>> GetProjectsForPackage(string packageName, int snapshotVersion)
         {
-            return _dbContext.Projects.Where(p => p.ProjectPackages.Any(pp => pp.Package.Name.Equals(packageName) && pp.SnapshotVersion == snapshotVersion))
-                                      .Include(x => x.ProjectPackages)
-                                      .ThenInclude(x => x.Package)
-                                      .ToList();
+            return await _dbContext.Projects.Where(p => p.ProjectPackages.Any(pp => pp.Package.Name.Equals(packageName) && pp.SnapshotVersion == snapshotVersion))
+                                            .Include(x => x.ProjectPackages)
+                                            .ThenInclude(x => x.Package)
+                                            .ToListAsync();
         }
 
         public void Add(Project project, IEnumerable<int> packageIds, int snapshotVersion)
