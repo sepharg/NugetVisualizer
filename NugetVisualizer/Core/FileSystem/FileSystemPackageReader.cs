@@ -17,7 +17,7 @@
                     packagesFile =>
                         {
                             {
-                                using (var fs = new FileStream(packagesFile, FileMode.Open))
+                                using (var fs = new FileStream(packagesFile, FileMode.Open, FileAccess.Read))
                                 {
                                     return XDocument.Load(fs);
                                 }
