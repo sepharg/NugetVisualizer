@@ -52,7 +52,17 @@ This can be used as a template:
 
 Just run them normally. At the moment of writing, Resharper's test runner doesn't work on .net core, so use the visual studio test runner.
 The Integration Tests that connect to github cannot be run locally, because a token is needed for a dummy organization i've created. Github doesn't let me check in tokens into source control for security reasons, so these tests run only on the travis build.	
-	
+
+##### Running Website locally
+
+Go into /NugetVisualizer an run the following commands
+
+- dotnet restore
+- dotnet build NugetVisualizer.sln
+- dotnet test UnitTests
+- cd WebVisualizer
+- dotnet run --project WebVisualizer.csproj --configuration Debug
+
 ##### Sample Screenshots
 
 ![Create Snapshot](create-snapshot.PNG?raw=true "Create Snapshot")
