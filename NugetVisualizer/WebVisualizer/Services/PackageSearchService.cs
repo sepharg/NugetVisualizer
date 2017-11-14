@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
 
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.Nuget;
     using NugetVisualizer.Core.Repositories;
 
     using WebVisualizer.Models;
@@ -14,11 +15,14 @@
         private readonly IPackageRepository _packageRepository;
 
         private readonly IProjectRepository _projectRepository;
-        
-        public PackageSearchService(IPackageRepository packageRepository, IProjectRepository projectRepository)
+
+        private readonly NugetVersionQuery _nugetVersionQuery;
+
+        public PackageSearchService(IPackageRepository packageRepository, IProjectRepository projectRepository, NugetVersionQuery nugetVersionQuery)
         {
             _packageRepository = packageRepository;
             _projectRepository = projectRepository;
+            _nugetVersionQuery = nugetVersionQuery;
         }
 
         public List<Package> GetPackagesForProject(string projectName, int snapshotVersion)
@@ -34,6 +38,11 @@
         public async Task<List<string>> GetPackageVersions(string packageName, int snapshotVersion)
         {
             return await _packageRepository.GetPackageVersions(packageName, snapshotVersion);
+        }
+
+        public async Task<string> GetPackageLatestVersion(string packageName)
+        {
+            return await _nugetVersionQuery.GetLatestVersion(packageName);
         }
 
         public async Task<List<ProjectRow>> GetProjectRows(string packageName, List<string> packageVersionsList, int snapshotVersion)
