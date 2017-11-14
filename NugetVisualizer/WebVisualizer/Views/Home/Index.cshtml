@@ -24,6 +24,9 @@
 
     @if (Model.SearchPackagesViewModel.SelectedPackageName != null)
     {
+        <span>Latest version for @Model.SearchPackagesViewModel.SelectedPackageName is <strong>@Model.SearchPackagesViewModel.LatestVersionForSelectedPackage</strong></span>
+        <p/>
+
         <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr>

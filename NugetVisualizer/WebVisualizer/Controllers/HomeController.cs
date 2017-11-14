@@ -51,6 +51,7 @@
             if (ModelState.IsValid)
             {
                 model.SearchPackagesViewModel.Versions = await _packageSearchService.GetPackageVersions(model.SearchPackagesViewModel.SelectedPackageName, model.SelectedSnapshotId);
+                model.SearchPackagesViewModel.LatestVersionForSelectedPackage = await _packageSearchService.GetPackageLatestVersion(model.SearchPackagesViewModel.SelectedPackageName);
                 model.SetDropdowns(await _packageSearchService.GetPackagesOrderedByVersions(model.SelectedSnapshotId), await _projectSearchService.GetProjects(model.SelectedSnapshotId), _snapshotService.GetSnapshots());
                 model.SearchPackagesViewModel.ProjectRows = await _packageSearchService.GetProjectRows(model.SearchPackagesViewModel.SelectedPackageName, model.SearchPackagesViewModel.Versions, model.SelectedSnapshotId);
                 return View("Index", model);

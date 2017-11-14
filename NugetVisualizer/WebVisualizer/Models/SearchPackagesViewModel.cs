@@ -17,6 +17,8 @@
 
         public string SelectedPackageName { get; set; }
 
+        public string LatestVersionForSelectedPackage { get; set; }
+
         public List<ProjectRow> ProjectRows { get; set; }
 
         public List<string> Versions { get; set; }

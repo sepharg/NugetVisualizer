@@ -11,6 +11,7 @@
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.FileSystem;
     using NugetVisualizer.Core.Github;
+    using NugetVisualizer.Core.Nuget;
     using NugetVisualizer.Core.Repositories;
 
     public class CoreInstaller : Module
@@ -86,6 +87,7 @@
             builder.RegisterType<ProjectRepository>().As<IProjectRepository>();
             builder.RegisterType<SnapshotRepository>().As<ISnapshotRepository>();
             builder.RegisterType<ProjectParsingStateRepository>().As<IProjectParsingState>();
+            builder.RegisterType<NugetVersionQuery>();
 
             builder.RegisterType<GithubClientFactory>().As<IGithubClientFactory>();
 
