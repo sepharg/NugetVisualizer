@@ -1,11 +1,12 @@
-﻿namespace NugetVisualizer.Core
+﻿namespace NugetVisualizer.Core.PackageParser
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Xml.Linq;
+
     using NugetVisualizer.Core.Domain;
 
-    public class PackageParser : IPackageParser
+    public class NetFrameworkPackageParser : IPackageParser
     {
         public IEnumerable<Package> ParsePackages(XDocument packagesXml)
         {

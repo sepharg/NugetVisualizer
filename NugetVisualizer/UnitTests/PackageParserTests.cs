@@ -6,6 +6,7 @@ namespace UnitTests
 
     using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.PackageParser;
 
     using Shouldly;
 
@@ -14,7 +15,7 @@ namespace UnitTests
 
     public class PackageParserTests
     {
-        private PackageParser _packageParser;
+        private NetFrameworkPackageParser _packageParser;
 
         private XDocument xmlDocument;
 
@@ -22,7 +23,7 @@ namespace UnitTests
 
         public PackageParserTests()
         {
-            _packageParser = new PackageParser();
+            _packageParser = new NetFrameworkPackageParser();
         }
 
 

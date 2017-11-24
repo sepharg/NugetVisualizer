@@ -12,6 +12,7 @@
 
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Exceptions;
+    using NugetVisualizer.Core.PackageParser;
 
     using Octokit;
     using Octokit.Internal;
@@ -30,9 +31,9 @@
             _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationRoot["GithubOrganization"]), credentials);
         }
 
-        public async Task<List<XDocument>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
+        public async Task<List<IPackageContainer>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
         {
-            var ret = new List<XDocument>();
+            var ret = new List<IPackageContainer>();
             try
             {
                 var counter = new Stopwatch();
@@ -46,7 +47,7 @@
                     try
                     {
                         XDocument xml = XDocument.Parse(downloadedFileContent);
-                        ret.Add(xml);
+                        ret.Add(new NetFrameworkPackageContainer(xml));
                     }
                     catch (XmlException e)
                     {

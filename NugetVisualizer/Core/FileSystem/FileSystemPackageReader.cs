@@ -7,26 +7,27 @@
     using System.Xml.Linq;
 
     using NugetVisualizer.Core.Domain;
+    using NugetVisualizer.Core.PackageParser;
 
     public class FileSystemPackageReader : IPackageReader
     {
-        private List<XDocument> GetPackagesContents(IProjectIdentifier projectIdentifier)
+        private List<IPackageContainer> GetPackagesContents(IProjectIdentifier projectIdentifier)
         {
-            return GetPackagesFiles(projectIdentifier.Path)
+            return new List<IPackageContainer>(GetPackagesFiles(projectIdentifier.Path)
                 .Select(
                     packagesFile =>
                         {
                             {
                                 using (var fs = new FileStream(packagesFile, FileMode.Open, FileAccess.Read))
                                 {
-                                    return XDocument.Load(fs);
+                                    return new NetFrameworkPackageContainer(XDocument.Load(fs));
                                 }
                             }
                         })
-                .ToList();
+                .ToList());
         }
 
-        public Task<List<XDocument>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
+        public Task<List<IPackageContainer>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
         {
             return Task.FromResult(GetPackagesContents(projectIdentifier));
         }
