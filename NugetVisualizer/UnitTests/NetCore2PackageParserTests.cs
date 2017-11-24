@@ -4,7 +4,6 @@ namespace UnitTests
     using System.Linq;
     using System.Xml.Linq;
 
-    using NugetVisualizer.Core;
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.PackageParser;
 
@@ -13,17 +12,17 @@ namespace UnitTests
     using TestStack.BDDfy;
     using Xunit;
 
-    public class PackageParserTests
+    public class NetCore2PackageParserTests
     {
-        private NetFrameworkPackageParser _packageParser;
+        private NetCore2PackageParser _packageParser;
 
         private XDocument xmlDocument;
 
         private IEnumerable<Package> _results;
 
-        public PackageParserTests()
+        public NetCore2PackageParserTests()
         {
-            _packageParser = new NetFrameworkPackageParser();
+            _packageParser = new NetCore2PackageParser();
         }
 
 
@@ -64,16 +63,28 @@ namespace UnitTests
 
         private void GivenAnXmlFileWithOnePackage()
         {
-            xmlDocument = XDocument.Parse("<?xml version=\"1.0\" encoding=\"utf-8\"?><packages><package id = \"Newtonsoft.Json\" version = \"9.0.1\" targetFramework = \"net461\" /></packages >");
+            xmlDocument = XDocument.Parse("<Project Sdk=\"Microsoft.NET.Sdk.Web\">"
+                                          + "<PropertyGroup>"
+                                          + "<TargetFramework> netcoreapp2.0 </TargetFramework>"
+                                          + "</PropertyGroup>"
+                                          + "<ItemGroup >"
+                                          + "<PackageReference Include=\"Microsoft.AspNetCore.All\" Version=\"2.0.0\" />"
+                                          + "</ItemGroup>"
+                                          + "</Project>");
         }
 
         private void GivenAnXmlFileWithThreePackages()
         {
-            xmlDocument = XDocument.Parse("<?xml version=\"1.0\" encoding=\"utf-8\"?><packages>"
-                                          + "<package id = \"Newtonsoft.Json\" version = \"9.0.1\" targetFramework = \"net461\" />"
-                                          + "<package id=\"EntityFramework\" version=\"6.1.3\" targetFramework=\"net462\" />"
-                                          + "<package id=\"AutoMapper\" version=\"3.3.1\" />"
-                                          + "</packages>");
+            xmlDocument = XDocument.Parse("<Project Sdk=\"Microsoft.NET.Sdk.Web\">"
+                                          + "<PropertyGroup>"
+                                          + "<TargetFramework > netcoreapp2.0 </TargetFramework>"
+                                          + "</PropertyGroup>"
+                                          + "<ItemGroup>"
+                                          + "<PackageReference Include=\"Newtonsoft.Json\" Version=\"9.0.1\" />"
+                                          + "<PackageReference Include=\"EntityFramework\" Version=\"6.1.3\" />"
+                                          + "<PackageReference Include=\"AutoMapper\" Version=\"3.3.1\" />"
+                                          + "</ItemGroup>"
+                                          + "</Project>");
         }
 
         private void WhenParsingXml()
@@ -90,9 +101,8 @@ namespace UnitTests
         {
             _results.Count().ShouldBe(1);
             var package = _results.Single();
-            package.Name.ShouldBe("Newtonsoft.Json");
-            package.Version.ShouldBe("9.0.1");
-            package.TargetFramework.ShouldBe("net461");
+            package.Name.ShouldBe("Microsoft.AspNetCore.All");
+            package.Version.ShouldBe("2.0.0");
         }
 
         private void ThenThreePackagesAreReturned()
@@ -100,13 +110,10 @@ namespace UnitTests
             _results.Count().ShouldBe(3);
             _results.ElementAt(0).Name.ShouldBe("Newtonsoft.Json");
             _results.ElementAt(0).Version.ShouldBe("9.0.1");
-            _results.ElementAt(0).TargetFramework.ShouldBe("net461");
             _results.ElementAt(1).Name.ShouldBe("EntityFramework");
             _results.ElementAt(1).Version.ShouldBe("6.1.3");
-            _results.ElementAt(1).TargetFramework.ShouldBe("net462");
             _results.ElementAt(2).Name.ShouldBe("AutoMapper");
             _results.ElementAt(2).Version.ShouldBe("3.3.1");
-            _results.ElementAt(2).TargetFramework.ShouldBeNullOrEmpty();
         }
     }
 }

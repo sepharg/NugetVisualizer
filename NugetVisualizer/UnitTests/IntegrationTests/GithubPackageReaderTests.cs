@@ -51,7 +51,7 @@
 
         private void ThenThePackagesFilesContentsAreReturned()
         {
-            _packagesContents.Count().ShouldBe(4);
+            _packagesContents.Count().ShouldBe(5);
         }
 
         protected override void ExtraRegistrations(ContainerBuilder builder)
