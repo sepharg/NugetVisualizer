@@ -55,7 +55,7 @@
                 int i = 1;
                 foreach (var packageVersion in packageVersionsList)
                 {
-                    if (project.ProjectPackages.Where(x => x.Package.Name == packageName).Any(pp => pp.Package.Version.Equals(packageVersion)))
+                    if (project.ProjectPackages.Where(x => x.Package.Name == packageName && x.SnapshotVersion.Equals(snapshotVersion)).Any(pp => pp.Package.Version.Equals(packageVersion)))
                     {
                         projectRow.ValuesList.Add(true);
                     }
