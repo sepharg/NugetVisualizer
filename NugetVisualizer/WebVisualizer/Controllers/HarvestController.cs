@@ -26,7 +26,7 @@
         {
             _snapshotService = snapshotService;
             _context = context;
-            _githubOrganization = _context.Resolve<IConfigurationHelper>().GetConfiguration()["GithubOrganization"];
+            _githubOrganization = _context.Resolve<IConfigurationHelper>().GithubOrganization;
         }
 
         public async Task<IActionResult> Index()

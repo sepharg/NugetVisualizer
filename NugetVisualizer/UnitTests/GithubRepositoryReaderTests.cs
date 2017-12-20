@@ -47,10 +47,8 @@ namespace UnitTests
             _githubOrganization = "My org";
             _githubclientMock = autoMocker.GetMock<IGitHubClient>();
             autoMocker.GetMock<IGithubClientFactory>().Setup(x => x.GetClient(_githubOrganization, It.IsAny<ICredentialStore>())).Returns(_githubclientMock.Object);
-            var configurationRootMock = autoMocker.GetMock<IConfigurationRoot>();
-            configurationRootMock.Setup(x => x["GithubToken"]).Returns("TOKEN");
-            configurationRootMock.Setup(x => x["GithubOrganization"]).Returns(_githubOrganization);
-            autoMocker.GetMock<IConfigurationHelper>().Setup(x => x.GetConfiguration()).Returns(configurationRootMock.Object);
+            autoMocker.GetMock<IConfigurationHelper>().Setup(x => x.GithubToken).Returns("TOKEN");
+            autoMocker.GetMock<IConfigurationHelper>().Setup(x => x.GithubOrganization).Returns(_githubOrganization);
             _githubRepositoryReader = autoMocker.CreateInstance<GithubRepositoryReader>();
         }
 

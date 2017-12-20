@@ -18,16 +18,15 @@
 
     public class GithubPackageReader : IPackageReader
     {
-        private IConfigurationRoot _configurationRoot;
-
+        private IConfigurationHelper _configurationHelper;
         private GitHubClient _gitHubClient;
 
         public GithubPackageReader(IConfigurationHelper configurationHelper)
         {
-            _configurationRoot = configurationHelper.GetConfiguration();
-            var githubToken = _configurationRoot["GithubToken"];
+            _configurationHelper = configurationHelper;
+            var githubToken = _configurationHelper.GithubToken;
             InMemoryCredentialStore credentials = new InMemoryCredentialStore(new Credentials(githubToken));
-            _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationRoot["GithubOrganization"]), credentials);
+            _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationHelper.GithubOrganization), credentials);
         }
 
         public async Task<List<XDocument>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
@@ -40,7 +39,7 @@
                 counter.Start();
                 foreach (var packagesFile in await GetPackagesFiles(projectIdentifier))
                 {
-                    var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(_configurationRoot["GithubOrganization"], projectIdentifier.RepositoryName, packagesFile)).Single();
+                    var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(_configurationHelper.GithubOrganization, projectIdentifier.RepositoryName, packagesFile)).Single();
 
                     var downloadedFileContent = GetDownloadedFileContent(downloadedFile);
                     try
@@ -77,7 +76,7 @@
         private async Task<string[]> GetPackagesFiles(IProjectIdentifier projectIdentifier)
         {
             var searchCodeRequest = new SearchCodeRequest() { FileName = "packages.config", Path = projectIdentifier.Path };
-            searchCodeRequest.Repos.Add($"{_configurationRoot["GithubOrganization"]}/{projectIdentifier.RepositoryName}");
+            searchCodeRequest.Repos.Add($"{_configurationHelper.GithubOrganization}/{projectIdentifier.RepositoryName}");
             var searchResult = await _gitHubClient.Search.SearchCode(searchCodeRequest);
             return searchResult.Items.Select(x => x.Url.Substring(x.Url.IndexOf("contents") + 8)).ToArray(); // blablabla/contents/{filepath}
         }

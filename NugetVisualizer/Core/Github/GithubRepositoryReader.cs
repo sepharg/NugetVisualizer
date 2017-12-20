@@ -16,17 +16,13 @@
     public class GithubRepositoryReader : IRepositoryReader
     {
         private readonly IGithubClientFactory _githubClientFactory;
-
-        private IConfigurationRoot _configurationRoot;
-
         private IGitHubClient _gitHubClient;
 
         public GithubRepositoryReader(IConfigurationHelper configurationHelper, IGithubClientFactory githubClientFactory)
         {
             _githubClientFactory = githubClientFactory;
-            _configurationRoot = configurationHelper.GetConfiguration();
-            var credentials = new InMemoryCredentialStore(new Credentials(_configurationRoot["GithubToken"]));
-            _gitHubClient = _githubClientFactory.GetClient(_configurationRoot["GithubOrganization"], credentials);
+            var credentials = new InMemoryCredentialStore(new Credentials(configurationHelper.GithubToken));
+            _gitHubClient = _githubClientFactory.GetClient(configurationHelper.GithubOrganization, credentials);
         }
 
         public async Task<List<IProjectIdentifier>> GetProjectsAsync(string rootPath, string[] filters)
