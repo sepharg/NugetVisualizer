@@ -36,7 +36,7 @@
         }
 
         public bool UseSqlLite => _useSqlLite;
-        public string Dbpath => GetSection("Dbpath").Exists() ? GetSection("Dbpath").Value : "";
+        public string Dbpath => GetSection("Dbpath").Exists() ? GetSection("Dbpath").Value : "testnugetvisualizer.db";
         public string GithubToken => GetSection("GithubToken").Exists() ? GetSection("GithubToken").Value : "";
         public string GithubOrganization => GetSection("GithubOrganization").Exists() ? GetSection("GithubOrganization").Value : "";
     }
