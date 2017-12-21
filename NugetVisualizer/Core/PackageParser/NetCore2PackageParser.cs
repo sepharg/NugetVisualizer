@@ -18,7 +18,7 @@
             var packages = from package in packagesXml.Root.Descendants("PackageReference")
                            select new Package(
                                package.Attribute("Include").Value,
-                               package.Attribute("Version").Value,
+                               package.Attribute("Version") != null ? package.Attribute("Version").Value : package.Element("Version").Value,
                                string.Empty);
             return packages;
         }
