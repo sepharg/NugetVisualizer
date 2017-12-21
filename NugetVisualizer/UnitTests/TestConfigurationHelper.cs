@@ -1,6 +1,7 @@
 ﻿namespace UnitTests
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -22,13 +23,21 @@
             _useSqlLite = useSqlLite;
         }
 
-        public IConfigurationRoot GetConfiguration()
+        private IConfigurationRoot GetConfiguration()
         {
             var builder = new ConfigurationBuilder().AddJsonFile($"configuration.json", optional: true, reloadOnChange: true)
                                                     .AddInMemoryCollection(IntegrationTestConfiguration);
             return builder.Build();
         }
+        private IConfigurationSection GetSection(string sectionName)
+        {
+            var conf = GetConfiguration();
+            return conf?.GetChildren().FirstOrDefault(t => t.Key.ToLower().Equals(sectionName.ToLower()));
+        }
 
         public bool UseSqlLite => _useSqlLite;
+        public string Dbpath => GetSection("Dbpath").Exists() ? GetSection("Dbpath").Value : "testnugetvisualizer.db";
+        public string GithubToken => GetSection("GithubToken").Exists() ? GetSection("GithubToken").Value : "";
+        public string GithubOrganization => GetSection("GithubOrganization").Exists() ? GetSection("GithubOrganization").Value : "";
     }
 }
