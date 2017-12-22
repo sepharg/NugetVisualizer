@@ -3,12 +3,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
 
     using Autofac;
 
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Github;
+    using NugetVisualizer.Core.PackageParser;
 
     using Shouldly;
 
@@ -22,7 +22,7 @@
 
         private ProjectIdentifier _projectIdentifier;
 
-        private IEnumerable<XDocument> _packagesContents;
+        private IEnumerable<IPackageContainer> _packagesContents;
 
         public GithubPackageReaderTests()
         {
@@ -51,7 +51,7 @@
 
         private void ThenThePackagesFilesContentsAreReturned()
         {
-            Enumerable.Count<XDocument>(_packagesContents).ShouldBe(4);
+            _packagesContents.Count().ShouldBe(5);
         }
 
         protected override void ExtraRegistrations(ContainerBuilder builder)

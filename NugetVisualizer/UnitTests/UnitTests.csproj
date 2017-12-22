@@ -51,6 +51,7 @@
   <ItemGroup>
     <None Include="TestData\FolderWithTwoSolutions\Sol1\MySol1.sln" />
     <None Include="TestData\FolderWithTwoSolutions\Something\Sol2\Sol2.sln" />
+    <None Include="TestData\Project2\Folder1\WebVisualizer.csproj" />
     <None Include="TestData\RootSol.sln" />
     <None Include="TestData\SolutionWithoutPackages\NoPackages.sln" />
   </ItemGroup>
@@ -83,6 +84,9 @@
     <MakeDir Directories="$(OutDir)TestData\Project1\Folder1" />
     <MakeDir Directories="$(OutDir)TestData\Project1\Folder2\Folder21" />
     <MakeDir Directories="$(OutDir)TestData\Project1\Folder3" />
+    <MakeDir Directories="$(OutDir)TestData\Project2\Folder1" />
+    <MakeDir Directories="$(OutDir)TestData\Project2\Folder2\Folder21" />
+    <MakeDir Directories="$(OutDir)TestData\Project2\Folder3" />
   </Target>
   
   <!-- Copies test data to output dir -->
@@ -90,9 +94,11 @@
     <ItemGroup>
       <AllFolderFiles Include="TestData\**\*.config" />
       <AllSlnFiles Include="TestData\**\*.sln" />
+      <AllCsProjFiles Include="TestData\**\*.csproj" />
     </ItemGroup>
     <Copy SourceFiles="@(AllFolderFiles)" DestinationFiles="$(OutDir)\TestData\%(RecursiveDir)%(Filename)%(Extension)" />
     <Copy SourceFiles="@(AllSlnFiles)" DestinationFiles="$(OutDir)\TestData\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="@(AllCsProjFiles)" DestinationFiles="$(OutDir)\TestData\%(RecursiveDir)%(Filename)%(Extension)" />
   </Target>
 
 </Project>

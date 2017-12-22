@@ -9,6 +9,7 @@
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Dto;
     using NugetVisualizer.Core.Exceptions;
+    using NugetVisualizer.Core.PackageParser;
     using NugetVisualizer.Core.Repositories;
 
     using Octokit;
@@ -18,17 +19,19 @@
     public class ProjectParser : IProjectParser
     {
         private IPackageReader _packageReader;
-        private IPackageParser _packageParser;
+
+        private readonly IPackageParserFactory _packageParserFactory;
+        
         private IProjectRepository _projectRepository;
         private IPackageRepository _packageRepository;
         private readonly IProjectParsingState _projectParsingState;
 
         public delegate ProjectParser Factory(ProjectParserType type);
 
-        public ProjectParser(IPackageReader packageReader, IPackageParser packageParser, IProjectRepository projectRepository, IPackageRepository packageRepository, IProjectParsingState projectParsingState)
+        public ProjectParser(IPackageReader packageReader, IPackageParserFactory packageParserFactory, IProjectRepository projectRepository, IPackageRepository packageRepository, IProjectParsingState projectParsingState)
         {
             _packageReader = packageReader;
-            _packageParser = packageParser;
+            _packageParserFactory = packageParserFactory;
             _projectRepository = projectRepository;
             _packageRepository = packageRepository;
             _projectParsingState = projectParsingState;
@@ -38,7 +41,7 @@
         {
             var packagesContents = await _packageReader.GetPackagesContentsAsync(projectIdentifier);
             var project = new Project(projectIdentifier.SolutionName);
-            var groupedPackagesByVersion = packagesContents.SelectMany(x => _packageParser.ParsePackages(x)).GroupBy(package => new { package.Name, package.Version }); // getting the first item of the group is fancy version of "distinct"
+            var groupedPackagesByVersion = packagesContents.SelectMany(x => _packageParserFactory.GetPackageParser(x.PackageType).ParsePackages(x.PackageContents)).GroupBy(package => new { package.Name, package.Version }); // getting the first item of the group is fancy version of "distinct"
             var packages = groupedPackagesByVersion.Select(group => group.First()).ToList();
             _packageRepository.AddRange(packages);
             _projectRepository.Add(project, packages.Select(p => p.Id), snapshotVersion);

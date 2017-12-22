@@ -12,13 +12,14 @@
     using NugetVisualizer.Core.FileSystem;
     using NugetVisualizer.Core.Github;
     using NugetVisualizer.Core.Nuget;
+    using NugetVisualizer.Core.PackageParser;
     using NugetVisualizer.Core.Repositories;
 
     public class CoreInstaller : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<PackageParser>().As<IPackageParser>();
+            builder.RegisterType<NetFrameworkPackageParser>().As<IPackageParser>();
 
             builder.RegisterType<FileSystemRepositoryReader>();
             builder.RegisterType<GithubRepositoryReader>();
@@ -90,6 +91,7 @@
             builder.RegisterType<NugetVersionQuery>();
 
             builder.RegisterType<GithubClientFactory>().As<IGithubClientFactory>();
+            builder.RegisterType<PackageParserFactory>().As<IPackageParserFactory>();
 
             builder.RegisterType<NugetVisualizerContext>().As<INugetVisualizerContext>().InstancePerLifetimeScope();
             builder.RegisterType<NugetVisualizerContext>().InstancePerLifetimeScope();

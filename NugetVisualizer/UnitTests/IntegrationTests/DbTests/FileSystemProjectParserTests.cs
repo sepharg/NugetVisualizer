@@ -45,17 +45,33 @@
         public async Task GivenAProjectWithSomePackages_WhenParsingProject_ThenAProjectWithExpectedPackagesIsReturned()
         {
             BDDfyExtensions.BDDfy(
-                    this.Given(x => x.GivenAProjectWithSomePackages())
+                    this.Given(x => x.GivenAProjectWithNetFrameworkOnlyPackages())
                         .When(x => x.WhenParsingProject())
-                        .Then(x => x.ThenAProjectWithExpectedPackagesIsReturned()));
+                        .Then(x => x.ThenAProjectWithExpectedPackagesIsReturned(29)));
         }
 
-        
+        [Fact]
 
-        private void GivenAProjectWithSomePackages()
+        public async Task GivenAProjectWithNetCoreAndNetFrameworkPackages_WhenParsingProject_ThenAProjectWithExpectedPackagesIsReturned()
         {
-            // folder21 has 6 packages, folder3 has 19 packages, root has 7 packages (total 32)
+            BDDfyExtensions.BDDfy(
+                this.Given(x => x.GivenAProjectWithNetCoreAndNetFrameworkPackages())
+                    .When(x => x.WhenParsingProject())
+                    .Then(x => x.ThenAProjectWithExpectedPackagesIsReturned(32)));
+        }
+
+        private void GivenAProjectWithNetFrameworkOnlyPackages()
+        {
+            // folder21 has 6 packages, folder3 has 19 packages, root has 7 packages (total 29 because Microsoft.Owin, Microsoft.Owin.Host.HttpListener and Microsoft.Owin.Hosting are repeated)
+            //
             _projecName = "Project1";
+            _projectPath = Path.Combine(ApplicationEnvironment.ApplicationBasePath, "TestData", _projecName);
+        }
+
+        private void GivenAProjectWithNetCoreAndNetFrameworkPackages()
+        {
+            // folder21 has 6 netframework packages, folder3 has 19 netframework packages, root has 7 netframework packages, folder1 has 3 net core packages (total 32 because Microsoft.Owin, Microsoft.Owin.Host.HttpListener and Microsoft.Owin.Hosting are repeated)
+            _projecName = "Project2";
             _projectPath = Path.Combine(ApplicationEnvironment.ApplicationBasePath, "TestData", _projecName);
         }
 
@@ -64,10 +80,10 @@
             _projects = (await _fileSystemProjectParser.ParseProjectsAsync(new IProjectIdentifier[1] { new ProjectIdentifier(_projecName, "", _projectPath) }, _snapshotVersion)).ParsedProjects;
         }
 
-        private void ThenAProjectWithExpectedPackagesIsReturned()
+        private void ThenAProjectWithExpectedPackagesIsReturned(int expected)
         {
             ShouldBeStringTestExtensions.ShouldBe(Enumerable.Single<ParsedProject>(_projects).ProjectName, _projecName);
-            Enumerable.Single(_projects).ProjectPackageCount.ShouldBe(29);
+            Enumerable.Single(_projects).ProjectPackageCount.ShouldBe(expected);
         }
     }
 }

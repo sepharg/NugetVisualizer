@@ -2,10 +2,10 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
 
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Exceptions;
+    using NugetVisualizer.Core.PackageParser;
 
     public interface IPackageReader
     {
@@ -19,6 +19,6 @@
         /// The <see cref="Task"/>.
         /// </returns>
         /// <exception cref="CannotGetPackagesContentsException">Thrown when the packages contents cannot be returned</exception>
-        Task<List<XDocument>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier);
+        Task<List<IPackageContainer>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier);
     }
 }

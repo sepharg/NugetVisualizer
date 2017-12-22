@@ -17,6 +17,7 @@ namespace UnitTests
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Dto;
     using NugetVisualizer.Core.Exceptions;
+    using NugetVisualizer.Core.PackageParser;
     using NugetVisualizer.Core.Repositories;
 
     using Shouldly;
@@ -44,7 +45,7 @@ namespace UnitTests
                         .Returns(new List<Package>());
             _autoMocker.GetMock<IPackageReader>()
                         .Setup(x => x.GetPackagesContentsAsync(It.IsAny<IProjectIdentifier>()))
-                        .ReturnsAsync(new List<XDocument>());
+                        .ReturnsAsync(new List<IPackageContainer>());
             _projectIdentifiers = new List<IProjectIdentifier>()
                                       {
                                           new ProjectIdentifier("first", "repo", "firstpath"),
@@ -114,7 +115,7 @@ namespace UnitTests
         {
             _autoMocker.GetMock<IPackageReader>()
                 .Setup(x => x.GetPackagesContentsAsync(It.IsAny<IProjectIdentifier>()))
-                .ReturnsAsync(new List<XDocument>());
+                .ReturnsAsync(new List<IPackageContainer>());
         }
 
         private void GivenAProjectCannotBeParsedFatal()

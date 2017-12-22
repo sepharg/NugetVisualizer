@@ -1,11 +1,12 @@
-﻿namespace NugetVisualizer.Core
+﻿namespace NugetVisualizer.Core.PackageParser
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Xml.Linq;
+
     using NugetVisualizer.Core.Domain;
 
-    public class PackageParser : IPackageParser
+    public class NetCore2PackageParser : IPackageParser
     {
         public IEnumerable<Package> ParsePackages(XDocument packagesXml)
         {
@@ -14,11 +15,11 @@
                 return Enumerable.Empty<Package>();
             }
 
-            var packages = from package in packagesXml.Root.Descendants("package")
+            var packages = from package in packagesXml.Root.Descendants("PackageReference")
                            select new Package(
-                               package.Attribute("id").Value,
-                               package.Attribute("version").Value,
-                               package.Attribute("targetFramework")?.Value);
+                               package.Attribute("Include").Value,
+                               package.Attribute("Version") != null ? package.Attribute("Version").Value : package.Element("Version").Value,
+                               string.Empty);
             return packages;
         }
     }
