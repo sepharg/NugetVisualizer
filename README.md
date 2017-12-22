@@ -12,7 +12,7 @@ Once the data is harvested, it can be visualized
 All data is stored in a Sqlite database
 
 The harvesting process looks for .sln files in the hierarchy, and creates a Project for each solution. Then it looks for packages.config files in all children directories and associates those packages with the project, creating new Packages each time a new one (package name + version) is found.
-.net core projects are -still- not supported
+.net core 2.0+ projects are also supported, a different parser looks into csproj files
 
 #### Github API caveats
 
