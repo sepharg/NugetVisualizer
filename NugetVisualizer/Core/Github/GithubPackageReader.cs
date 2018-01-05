@@ -4,7 +4,9 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+    using System.Timers;
     using System.Xml;
     using System.Xml.Linq;
 
@@ -23,6 +25,10 @@
         private IConfigurationRoot _configurationRoot;
 
         private GitHubClient _gitHubClient;
+        private int _searchApiCalls;
+        private object lockObject = new object();
+        private System.Timers.Timer _timer;
+        private AutoResetEvent _safeToCallSearchApi;
 
         private delegate Task<string[]> GetFiles(IProjectIdentifier projectIdentifier);
 
@@ -32,6 +38,20 @@
             var githubToken = _configurationRoot["GithubToken"];
             InMemoryCredentialStore credentials = new InMemoryCredentialStore(new Credentials(githubToken));
             _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationRoot["GithubOrganization"]), credentials);
+            _searchApiCalls = 0;
+            var timer = new System.Timers.Timer(1000*62);
+            _timer = timer;
+            _timer.AutoReset = false;
+            _timer.Elapsed += Timer_Elapsed;
+            _timer.Enabled = false;
+            _safeToCallSearchApi = new AutoResetEvent(false);
+        }
+
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Debug.WriteLine("Github api 1 minute passed, allowing more calls..");
+            _searchApiCalls = 0;
+            _safeToCallSearchApi.Set();
         }
 
         public async Task<List<IPackageContainer>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
@@ -53,18 +73,24 @@
         private async Task ProcessPackagesFiles(IProjectIdentifier projectIdentifier, GetFiles getFilesDelegate, PackageType packageType, List<IPackageContainer> ret)
         {
             Stack<string> packagesToProcess = null;
+            
+            if (!_timer.Enabled)
+            {
+                Debug.WriteLine("Starting timer on first call");
+                _timer.Start();
+            }
 
             var waitAndRetryForever = Policy.Handle<RateLimitExceededException>()
-                .WaitAndRetryForeverAsync((retryAttempt) => TimeSpan.FromSeconds(10*retryAttempt),
-                    (exception, timespan) =>
+                .WaitAndRetryForeverAsync((retryAttempt, exception, context) => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timespan, context) =>
                     {
+                        Debug.WriteLine($"Got {exception.GetType()} exception");
                         // print something on the UI so that user knows it hasn't hang
+                        return Task.CompletedTask;
                     });
-            
+
             await waitAndRetryForever.ExecuteAsync(async () => {
-                var searchApiCalls = 0;
-                var counter = new Stopwatch();
-                counter.Start();
+                
                 if (packagesToProcess == null)
                 {
                     packagesToProcess = new Stack<string>(await getFilesDelegate(projectIdentifier));
@@ -74,6 +100,11 @@
 
                 while (packagesFile != null)
                 {
+                    if (!_timer.Enabled)
+                    {
+                        Debug.WriteLine("Starting timer after waiting");
+                        _timer.Start();
+                    }
                     var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(
                                               _configurationRoot["GithubOrganization"],
                                               projectIdentifier.RepositoryName,
@@ -91,16 +122,16 @@
                         Trace.WriteLine($"Error {e.Message} while parsing {packagesFile} for {projectIdentifier.SolutionName}");
                     }
 
-                    searchApiCalls++;
+                    _searchApiCalls++;
                     packagesToProcess.Pop();
 
                     // Github's search API has a custom limit of 30 requests per minute, so we have to throttle otherwise we get kicked out. https://developer.github.com/v3/search/#rate-limit 
-                    if (searchApiCalls == 29 && counter.ElapsedMilliseconds < 60000) // even though this helps a bit, it's only considering more than 30 calls for this particular projectIdentifier. the right way to do it would be in the foreach of ProjectParser.ParseProjectsAsync. This is a pending task. 
+                    if (_searchApiCalls == 29)
                     {
-                        int remainingTimeUntilMinuteHasPassed = (int)((1000 * 60) - counter.ElapsedMilliseconds);
-                        await Task.Delay(remainingTimeUntilMinuteHasPassed).ConfigureAwait(false);
-                        searchApiCalls = 0;
-                        counter.Restart();
+                        Debug.WriteLine("Waiting for github api, 30 calls per minute..");
+                        _safeToCallSearchApi.WaitOne();
+                        Debug.WriteLine("Finished waiting for github api.");
+                        _searchApiCalls++;
                     }
                     packagesToProcess.TryPeek(out packagesFile);
                 }
