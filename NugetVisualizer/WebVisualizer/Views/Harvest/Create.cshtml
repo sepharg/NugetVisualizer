@@ -26,6 +26,11 @@
 
                 <label for="ddlParserType">Parser Type</label>
                 <select id="ddlParserType" asp-for="ParserType" asp-items="Model.ParserTypes" class="form-control"></select>
+                <div id="githubWarning" class="text-danger" style="margin-top: -5px; margin-bottom: 10px">
+                    <span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span>
+                    For organizations with many projects this can take a long while. Please be patient.
+                </div>
+                
                 <p/>
 
                 <label for="txtRootPath" id="lblRootPath">Full root path to where the projects are located</label>
@@ -92,11 +97,13 @@
             $('#txtRootPath').val('');
             $('#txtRootPath').removeAttr('readonly');
             $('#txtRootPath').attr("placeholder", "i.e. C:\Development\MyProjects\Repositories");
+            $('#githubWarning').hide();
         } else {
             $('#lblRootPath').text("Github Organization name");
             $('#txtRootPath').val("@Model.GithubOrganization");
             $('#txtRootPath').removeAttr('placeholder');
             $('#txtRootPath').attr('readonly', 'readonly');
+            $('#githubWarning').show();
         }
     }
 

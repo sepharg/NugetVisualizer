@@ -4,7 +4,9 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+    using System.Timers;
     using System.Xml;
     using System.Xml.Linq;
 
@@ -16,12 +18,17 @@
 
     using Octokit;
     using Octokit.Internal;
+    using Polly;
 
     public class GithubPackageReader : IPackageReader
     {
         private IConfigurationRoot _configurationRoot;
 
         private GitHubClient _gitHubClient;
+        private int _searchApiCalls;
+        private object lockObject = new object();
+        private System.Timers.Timer _timer;
+        private AutoResetEvent _safeToCallSearchApi;
 
         private delegate Task<string[]> GetFiles(IProjectIdentifier projectIdentifier);
 
@@ -31,6 +38,20 @@
             var githubToken = _configurationRoot["GithubToken"];
             InMemoryCredentialStore credentials = new InMemoryCredentialStore(new Credentials(githubToken));
             _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationRoot["GithubOrganization"]), credentials);
+            _searchApiCalls = 0;
+            var timer = new System.Timers.Timer(1000*62);
+            _timer = timer;
+            _timer.AutoReset = false;
+            _timer.Elapsed += Timer_Elapsed;
+            _timer.Enabled = false;
+            _safeToCallSearchApi = new AutoResetEvent(false);
+        }
+
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Debug.WriteLine("Github api 1 minute passed, allowing more calls..");
+            _searchApiCalls = 0;
+            _safeToCallSearchApi.Set();
         }
 
         public async Task<List<IPackageContainer>> GetPackagesContentsAsync(IProjectIdentifier projectIdentifier)
@@ -51,49 +72,84 @@
 
         private async Task ProcessPackagesFiles(IProjectIdentifier projectIdentifier, GetFiles getFilesDelegate, PackageType packageType, List<IPackageContainer> ret)
         {
-            var searchApiCalls = 0;
-            var counter = new Stopwatch();
-            counter.Start();
-            foreach (var packagesFile in await getFilesDelegate(projectIdentifier))
+            Stack<string> packagesToProcess = null;
+            
+            if (!_timer.Enabled)
             {
-                var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(
-                                          _configurationRoot["GithubOrganization"],
-                                          projectIdentifier.RepositoryName,
-                                          packagesFile)).Single();
+                Debug.WriteLine("Starting timer on first call");
+                _timer.Start();
+            }
 
-                var downloadedFileContent = GetDownloadedFileContent(downloadedFile);
-                try
-                {
-                    XDocument xml = XDocument.Parse(downloadedFileContent);
-                    // ToDo: move into its own class / factory / whatever
-                    switch (packageType)
+            var waitAndRetryForever = Policy.Handle<RateLimitExceededException>()
+                .WaitAndRetryForeverAsync((retryAttempt, exception, context) => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timespan, context) =>
                     {
-                        case PackageType.NetFramework:
-                            ret.Add(new NetFrameworkPackageContainer(xml));
-                            break;
-                        case PackageType.NetCore2:
-                            ret.Add(new NetCore2PackageContainer(xml));
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(packageType), packageType, null);
+                        Debug.WriteLine($"Got {exception.GetType()} exception");
+                        // print something on the UI so that user knows it hasn't hang
+                        return Task.CompletedTask;
+                    });
+
+            await waitAndRetryForever.ExecuteAsync(async () => {
+                
+                if (packagesToProcess == null)
+                {
+                    packagesToProcess = new Stack<string>(await getFilesDelegate(projectIdentifier));
+                }
+
+                packagesToProcess.TryPeek(out var packagesFile);
+
+                while (packagesFile != null)
+                {
+                    if (!_timer.Enabled)
+                    {
+                        Debug.WriteLine("Starting timer after waiting");
+                        _timer.Start();
                     }
-                }
-                catch (XmlException e)
-                {
-                    // ToDo : Log this in a better way
-                    Trace.WriteLine($"Error {e.Message} while parsing {packagesFile} for {projectIdentifier.SolutionName}");
-                }
+                    var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(
+                                              _configurationRoot["GithubOrganization"],
+                                              projectIdentifier.RepositoryName,
+                                              packagesFile)).Single();
 
-                searchApiCalls++;
+                    var downloadedFileContent = GetDownloadedFileContent(downloadedFile);
+                    try
+                    {
+                        XDocument xml = XDocument.Parse(downloadedFileContent);
+                        AddContainerToResult(packageType, ret, xml);
+                    }
+                    catch (XmlException e)
+                    {
+                        // ToDo : Log this in a better way
+                        Trace.WriteLine($"Error {e.Message} while parsing {packagesFile} for {projectIdentifier.SolutionName}");
+                    }
 
-                // Github's search API has a custom limit of 30 requests per minute, so we have to throttle otherwise we get kicked out. https://developer.github.com/v3/search/#rate-limit 
-                if (searchApiCalls == 29 && counter.ElapsedMilliseconds < 60000)
-                {
-                    int remainingTimeUntilMinuteHasPassed = (int)((1000 * 60) - counter.ElapsedMilliseconds);
-                    await Task.Delay(remainingTimeUntilMinuteHasPassed).ConfigureAwait(false);
-                    searchApiCalls = 0;
-                    counter.Restart();
+                    _searchApiCalls++;
+                    packagesToProcess.Pop();
+
+                    // Github's search API has a custom limit of 30 requests per minute, so we have to throttle otherwise we get kicked out. https://developer.github.com/v3/search/#rate-limit 
+                    if (_searchApiCalls == 29)
+                    {
+                        Debug.WriteLine("Waiting for github api, 30 calls per minute..");
+                        _safeToCallSearchApi.WaitOne();
+                        Debug.WriteLine("Finished waiting for github api.");
+                        _searchApiCalls++;
+                    }
+                    packagesToProcess.TryPeek(out packagesFile);
                 }
+            });
+        }
+
+        private static void AddContainerToResult(PackageType packageType, List<IPackageContainer> ret, XDocument xml)
+        {
+            switch (packageType)
+            {
+                case PackageType.NetFramework:
+                    ret.Add(new NetFrameworkPackageContainer(xml));
+                    break;
+                case PackageType.NetCore2:
+                    ret.Add(new NetCore2PackageContainer(xml));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(packageType), packageType, null);
             }
         }
 
@@ -123,13 +179,6 @@
                 downloadedFileContent = downloadedFileContent.Remove(0, startIndex);
             }
             return downloadedFileContent;
-        }
-
-        private class PackageFilesPaths
-        {
-            public string[] PackageFilePathStrings { get; set; }
-
-            public PackageType PackageType { get; set; }
         }
     }
 }
