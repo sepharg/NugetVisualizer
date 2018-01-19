@@ -4,7 +4,7 @@
     ViewData["Title"] = "Package List";
 }
 
-<form asp-controller="Home" asp-action="ChangeSnapshot" method="post" class="form" name="snapshotForm" >
+<form asp-controller="Home" asp-action="ChangeSnapshot" method="post" class="form" name="snapshotForm">
     <div class="form-group">
         <label for="ddlSnapshots">Snapshots:</label>
         <select id="ddlSnapshots" asp-for="SelectedSnapshotId" asp-items="Model.Snapshots" class="form-control"></select>
@@ -22,22 +22,22 @@
     </div>
 </div>
 
-    @if (Model.SearchPackagesViewModel.SelectedPackageName != null)
-    {
-        <span>Latest version for @Model.SearchPackagesViewModel.SelectedPackageName is <strong>@Model.SearchPackagesViewModel.LatestVersionForSelectedPackage</strong></span>
-        <p/>
-
-        <table class="table table-bordered table-striped table-hover">
-            <thead>
+@if (Model.SearchPackagesViewModel.SelectedPackageName != null)
+{
+    <span style="float: right">Latest version for @Model.SearchPackagesViewModel.SelectedPackageName is <strong>@Model.SearchPackagesViewModel.LatestVersionForSelectedPackage</strong></span>
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
             <tr>
                 <th style="background-color: floralwhite;">@Model.SearchPackagesViewModel.SelectedPackageName</th>
                 @foreach (var version in Model.SearchPackagesViewModel.Versions)
                 {
-                    <th style="text-align: center">@version</th>
+                    bool versionIsEqual = Version.Parse(Model.SearchPackagesViewModel.LatestVersionForSelectedPackage).CompareTo(Version.Parse(version)) <= 0;
+                    string style = versionIsEqual ? "color: Green" : "color: Red";
+                    <th style="text-align: center; @style">@version</th>
                 }
             </tr>
-            </thead>
-            <tbody>
+        </thead>
+        <tbody>
             @foreach (var projectRowValue in Model.SearchPackagesViewModel.ProjectRows)
             {
                 <tr>
@@ -48,42 +48,42 @@
                     }
                 </tr>
             }
-            </tbody>
-        </table>
-    }
-    
-    @if (Model.SearchProjectsViewModel.SelectedProjectName != null)
-    {
-        <ul>
-            @foreach (var package in Model.SearchProjectsViewModel.PackagesForSelectedProject)
-            {
-                <li>@package.Name @package.Version</li>
-            }
-        </ul>
-    }
-    
+        </tbody>
+    </table>
+}
+
+@if (Model.SearchProjectsViewModel.SelectedProjectName != null)
+{
+    <ul>
+        @foreach (var package in Model.SearchProjectsViewModel.PackagesForSelectedProject)
+        {
+            <li>@package.Name @package.Version</li>
+        }
+    </ul>
+}
+
 <script type="text/javascript">
     $(document).ready(function () {
-        document.getElementById('searchPackages').addEventListener('awesomplete-selectcomplete', function(obj) {
+        document.getElementById('searchPackages').addEventListener('awesomplete-selectcomplete', function (obj) {
             document.getElementById('ddlPackages').value = obj.text.value;
         });
         document.getElementById('searchProjects').addEventListener('awesomplete-selectcomplete', function (obj) {
             document.getElementById('ddlProjects').value = obj.text.value;
         });
-        $("#ddlSnapshots").change(function() {
-             document.snapshotForm.submit();
+        $("#ddlSnapshots").change(function () {
+            document.snapshotForm.submit();
         });
-        $("#btnSearchPackagesSubmit").click(function() {
+        $("#btnSearchPackagesSubmit").click(function () {
             document.getElementById('hiddenSnapshotId').value = document.getElementById('ddlSnapshots').value;
-            document.searchPackagesForm.appendChild(document.getElementById('hiddenSnapshotId')); 
+            document.searchPackagesForm.appendChild(document.getElementById('hiddenSnapshotId'));
             document.searchPackagesForm.submit();
         });
         $("#btnSearchProjectsSubmit").click(function () {
             document.getElementById('hiddenSnapshotId').value = document.getElementById('ddlSnapshots').value;
-            document.searchProjectsForm.appendChild(document.getElementById('hiddenSnapshotId')); 
+            document.searchProjectsForm.appendChild(document.getElementById('hiddenSnapshotId'));
             document.searchProjectsForm.submit();
         });
     });
 
-    
+
 </script>
