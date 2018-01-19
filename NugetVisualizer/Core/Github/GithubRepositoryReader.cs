@@ -5,9 +5,7 @@
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
-
-    using Microsoft.Extensions.Configuration;
-
+    
     using NugetVisualizer.Core.Domain;
 
     using Octokit;
@@ -17,16 +15,16 @@
     {
         private readonly IGithubClientFactory _githubClientFactory;
 
-        private IConfigurationRoot _configurationRoot;
+        private IConfigurationHelper _configurationHelper;
 
         private IGitHubClient _gitHubClient;
 
         public GithubRepositoryReader(IConfigurationHelper configurationHelper, IGithubClientFactory githubClientFactory)
         {
             _githubClientFactory = githubClientFactory;
-            _configurationRoot = configurationHelper.GetConfiguration();
-            var credentials = new InMemoryCredentialStore(new Credentials(_configurationRoot["GithubToken"]));
-            _gitHubClient = _githubClientFactory.GetClient(_configurationRoot["GithubOrganization"], credentials);
+            _configurationHelper = configurationHelper;
+            var credentials = new InMemoryCredentialStore(new Credentials(_configurationHelper.GithubToken));
+            _gitHubClient = _githubClientFactory.GetClient(_configurationHelper.GithubOrganization, credentials);
         }
 
         public async Task<List<IProjectIdentifier>> GetProjectsAsync(string rootPath, string[] filters)

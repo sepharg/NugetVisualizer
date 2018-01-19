@@ -3,7 +3,6 @@
     using System.Data.Common;
 
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
 
     using NugetVisualizer.Core.Domain;
 
@@ -11,12 +10,9 @@
     {
         private readonly IConfigurationHelper _configurationHelper;
 
-        private IConfigurationRoot _configurationRoot;
-
         public NugetVisualizerContext(IConfigurationHelper configurationHelper, DbContextOptions<NugetVisualizerContext> options) : base(options)
         {
             _configurationHelper = configurationHelper;
-            _configurationRoot = _configurationHelper.GetConfiguration();
         }
 
         public virtual DbSet<Snapshot> Snapshots { get; set; }
@@ -36,7 +32,7 @@
         {
             if (_configurationHelper.UseSqlLite)
             {
-                optionsBuilder.UseSqlite($"Data Source={_configurationRoot["Dbpath"]}");
+                optionsBuilder.UseSqlite($"Data Source={_configurationHelper.Dbpath}");
             }
         }
 

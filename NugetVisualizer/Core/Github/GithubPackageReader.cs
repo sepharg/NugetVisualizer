@@ -9,9 +9,7 @@
     using System.Timers;
     using System.Xml;
     using System.Xml.Linq;
-
-    using Microsoft.Extensions.Configuration;
-
+    
     using NugetVisualizer.Core.Domain;
     using NugetVisualizer.Core.Exceptions;
     using NugetVisualizer.Core.PackageParser;
@@ -22,7 +20,7 @@
 
     public class GithubPackageReader : IPackageReader
     {
-        private IConfigurationRoot _configurationRoot;
+        private IConfigurationHelper _configurationHelper;
 
         private GitHubClient _gitHubClient;
         private int _searchApiCalls;
@@ -34,10 +32,10 @@
 
         public GithubPackageReader(IConfigurationHelper configurationHelper)
         {
-            _configurationRoot = configurationHelper.GetConfiguration();
-            var githubToken = _configurationRoot["GithubToken"];
+            _configurationHelper = configurationHelper;
+            var githubToken = _configurationHelper.GithubToken;
             InMemoryCredentialStore credentials = new InMemoryCredentialStore(new Credentials(githubToken));
-            _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationRoot["GithubOrganization"]), credentials);
+            _gitHubClient = new GitHubClient(new ProductHeaderValue(_configurationHelper.GithubOrganization), credentials);
             _searchApiCalls = 0;
             var timer = new System.Timers.Timer(1000*62);
             _timer = timer;
@@ -106,7 +104,7 @@
                         _timer.Start();
                     }
                     var downloadedFile = (await _gitHubClient.Repository.Content.GetAllContents(
-                                              _configurationRoot["GithubOrganization"],
+                                              _configurationHelper.GithubOrganization,
                                               projectIdentifier.RepositoryName,
                                               packagesFile)).Single();
 
@@ -156,7 +154,7 @@
         private async Task<string[]> GetNetFrameworkPackagesFiles(IProjectIdentifier projectIdentifier)
         {
             var searchCodeRequest = new SearchCodeRequest() { FileName = "packages.config", Path = projectIdentifier.Path };
-            searchCodeRequest.Repos.Add($"{_configurationRoot["GithubOrganization"]}/{projectIdentifier.RepositoryName}");
+            searchCodeRequest.Repos.Add($"{_configurationHelper.GithubOrganization}/{projectIdentifier.RepositoryName}");
             var searchResult = await _gitHubClient.Search.SearchCode(searchCodeRequest);
             return searchResult.Items.Select(x => x.Url.Substring(x.Url.IndexOf("contents") + 8)).ToArray(); // blablabla/contents/{filepath}
         }
@@ -164,7 +162,7 @@
         private async Task<string[]> GetNetCore2PackagesFiles(IProjectIdentifier projectIdentifier)
         {
             var searchCodeRequest = new SearchCodeRequest() { FileName = "*.csproj", Path = projectIdentifier.Path };
-            searchCodeRequest.Repos.Add($"{_configurationRoot["GithubOrganization"]}/{projectIdentifier.RepositoryName}");
+            searchCodeRequest.Repos.Add($"{_configurationHelper.GithubOrganization}/{projectIdentifier.RepositoryName}");
             var searchResult = await _gitHubClient.Search.SearchCode(searchCodeRequest);
             return searchResult.Items.Select(x => x.Url.Substring(x.Url.IndexOf("contents") + 8)).ToArray(); // blablabla/contents/{filepath}
         }
